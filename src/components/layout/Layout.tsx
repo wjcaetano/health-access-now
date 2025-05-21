@@ -79,13 +79,17 @@ const Layout: React.FC = () => {
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} userProfile={userProfile} />
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main 
+        className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
+          !collapsed ? "sm:ml-20 md:ml-72" : ""
+        }`}
+      >
         <Header 
           title={title} 
           subtitle={subtitle} 
           toggleSidebar={toggleSidebar} 
         />
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-x-auto overflow-y-auto p-6">
           <Outlet />
         </div>
       </main>
