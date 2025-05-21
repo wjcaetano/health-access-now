@@ -24,6 +24,7 @@ const pageInfo: { [key: string]: { title: string; subtitle?: string } } = {
   "/financeiro": { title: "Financeiro", subtitle: "Gestão financeira do sistema" },
   "/agenda-pagamentos": { title: "Agenda de Pagamentos", subtitle: "Calendário de pagamentos aos prestadores" },
   "/guias": { title: "Guias", subtitle: "Gerenciamento de guias de serviço" },
+  "/configuracoes": { title: "Configurações", subtitle: "Ajustes do sistema" },
   
   // Páginas do prestador
   "/prestador": { title: "Portal do Prestador", subtitle: "Bem-vindo ao seu portal" },
@@ -39,14 +40,6 @@ const getProfileFromPath = (path: string) => {
   // Por padrão, assume o perfil de usuário AGENDAJA
   return "agendaja";
 };
-
-// Atualizando o tipo do componente Header para aceitar a propriedade userProfile
-type HeaderProps = {
-  title: string;
-  subtitle?: string;
-  toggleSidebar: () => void;
-  userProfile?: string;
-}
 
 const Layout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);

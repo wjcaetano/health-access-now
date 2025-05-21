@@ -1,8 +1,10 @@
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Menu, Search } from "lucide-react";
+import { ArrowLeft, LogOut, Menu, Search } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface HeaderProps {
   title: string;
@@ -15,6 +17,24 @@ const Header: React.FC<HeaderProps> = ({
   subtitle, 
   toggleSidebar 
 }) => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = () => {
+    // Remover o token de autenticação simulado
+    localStorage.removeItem("agendaja_authenticated");
+    localStorage.removeItem("agendaja_user_type");
+    
+    // Notificar o usuário
+    toast({
+      title: "Logout realizado com sucesso",
+      description: "Você foi desconectado do sistema"
+    });
+    
+    // Redirecionar para a tela de login
+    navigate("/login");
+  };
+
   return (
     <header className="bg-white border-b border-gray-200 py-4 px-6">
       <div className="flex items-center justify-between">
@@ -48,6 +68,17 @@ const Header: React.FC<HeaderProps> = ({
           <Button variant="outline" size="sm" className="hidden md:flex gap-1">
             <Search className="h-4 w-4 md:hidden" />
             <span>Buscar</span>
+          </Button>
+          
+          {/* Botão de logout */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={handleLogout} 
+            className="flex gap-1 text-gray-600 hover:bg-red-50 hover:text-red-600 ml-2"
+          >
+            <LogOut className="h-4 w-4" />
+            <span className="hidden sm:inline">Sair</span>
           </Button>
         </div>
       </div>
