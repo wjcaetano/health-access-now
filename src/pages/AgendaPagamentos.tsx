@@ -1,329 +1,274 @@
 
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, CalendarGrid, CalendarCell, CalendarHeader, CalendarHeading, CalendarNext, CalendarPrevious, CalendarViewport } from "@/components/ui/calendar";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Calendar as CalendarIcon, CreditCard, ChevronDown, Info } from "lucide-react";
-import { Usuario, DiaAgendaPagamento, Prestador } from "@/types";
-import { format, addMonths, subMonths, getMonth, getYear, getDate, isToday } from "date-fns";
+import { format, addMonths, getMonth, getYear, addDays, isBefore, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { AgendaPagamentos as TipoAgendaPagamentos } from "@/types";
 
-// Dados simulados dos próximos meses
-const gerarDadosCalendario = (mes: number, ano: number) => {
-  const diasNoMes = new Date(ano, mes + 1, 0).getDate();
-  const diasAgendados: Record<number, { prestadores: {id: string; nome: string}[]; disponivel: boolean }> = {};
+// Cria dados fictícios para a agenda de pagamentos
+const gerarAgendaMock = (mes: number, ano: number): TipoAgendaPagamentos => {
+  const diasDisponiveis = [];
+  const dataInicial = new Date(ano, mes - 1, 10); // A partir do dia 10
+  const dataFinal = new Date(ano, mes, 9); // Até o dia 9 do mês seguinte
   
-  // Gerar dados para cada dia
-  for (let dia = 10; dia <= diasNoMes; dia++) {
-    const prestadores = [];
-    const qtdPrestadores = Math.floor(Math.random() * 4); // 0 a 3 prestadores
-    
-    for (let i = 0; i < qtdPrestadores; i++) {
-      prestadores.push({
-        id: `prestador-${i}`,
-        nome: [`Clínica Saúde Plena`, `Laboratório Diagnóstico`, `Dra. Ana Silva`, `Dr. Roberto Martins`][i]
+  let dataAtual = dataInicial;
+  const hoje = new Date();
+  
+  while (dataAtual <= dataFinal) {
+    // Não inclui finais de semana
+    if (dataAtual.getDay() !== 0 && dataAtual.getDay() !== 6) {
+      // Distribui aleatoriamente 0 a 3 prestadores por dia para simulação
+      const prestadoresAgendados = Math.floor(Math.random() * 4);
+      diasDisponiveis.push({
+        data: new Date(dataAtual),
+        prestadoresAgendados,
+        disponivel: prestadoresAgendados < 3 && !isBefore(dataAtual, hoje),
       });
     }
     
-    diasAgendados[dia] = {
-      prestadores,
-      disponivel: prestadores.length < 3
-    };
+    dataAtual = addDays(dataAtual, 1);
   }
   
-  return diasAgendados;
+  return {
+    mes,
+    ano,
+    diasDisponiveis,
+  };
 };
 
-// Calendário para os próximos meses
-const dadosCalendario: Record<string, Record<number, { prestadores: {id: string; nome: string}[]; disponivel: boolean }>> = {};
-
-// Gerar dados para os próximos 3 meses
-const hoje = new Date();
-const mesAtual = hoje.getMonth();
-const anoAtual = hoje.getFullYear();
-
-for (let i = 0; i < 3; i++) {
-  const data = addMonths(hoje, i);
-  const mes = getMonth(data);
-  const ano = getYear(data);
-  const chave = `${mes}-${ano}`;
-  dadosCalendario[chave] = gerarDadosCalendario(mes, ano);
-}
-
 const AgendaPagamentos: React.FC = () => {
-  const [date, setDate] = useState<Date>(hoje);
-  const [visualizacao, setVisualizacao] = useState<"mes" | "dia">("mes");
-  const [diaSelecionado, setDiaSelecionado] = useState<number | null>(null);
+  const hoje = new Date();
+  const mesAtual = getMonth(hoje) + 1; // getMonth é 0-indexed
+  const anoAtual = getYear(hoje);
   
-  // Obter dados do mês selecionado
-  const mesChave = `${getMonth(date)}-${getYear(date)}`;
-  const dadosMes = dadosCalendario[mesChave] || {};
+  const [periodoSelecionado, setPeriodoSelecionado] = useState({
+    mes: mesAtual,
+    ano: anoAtual,
+  });
   
-  // Verificar se é um dia com agendamentos
-  const isDiaComAgendamentos = (dia: number) => {
-    return dia >= 10 && dadosMes[dia];
+  const [dataSelecionada, setDataSelecionada] = useState<Date | undefined>(undefined);
+  const [prestadoresSelecionados, setPrestadoresSelecionados] = useState<string[]>([
+    "Clínica CardioSaúde", "Laboratório Análises Clínicas"
+  ]);
+  
+  // Gera dados de agenda para o período selecionado
+  const agendaAtual = gerarAgendaMock(periodoSelecionado.mes, periodoSelecionado.ano);
+  
+  // Calcular valor total fictício do pagamento
+  const valorTotal = 3560.75;
+  
+  // Avança para o próximo mês
+  const avancarMes = () => {
+    const dataAtual = new Date(periodoSelecionado.ano, periodoSelecionado.mes - 1, 1);
+    const proximaData = addMonths(dataAtual, 1);
+    setPeriodoSelecionado({
+      mes: getMonth(proximaData) + 1,
+      ano: getYear(proximaData),
+    });
+    setDataSelecionada(undefined);
   };
   
-  // Formatar data por extenso
-  const dataFormatada = format(date, "MMMM 'de' yyyy", { locale: ptBR });
-  
-  // Mudar para o mês anterior ou próximo
-  const mesAnterior = () => {
-    const novaData = subMonths(date, 1);
-    setDate(novaData);
-    setDiaSelecionado(null);
+  // Retrocede para o mês anterior
+  const voltarMes = () => {
+    const dataAtual = new Date(periodoSelecionado.ano, periodoSelecionado.mes - 1, 1);
+    const dataAnterior = addMonths(dataAtual, -1);
+    setPeriodoSelecionado({
+      mes: getMonth(dataAnterior) + 1,
+      ano: getYear(dataAnterior),
+    });
+    setDataSelecionada(undefined);
   };
   
-  const proximoMes = () => {
-    const novaData = addMonths(date, 1);
-    setDate(novaData);
-    setDiaSelecionado(null);
+  // Filtra funções de datas disponíveis para o calendário
+  const isDayAvailable = (date: Date) => {
+    return agendaAtual.diasDisponiveis.some(dia => 
+      isSameDay(dia.data, date) && dia.disponivel
+    );
   };
   
-  // Selecionar um dia específico
-  const selecionarDia = (dia: number) => {
-    if (isDiaComAgendamentos(dia)) {
-      setDiaSelecionado(dia);
-      setVisualizacao("dia");
-    }
+  const isDayUnavailable = (date: Date) => {
+    return agendaAtual.diasDisponiveis.some(dia => 
+      isSameDay(dia.data, date) && !dia.disponivel && dia.prestadoresAgendados >= 3
+    );
   };
   
-  // Voltar para visualização de mês
-  const voltarParaMes = () => {
-    setVisualizacao("mes");
-    setDiaSelecionado(null);
+  const isDayPartiallyAvailable = (date: Date) => {
+    return agendaAtual.diasDisponiveis.some(dia => 
+      isSameDay(dia.data, date) && dia.prestadoresAgendados > 0 && dia.prestadoresAgendados < 3
+    );
   };
   
-  // Renderizar o conteúdo baseado na visualização
-  const renderConteudo = () => {
-    if (visualizacao === "dia" && diaSelecionado) {
-      const dadosDia = dadosMes[diaSelecionado];
-      const dataSelecionada = new Date(getYear(date), getMonth(date), diaSelecionado);
+  const getPrestadoresCountForDate = (date: Date): number => {
+    const dia = agendaAtual.diasDisponiveis.find(dia => isSameDay(dia.data, date));
+    return dia ? dia.prestadoresAgendados : 0;
+  };
+  
+  const formatMoeda = (valor: number) => {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+  };
+  
+  return (
+    <div className="space-y-6 animate-fade-in">
+      <div>
+        <h2 className="text-3xl font-bold text-gray-900">Agenda de Pagamentos</h2>
+        <p className="text-gray-500 mt-1">
+          Configure os dias de pagamentos para prestadores de serviço
+        </p>
+      </div>
       
-      return (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold flex items-center">
-              <CalendarIcon className="h-5 w-5 mr-2" />
-              {format(dataSelecionada, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-            </h2>
-            <Button variant="outline" size="sm" onClick={voltarParaMes}>
-              Voltar ao Calendário
-            </Button>
-          </div>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Prestadores Agendados</CardTitle>
-              <CardDescription>
-                {dadosDia.prestadores.length} prestador(es) programado(s) para esta data
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {dadosDia.prestadores.length > 0 ? (
-                <div className="space-y-4">
-                  {dadosDia.prestadores.map((prestador, index) => (
-                    <div key={prestador.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-md">
-                      <div>
-                        <p className="font-medium">{prestador.nome}</p>
-                        <p className="text-sm text-gray-500">ID: {prestador.id}</p>
-                      </div>
-                      <Badge 
-                        variant="outline" 
-                        className="bg-green-100 hover:bg-green-100 text-green-800"
-                      >
-                        Confirmado
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex justify-between items-center">
+              <div>Calendário de Pagamentos</div>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={voltarMes}
+                >
+                  Anterior
+                </Button>
+                <div className="bg-gray-100 px-3 py-1 rounded-md">
+                  {format(new Date(periodoSelecionado.ano, periodoSelecionado.mes - 1, 1), "MMMM yyyy", { locale: ptBR })}
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={avancarMes}
+                >
+                  Próximo
+                </Button>
+              </div>
+            </CardTitle>
+            <CardDescription>
+              Selecione uma data para agendar os pagamentos dos prestadores
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col items-center">
+              <div className="mb-4 flex flex-wrap gap-2 text-sm">
+                <div className="flex items-center">
+                  <div className="h-4 w-4 rounded-full bg-gray-200 mr-1"></div>
+                  <span>Não disponível</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="h-4 w-4 rounded-full bg-agendaja-light mr-1"></div>
+                  <span>Disponível</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="h-4 w-4 rounded-full bg-agendaja-primary mr-1"></div>
+                  <span>Data selecionada</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="h-4 w-4 rounded-full bg-yellow-200 mr-1"></div>
+                  <span>Parcialmente ocupado</span>
+                </div>
+              </div>
+              
+              <Calendar
+                mode="single"
+                selected={dataSelecionada}
+                onSelect={setDataSelecionada}
+                className="border rounded-md p-3"
+                locale={ptBR}
+                modifiers={{
+                  available: (date) => isDayAvailable(date),
+                  unavailable: (date) => isDayUnavailable(date),
+                  partiallyAvailable: (date) => isDayPartiallyAvailable(date),
+                }}
+                modifiersClassNames={{
+                  available: "bg-agendaja-light text-agendaja-primary",
+                  unavailable: "bg-gray-200 text-gray-400",
+                  partiallyAvailable: "bg-yellow-200",
+                }}
+                disabled={(date) => 
+                  !agendaAtual.diasDisponiveis.some(dia => 
+                    isSameDay(dia.data, date) && dia.disponivel
+                  )
+                }
+              />
+              
+              {dataSelecionada && (
+                <div className="mt-4 text-center">
+                  <p>
+                    Data selecionada: <strong>{format(dataSelecionada, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</strong>
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {getPrestadoresCountForDate(dataSelecionada)} de 3 vagas ocupadas
+                  </p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="lg:col-span-1">
+          <CardHeader>
+            <CardTitle>Detalhes do Pagamento</CardTitle>
+            <CardDescription>
+              Configure os prestadores e valores para pagamento
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium block mb-1">
+                  Prestadores Selecionados
+                </label>
+                <div className="space-y-2">
+                  {prestadoresSelecionados.map((prestador, index) => (
+                    <div key={index} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-md">
+                      <span>{prestador}</span>
+                      <Badge variant="outline">
+                        {index === 0 ? "5 guias" : "3 guias"}
                       </Badge>
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  Nenhum prestador agendado para esta data.
-                </div>
-              )}
-              
-              <div className="flex justify-between items-center mt-6 p-4 bg-blue-50 rounded-md">
-                <div>
-                  <p className="font-medium text-blue-900">Status do Dia</p>
-                  <p className="text-sm text-blue-700">
-                    {dadosDia.disponivel 
-                      ? "Este dia ainda pode receber mais agendamentos."
-                      : "Este dia atingiu o limite de prestadores."}
-                  </p>
-                </div>
-                <Badge 
-                  variant="outline" 
-                  className={dadosDia.disponivel 
-                    ? "bg-green-100 hover:bg-green-100 text-green-800"
-                    : "bg-red-100 hover:bg-red-100 text-red-800"}
-                >
-                  {dadosDia.disponivel ? "Disponível" : "Lotado"}
-                </Badge>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      );
-    }
-    
-    // Visualização de mês
-    return (
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Agenda de Pagamentos</CardTitle>
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" size="icon" onClick={mesAnterior}>
-                <CalendarPrevious />
-              </Button>
-              <span className="font-medium min-w-[140px] text-center">
-                {dataFormatada.charAt(0).toUpperCase() + dataFormatada.slice(1)}
-              </span>
-              <Button variant="outline" size="icon" onClick={proximoMes}>
-                <CalendarNext />
-              </Button>
+              
+              <div className="pt-4 border-t">
+                <div className="flex justify-between mb-2">
+                  <span className="text-sm text-gray-600">Valor Total:</span>
+                  <span className="font-medium">{formatMoeda(valorTotal)}</span>
+                </div>
+                <div className="flex justify-between mb-4">
+                  <span className="text-sm text-gray-600">Data de Pagamento:</span>
+                  <span className="font-medium">
+                    {dataSelecionada 
+                      ? format(dataSelecionada, "dd/MM/yyyy") 
+                      : "Selecione uma data"}
+                  </span>
+                </div>
+                
+                <Button 
+                  className="w-full bg-agendaja-primary hover:bg-agendaja-secondary"
+                  disabled={!dataSelecionada}
+                >
+                  Confirmar Agendamento
+                </Button>
+              </div>
             </div>
-          </div>
-          <CardDescription className="flex items-center gap-1">
-            <Info className="h-4 w-4" />
-            Máximo de 3 prestadores por dia. Disponível apenas após o dia 10 de cada mês.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={(date) => {
-              if (date) {
-                setDate(date);
-                const dia = getDate(date);
-                if (isDiaComAgendamentos(dia)) {
-                  selecionarDia(dia);
-                }
-              }
-            }}
-            className="border rounded-md"
-            locale={ptBR}
-          >
-            <CalendarHeader>
-              <CalendarHeading />
-            </CalendarHeader>
-            <CalendarViewport>
-              <CalendarGrid>
-                {(day) => {
-                  const dia = getDate(day);
-                  const ehHoje = isToday(day);
-                  const temAgendamento = isDiaComAgendamentos(dia);
-                  const dadosDia = dadosMes[dia];
-                  
-                  let className = "";
-                  let status = "";
-                  
-                  if (dia < 10) {
-                    className = "text-gray-300 cursor-not-allowed";
-                  } else if (temAgendamento) {
-                    const prestadoresCount = dadosDia.prestadores.length;
-                    
-                    if (prestadoresCount === 0) {
-                      className = "bg-green-50 hover:bg-green-100";
-                      status = "Livre";
-                    } else if (prestadoresCount < 3) {
-                      className = "bg-yellow-50 hover:bg-yellow-100";
-                      status = `${prestadoresCount}/3`;
-                    } else {
-                      className = "bg-red-50 hover:bg-red-100";
-                      status = "Lotado";
-                    }
-                  }
-                  
-                  if (ehHoje) {
-                    className += " font-bold border-2 border-blue-400";
-                  }
-                  
-                  return (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <CalendarCell 
-                            day={day} 
-                            className={className}
-                            onClick={() => dia >= 10 && selecionarDia(dia)}
-                          >
-                            {dia}
-                            {temAgendamento && (
-                              <div className="text-xs mt-1 font-normal">
-                                {status}
-                              </div>
-                            )}
-                          </CalendarCell>
-                        </TooltipTrigger>
-                        {temAgendamento && (
-                          <TooltipContent>
-                            <div className="text-sm">
-                              <p className="font-medium">Status: {status}</p>
-                              <p>Prestadores: {dadosDia.prestadores.length}/3</p>
-                              {dadosDia.prestadores.map((p, i) => (
-                                <p key={i} className="text-xs text-gray-600">{p.nome}</p>
-                              ))}
-                            </div>
-                          </TooltipContent>
-                        )}
-                      </Tooltip>
-                    </TooltipProvider>
-                  );
-                }}
-              </CalendarGrid>
-            </CalendarViewport>
-          </Calendar>
-          
-          <div className="mt-6 flex flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-gray-200 rounded"></div>
-              <span className="text-sm">Indisponível</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-50 rounded"></div>
-              <span className="text-sm">Livre</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-yellow-50 rounded"></div>
-              <span className="text-sm">Parcialmente ocupado</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-red-50 rounded"></div>
-              <span className="text-sm">Lotado</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  };
-
-  return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <h1 className="text-2xl font-bold flex items-center">
-          <CreditCard className="h-6 w-6 mr-2" />
-          Agenda de Pagamentos
-        </h1>
-        <Select defaultValue="proximos3meses">
-          <SelectTrigger className="w-[240px]">
-            <SelectValue placeholder="Selecione o período" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="mesAtual">Mês Atual</SelectItem>
-            <SelectItem value="proximoMes">Próximo Mês</SelectItem>
-            <SelectItem value="proximos3meses">Próximos 3 Meses</SelectItem>
-            <SelectItem value="personalizado">Período Personalizado</SelectItem>
-          </SelectContent>
-        </Select>
+          </CardContent>
+        </Card>
       </div>
-      
-      {renderConteudo()}
     </div>
   );
 };

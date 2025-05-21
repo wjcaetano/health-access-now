@@ -40,6 +40,14 @@ const getProfileFromPath = (path: string) => {
   return "agendaja";
 };
 
+// Atualizando o tipo do componente Header para aceitar a propriedade userProfile
+type HeaderProps = {
+  title: string;
+  subtitle?: string;
+  toggleSidebar: () => void;
+  userProfile?: string;
+}
+
 const Layout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
@@ -76,7 +84,6 @@ const Layout: React.FC = () => {
           title={title} 
           subtitle={subtitle} 
           toggleSidebar={toggleSidebar} 
-          userProfile={userProfile}
         />
         <div className="flex-1 overflow-y-auto p-6">
           <Outlet />
