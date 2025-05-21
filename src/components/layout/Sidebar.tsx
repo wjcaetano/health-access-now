@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -16,6 +15,7 @@ import {
   ListChecks,
   FileText,
   BarChart3,
+  ShoppingCart
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -39,9 +39,9 @@ const agendajaMenu = [
     href: "/clientes",
   },
   {
-    title: "Agendamentos",
-    icon: <Calendar className="h-5 w-5" />,
-    href: "/agendamentos",
+    title: "Vendas",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    href: "/vendas",
   },
   {
     title: "Orçamentos",

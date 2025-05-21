@@ -9,7 +9,7 @@ import Layout from "./components/layout/Layout";
 import Index from "./pages/Index";
 import Clientes from "./pages/Clientes";
 import NovoCliente from "./pages/NovoCliente";
-import Agendamentos from "./pages/Agendamentos";
+import Vendas from "./pages/Vendas"; // Alterado de Agendamentos para Vendas
 import NovoAgendamento from "./pages/NovoAgendamento";
 import Orcamentos from "./pages/Orcamentos";
 import Conversas from "./pages/Conversas";
@@ -49,7 +49,7 @@ const App = () => (
             {/* Rotas do MVP original */}
             <Route path="clientes" element={<Clientes />} />
             <Route path="novo-cliente" element={<NovoCliente />} />
-            <Route path="agendamentos" element={<Agendamentos />} />
+            <Route path="vendas" element={<Vendas />} /> {/* Alterado de agendamentos para vendas */}
             <Route path="novo-agendamento" element={<NovoAgendamento />} />
             <Route path="orcamentos" element={<Orcamentos />} />
             <Route path="conversas" element={<Conversas />} />

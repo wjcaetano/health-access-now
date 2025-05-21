@@ -10,7 +10,7 @@ const pageInfo: { [key: string]: { title: string; subtitle?: string } } = {
   
   // Páginas originais
   "/clientes": { title: "Clientes", subtitle: "Gerenciamento de clientes" },
-  "/agendamentos": { title: "Agendamentos", subtitle: "Gerenciamento de agendamentos" },
+  "/vendas": { title: "Vendas", subtitle: "Gerenciamento de vendas" },
   "/orcamentos": { title: "Orçamentos", subtitle: "Gerenciamento de orçamentos" },
   "/conversas": { title: "Conversas", subtitle: "Gerenciamento de mensagens" },
   "/novo-cliente": { title: "Novo Cliente", subtitle: "Cadastre um novo cliente" },
