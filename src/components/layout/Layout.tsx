@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
@@ -11,6 +10,7 @@ const pageInfo: { [key: string]: { title: string; subtitle?: string } } = {
   // Páginas originais
   "/clientes": { title: "Clientes", subtitle: "Gerenciamento de clientes" },
   "/vendas": { title: "Vendas", subtitle: "Gerenciamento de vendas" },
+  "/checkout-vendas": { title: "Checkout de Vendas", subtitle: "Finalização do pagamento" },
   "/orcamentos": { title: "Orçamentos", subtitle: "Gerenciamento de orçamentos" },
   "/conversas": { title: "Conversas", subtitle: "Gerenciamento de mensagens" },
   "/novo-cliente": { title: "Novo Cliente", subtitle: "Cadastre um novo cliente" },

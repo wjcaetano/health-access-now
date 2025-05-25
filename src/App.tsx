@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -30,6 +29,8 @@ import FaturamentoPrestador from "./pages/prestador/Faturamento";
 // Área de autenticação
 import Login from "./pages/auth/Login";
 
+import CheckoutVendas from "./pages/CheckoutVendas";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -49,7 +50,8 @@ const App = () => (
             {/* Rotas do MVP original */}
             <Route path="clientes" element={<Clientes />} />
             <Route path="novo-cliente" element={<NovoCliente />} />
-            <Route path="vendas" element={<Vendas />} /> {/* Alterado de agendamentos para vendas */}
+            <Route path="vendas" element={<Vendas />} />
+            <Route path="checkout-vendas" element={<CheckoutVendas />} />
             <Route path="novo-agendamento" element={<NovoAgendamento />} />
             <Route path="orcamentos" element={<Orcamentos />} />
             <Route path="conversas" element={<Conversas />} />

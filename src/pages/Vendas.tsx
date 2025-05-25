@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -190,14 +189,25 @@ const Vendas: React.FC = () => {
       return;
     }
 
-    // Aqui seria a lógica para salvar a venda no backend
+    // Preparar dados da venda para o checkout
+    const dadosVenda = {
+      cliente: clienteSelecionado,
+      servicos: carrinho,
+      total: calcularTotal()
+    };
+
+    // Salvar no localStorage como backup
+    localStorage.setItem('checkout_venda', JSON.stringify(dadosVenda));
+
     toast({
-      title: "Venda finalizada",
-      description: `Venda para ${clienteSelecionado.nome} confirmada com sucesso!`
+      title: "Redirecionando para checkout",
+      description: `Processando venda para ${clienteSelecionado.nome}.`
     });
     
-    // Redirecionar para checkout (simulado)
-    navigate("/orcamentos");
+    // Redirecionar para o checkout de vendas
+    navigate("/checkout-vendas", { 
+      state: { vendaData: dadosVenda }
+    });
   };
 
   const gerarOrcamento = () => {
