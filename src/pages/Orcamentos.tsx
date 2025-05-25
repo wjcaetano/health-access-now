@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,11 +20,13 @@ import {
 import { 
   Calendar,
   Search,
-  User
+  User,
+  Eye
 } from "lucide-react";
 import { Orcamento } from "@/types";
 import { format } from "date-fns";
 import { orcamentos } from "@/data/mock";
+import { useNavigate } from "react-router-dom";
 
 const statusMap = {
   pendente: {
@@ -55,6 +56,7 @@ const formatarValor = (valor: number) => {
 
 const Orcamentos: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
   
   // Filtrar orçamentos com base no termo de busca
   const orcamentosFiltrados = orcamentos.filter((orcamento) => 
@@ -149,8 +151,10 @@ const Orcamentos: React.FC = () => {
                         variant="ghost" 
                         size="sm"
                         className="text-agendaja-primary hover:text-agendaja-primary/80 hover:bg-agendaja-light/50"
+                        onClick={() => navigate(`/orcamentos/${orcamento.id}`)}
                       >
-                        Visualizar
+                        <Eye className="h-4 w-4 mr-1" />
+                        Ver
                       </Button>
                     </TableCell>
                   </TableRow>

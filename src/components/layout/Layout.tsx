@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
@@ -60,9 +61,15 @@ const Layout: React.FC = () => {
     }
   }, [location, navigate]);
   
+  // Detectar se é uma página de visualização de orçamento
+  const isOrcamentoView = location.pathname.startsWith("/orcamentos/");
+  const defaultTitle = isOrcamentoView ? "Visualizar Orçamento" : "AGENDAJA";
+  const defaultSubtitle = isOrcamentoView ? "Detalhes do orçamento selecionado" : 
+    (userProfile === "prestador" ? "Portal do Prestador" : "Sistema de Agendamento");
+  
   const { title, subtitle } = pageInfo[location.pathname] || { 
-    title: "AGENDAJA", 
-    subtitle: userProfile === "prestador" ? "Portal do Prestador" : "Sistema de Agendamento" 
+    title: defaultTitle, 
+    subtitle: defaultSubtitle
   };
 
   const toggleSidebar = () => {

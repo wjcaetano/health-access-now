@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +12,7 @@ import NovoCliente from "./pages/NovoCliente";
 import Vendas from "./pages/Vendas"; // Alterado de Agendamentos para Vendas
 import NovoAgendamento from "./pages/NovoAgendamento";
 import Orcamentos from "./pages/Orcamentos";
+import VisualizarOrcamento from "./pages/VisualizarOrcamento";
 import Conversas from "./pages/Conversas";
 import NotFound from "./pages/NotFound";
 
@@ -54,6 +56,7 @@ const App = () => (
             <Route path="checkout-vendas" element={<CheckoutVendas />} />
             <Route path="novo-agendamento" element={<NovoAgendamento />} />
             <Route path="orcamentos" element={<Orcamentos />} />
+            <Route path="orcamentos/:id" element={<VisualizarOrcamento />} />
             <Route path="conversas" element={<Conversas />} />
             
             {/* Novas rotas para o SaaS */}
