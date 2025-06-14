@@ -28,7 +28,7 @@ import GuiasPrestador from "./pages/prestador/Guias";
 import FaturamentoPrestador from "./pages/prestador/Faturamento";
 
 // Área de autenticação
-import Login from "./pages/auth/Login";
+import Login from "./pages/auth/Login"; // Adicionado
 
 import CheckoutVendas from "./pages/CheckoutVendas";
 
@@ -43,10 +43,11 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* Página de Vendas pública */}
+          {/* Página de Vendas agora também é a página principal */}
+          <Route path="/" element={<PaginaDeVendas mostrarLogin />} />
           <Route path="/vender" element={<PaginaDeVendas />} />
-          
-          {/* Autenticação */}
+
+          {/* Autenticação: removido "/" principal daqui pois está em PaginaDeVendas */}
           <Route path="/login" element={<Login />} />
           
           {/* Layout padrão AGENDAJA (atendentes e gerentes) */}
