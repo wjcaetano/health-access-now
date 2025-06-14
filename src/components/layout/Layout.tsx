@@ -6,7 +6,7 @@ import Header from "./Header";
 
 // Informações de páginas por rota
 const pageInfo: { [key: string]: { title: string; subtitle?: string } } = {
-  "/": { title: "Dashboard", subtitle: "Visão geral do sistema" },
+  "/dashboard": { title: "Dashboard", subtitle: "Visão geral do sistema" },
   
   // Páginas originais
   "/clientes": { title: "Clientes", subtitle: "Gerenciamento de clientes" },
@@ -54,10 +54,10 @@ const Layout: React.FC = () => {
     setUserProfile(profile);
     
     // Simulação de verificação de autenticação
-    // Em um app real, isso verificaria se o usuário está autenticado e tem permissão para a rota
     const isAuthenticated = localStorage.getItem("agendaja_authenticated") === "true";
-    if (!isAuthenticated && location.pathname !== "/login") {
-      navigate("/login");
+    if (!isAuthenticated) {
+      // Se não estiver autenticado, redireciona para a página inicial (vendas/login)
+      navigate("/");
     }
   }, [location, navigate]);
   

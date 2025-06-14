@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,7 +9,7 @@ import Layout from "./components/layout/Layout";
 import Index from "./pages/Index";
 import Clientes from "./pages/Clientes";
 import NovoCliente from "./pages/NovoCliente";
-import Vendas from "./pages/Vendas"; // Alterado de Agendamentos para Vendas
+import Vendas from "./pages/Vendas";
 import NovoAgendamento from "./pages/NovoAgendamento";
 import Orcamentos from "./pages/Orcamentos";
 import VisualizarOrcamento from "./pages/VisualizarOrcamento";
@@ -27,8 +28,16 @@ import PortalPrestador from "./pages/prestador/Portal";
 import GuiasPrestador from "./pages/prestador/Guias";
 import FaturamentoPrestador from "./pages/prestador/Faturamento";
 
+// Páginas da área pública/vendas
+import ConsultasMedicas from "./pages/servicos/ConsultasMedicas";
+import ExamesLaboratoriais from "./pages/servicos/ExamesLaboratoriais";
+import ExamesDeImagem from "./pages/servicos/ExamesDeImagem";
+import OutrosExames from "./pages/servicos/OutrosExames";
+import PortalParceiro from "./pages/parceiros/PortalParceiro";
+import SejaFranqueado from "./pages/franquia/SejaFranqueado";
+
 // Área de autenticação
-import Login from "./pages/auth/Login"; // Adicionado
+import Login from "./pages/auth/Login";
 
 import CheckoutVendas from "./pages/CheckoutVendas";
 
@@ -43,35 +52,39 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* Página de Vendas agora também é a página principal */}
+          {/* Rotas Públicas */}
           <Route path="/" element={<PaginaDeVendas mostrarLogin />} />
           <Route path="/vender" element={<PaginaDeVendas />} />
-
-          {/* Autenticação: removido "/" principal daqui pois está em PaginaDeVendas */}
           <Route path="/login" element={<Login />} />
+          <Route path="/servicos/consultas" element={<ConsultasMedicas />} />
+          <Route path="/servicos/exames-laboratoriais" element={<ExamesLaboratoriais />} />
+          <Route path="/servicos/exames-imagem" element={<ExamesDeImagem />} />
+          <Route path="/servicos/outros-exames" element={<OutrosExames />} />
+          <Route path="/portal-parceiro" element={<PortalParceiro />} />
+          <Route path="/seja-franqueado" element={<SejaFranqueado />} />
           
           {/* Layout padrão AGENDAJA (atendentes e gerentes) */}
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Index />} />
+          <Route element={<Layout />}>
+            <Route path="/dashboard" element={<Index />} />
             
             {/* Rotas do MVP original */}
-            <Route path="clientes" element={<Clientes />} />
-            <Route path="novo-cliente" element={<NovoCliente />} />
-            <Route path="vendas" element={<Vendas />} />
-            <Route path="checkout-vendas" element={<CheckoutVendas />} />
-            <Route path="novo-agendamento" element={<NovoAgendamento />} />
-            <Route path="orcamentos" element={<Orcamentos />} />
-            <Route path="orcamentos/:id" element={<VisualizarOrcamento />} />
-            <Route path="conversas" element={<Conversas />} />
+            <Route path="/clientes" element={<Clientes />} />
+            <Route path="/novo-cliente" element={<NovoCliente />} />
+            <Route path="/vendas" element={<Vendas />} />
+            <Route path="/checkout-vendas" element={<CheckoutVendas />} />
+            <Route path="/novo-agendamento" element={<NovoAgendamento />} />
+            <Route path="/orcamentos" element={<Orcamentos />} />
+            <Route path="/orcamentos/:id" element={<VisualizarOrcamento />} />
+            <Route path="/conversas" element={<Conversas />} />
             
             {/* Novas rotas para o SaaS */}
-            <Route path="prestadores" element={<Prestadores />} />
-            <Route path="novo-prestador" element={<NovoPrestador />} />
-            <Route path="servicos" element={<Servicos />} />
-            <Route path="novo-servico" element={<NovoServico />} />
-            <Route path="financeiro" element={<Financeiro />} />
-            <Route path="agenda-pagamentos" element={<AgendaPagamentos />} />
-            <Route path="guias" element={<Guias />} />
+            <Route path="/prestadores" element={<Prestadores />} />
+            <Route path="/novo-prestador" element={<NovoPrestador />} />
+            <Route path="/servicos" element={<Servicos />} />
+            <Route path="/novo-servico" element={<NovoServico />} />
+            <Route path="/financeiro" element={<Financeiro />} />
+            <Route path="/agenda-pagamentos" element={<AgendaPagamentos />} />
+            <Route path="/guias" element={<Guias />} />
           </Route>
           
           {/* Layout para prestadores */}
