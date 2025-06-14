@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import HeaderVendas from "@/components/vendas/HeaderVendas";
@@ -9,6 +9,7 @@ import ServicosPrincipais from "@/components/vendas/ServicosPrincipais";
 import Depoimentos from "@/components/vendas/Depoimentos";
 import CallToAction from "@/components/vendas/CallToAction";
 import Login from "./auth/Login";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 interface PaginaDeVendasProps {
   mostrarLogin?: boolean;
@@ -16,6 +17,7 @@ interface PaginaDeVendasProps {
 
 const PaginaDeVendas = ({ mostrarLogin }: PaginaDeVendasProps) => {
   const navigate = useNavigate();
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem("agendaja_authenticated") === "true";
@@ -29,27 +31,40 @@ const PaginaDeVendas = ({ mostrarLogin }: PaginaDeVendasProps) => {
     }
   }, [navigate]);
 
+  // função que será passada para o Header para abrir o modal
+  const handleAbrirLogin = () => {
+    setShowLoginModal(true);
+  };
+
+  const handleFecharLogin = () => {
+    setShowLoginModal(false);
+  };
+
   return (
     <div className="bg-white">
-      <HeaderVendas />
+      <HeaderVendas onAbrirLogin={handleAbrirLogin} />
       <main className="flex flex-col gap-12 pt-4">
         <Hero />
         <Sobre />
         <ServicosPrincipais />
         <Depoimentos />
         <CallToAction />
-        {mostrarLogin && (
-          <section id="login" className="py-16 bg-agendaja-light flex justify-center">
-            <div className="w-full max-w-2xl">
-              <h2 className="text-3xl font-bold text-center mb-6 text-agendaja-primary">
-                Acesso ao Sistema AGENDAJA
-              </h2>
-              <Login />
-            </div>
-          </section>
-        )}
+        {/* Removido o campo de login antigo */}
       </main>
+      <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
+        <DialogContent className="max-w-md p-0 bg-transparent shadow-none border-none">
+          <div className="bg-white rounded-lg shadow-lg p-0">
+            <button
+              aria-label="Fechar"
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-lg"
+              onClick={handleFecharLogin}
+            >×</button>
+            <Login />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
 export default PaginaDeVendas;
+

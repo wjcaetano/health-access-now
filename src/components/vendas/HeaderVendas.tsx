@@ -40,18 +40,13 @@ const ListItem = React.forwardRef<
 });
 ListItem.displayName = 'ListItem';
 
-const HeaderVendas = () => {
+interface HeaderVendasProps {
+  onAbrirLogin?: () => void;
+}
+
+const HeaderVendas: React.FC<HeaderVendasProps> = ({ onAbrirLogin }) => {
   const navigate = useNavigate();
 
-  const handleScrollToLogin = () => {
-    const loginSection = document.getElementById('login');
-    if (loginSection) {
-      loginSection.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      navigate('/#login');
-    }
-  };
-  
   const handleScrollToComoFunciona = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
     const section = document.getElementById('como-funciona');
@@ -115,7 +110,7 @@ const HeaderVendas = () => {
         </div>
         
         <div className="ml-auto flex items-center space-x-4">
-          <Button onClick={handleScrollToLogin}>
+          <Button onClick={onAbrirLogin}>
             <LogIn className="mr-2 h-4 w-4" /> Entrar
           </Button>
         </div>
