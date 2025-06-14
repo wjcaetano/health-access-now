@@ -31,8 +31,8 @@ const Header: React.FC<HeaderProps> = ({
       description: "Você foi desconectado do sistema"
     });
     
-    // Redirecionar para a tela de login
-    navigate("/login");
+    // Redirecionar para a tela inicial (home)
+    navigate("/");
   };
 
   return (
