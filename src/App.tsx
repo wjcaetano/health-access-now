@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -35,6 +34,8 @@ import CheckoutVendas from "./pages/CheckoutVendas";
 
 const queryClient = new QueryClient();
 
+import PaginaDeVendas from "./pages/PaginaDeVendas";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -42,6 +43,9 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* Página de Vendas pública */}
+          <Route path="/vender" element={<PaginaDeVendas />} />
+          
           {/* Autenticação */}
           <Route path="/login" element={<Login />} />
           
