@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import HeaderVendas from "@/components/vendas/HeaderVendas";
 import { Stethoscope } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 const especialidades = [
     "Alergia e Imunologia",
@@ -31,7 +30,13 @@ const especialidades = [
 ];
 
 const ConsultasMedicas = () => {
-    const navigate = useNavigate();
+    const handleAgendar = () => {
+        const phone = "5511999999999"; // TODO: Substituir pelo número de WhatsApp da empresa
+        const message = "Olá! Gostaria de agendar uma consulta médica.";
+        const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+    };
+
     return (
         <div className="bg-white min-h-screen">
             <HeaderVendas />
@@ -49,7 +54,7 @@ const ConsultasMedicas = () => {
                         ))}
                     </div>
                 </div>
-                <Button size="lg" onClick={() => navigate('/conversas')}>
+                <Button size="lg" onClick={handleAgendar}>
                     Agendar Consulta
                 </Button>
             </main>
