@@ -1,17 +1,12 @@
 
 import { Button } from "@/components/ui/button";
 import HeaderVendas from "@/components/vendas/HeaderVendas";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import SelecaoUnidadeModal from "@/components/vendas/SelecaoUnidadeModal";
 
 const exames = ["Hemograma Completo", "Colesterol Total e Frações", "Glicemia de Jejum", "Exame de Urina", "Exame de Fezes", "TSH e T4 Livre"];
 
 const ExamesLaboratoriais = () => {
-    const handleAgendar = () => {
-        const phone = "5511999999999"; // TODO: Substituir pelo número de WhatsApp da empresa
-        const message = "Olá! Gostaria de agendar um exame laboratorial.";
-        const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, '_blank');
-    };
-
     return (
         <div className="bg-white min-h-screen">
             <HeaderVendas />
@@ -26,9 +21,14 @@ const ExamesLaboratoriais = () => {
                         ))}
                     </div>
                 </div>
-                <Button size="lg" onClick={handleAgendar}>
-                    Agendar Exame Laboratorial
-                </Button>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button size="lg">
+                            Agendar Exame Laboratorial
+                        </Button>
+                    </DialogTrigger>
+                    <SelecaoUnidadeModal tipoServico="Exame Laboratorial" />
+                </Dialog>
             </main>
         </div>
     );

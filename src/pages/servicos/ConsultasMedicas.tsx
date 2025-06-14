@@ -2,6 +2,8 @@
 import { Button } from "@/components/ui/button";
 import HeaderVendas from "@/components/vendas/HeaderVendas";
 import { Stethoscope } from "lucide-react";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import SelecaoUnidadeModal from "@/components/vendas/SelecaoUnidadeModal";
 
 const especialidades = [
     "Alergia e Imunologia",
@@ -30,13 +32,6 @@ const especialidades = [
 ];
 
 const ConsultasMedicas = () => {
-    const handleAgendar = () => {
-        const phone = "5511999999999"; // TODO: Substituir pelo número de WhatsApp da empresa
-        const message = "Olá! Gostaria de agendar uma consulta médica.";
-        const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, '_blank');
-    };
-
     return (
         <div className="bg-white min-h-screen">
             <HeaderVendas />
@@ -54,9 +49,14 @@ const ConsultasMedicas = () => {
                         ))}
                     </div>
                 </div>
-                <Button size="lg" onClick={handleAgendar}>
-                    Agendar Consulta
-                </Button>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button size="lg">
+                            Agendar Consulta
+                        </Button>
+                    </DialogTrigger>
+                    <SelecaoUnidadeModal tipoServico="Consulta Médica" />
+                </Dialog>
             </main>
         </div>
     );
