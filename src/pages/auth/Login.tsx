@@ -38,7 +38,7 @@ const Login: React.FC = () => {
             description: "Bem-vindo ao Portal do Prestador AGENDAJA",
           });
         } else {
-          navigate("/");
+          navigate("/dashboard");
           toast({
             title: "Login realizado com sucesso!",
             description: "Bem-vindo ao Sistema AGENDAJA",
