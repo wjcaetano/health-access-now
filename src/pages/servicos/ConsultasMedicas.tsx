@@ -1,9 +1,34 @@
 
 import { Button } from "@/components/ui/button";
 import HeaderVendas from "@/components/vendas/HeaderVendas";
+import { Stethoscope } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const especialidades = ["Cardiologia", "Dermatologia", "Ginecologia", "Oftalmologia", "Ortopedia", "Pediatria", "Psicologia", "Urologia"];
+const especialidades = [
+    "Alergia e Imunologia",
+    "Cardiologia",
+    "Dermatologia",
+    "Endocrinologia e Metabologia",
+    "Endoscopia",
+    "Gastroenterologia",
+    "Geriatria",
+    "Ginecologia e Obstetrícia",
+    "Hematologia e Hemoterapia",
+    "Infectologia",
+    "Mastologia",
+    "Nefrologia",
+    "Neurologia",
+    "Nutrologia",
+    "Oftalmologia",
+    "Oncologia Clínica",
+    "Ortopedia e Traumatologia",
+    "Otorrinolaringologia",
+    "Pediatria",
+    "Pneumologia",
+    "Psiquiatria",
+    "Reumatologia",
+    "Urologia"
+];
 
 const ConsultasMedicas = () => {
     const navigate = useNavigate();
@@ -13,11 +38,14 @@ const ConsultasMedicas = () => {
             <main className="container mx-auto px-4 py-12">
                 <h1 className="text-4xl font-bold text-agendaja-primary mb-4">Consultas Médicas</h1>
                 <p className="text-lg text-gray-600 mb-8">Oferecemos uma ampla gama de especialidades médicas para cuidar da sua saúde de forma completa e acessível. Agende sua consulta com profissionais qualificados.</p>
-                <div className="mb-8">
-                    <h2 className="text-2xl font-semibold mb-4">Especialidades Disponíveis:</h2>
-                    <div className="flex flex-wrap gap-2">
+                <div className="mb-12">
+                    <h2 className="text-3xl font-semibold mb-6 text-gray-800">Especialidades Disponíveis</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                         {especialidades.map(especialidade => (
-                            <span key={especialidade} className="bg-agendaja-light text-agendaja-primary font-medium py-1 px-3 rounded-full">{especialidade}</span>
+                            <div key={especialidade} className="flex items-center p-3 border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 bg-white cursor-default">
+                                <Stethoscope className="h-5 w-5 mr-3 text-agendaja-primary flex-shrink-0" />
+                                <span className="font-medium text-gray-700 text-sm">{especialidade}</span>
+                            </div>
                         ))}
                     </div>
                 </div>
