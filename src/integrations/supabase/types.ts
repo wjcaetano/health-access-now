@@ -9,7 +9,77 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      colaboradores: {
+        Row: {
+          ativo: boolean | null
+          cargo: string | null
+          data_cadastro: string | null
+          email: string
+          id: string
+          nivel_acesso: string
+          nome: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          cargo?: string | null
+          data_cadastro?: string | null
+          email: string
+          id?: string
+          nivel_acesso: string
+          nome: string
+        }
+        Update: {
+          ativo?: boolean | null
+          cargo?: string | null
+          data_cadastro?: string | null
+          email?: string
+          id?: string
+          nivel_acesso?: string
+          nome?: string
+        }
+        Relationships: []
+      }
+      ponto_eletronico: {
+        Row: {
+          colaborador_id: string | null
+          created_at: string | null
+          data_ponto: string
+          hora_entrada: string | null
+          hora_saida: string | null
+          id: string
+          observacao: string | null
+          tipo_ponto: string
+        }
+        Insert: {
+          colaborador_id?: string | null
+          created_at?: string | null
+          data_ponto: string
+          hora_entrada?: string | null
+          hora_saida?: string | null
+          id?: string
+          observacao?: string | null
+          tipo_ponto: string
+        }
+        Update: {
+          colaborador_id?: string | null
+          created_at?: string | null
+          data_ponto?: string
+          hora_entrada?: string | null
+          hora_saida?: string | null
+          id?: string
+          observacao?: string | null
+          tipo_ponto?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ponto_eletronico_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
