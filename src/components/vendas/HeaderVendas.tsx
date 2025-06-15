@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   NavigationMenu,
@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/navigation-menu';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { LogIn } from 'lucide-react';
+import { LogIn, Menu, X } from 'lucide-react';
 
 const ListItem = React.forwardRef<
   React.ElementRef<'a'>,
@@ -46,6 +46,7 @@ interface HeaderVendasProps {
 
 const HeaderVendas: React.FC<HeaderVendasProps> = ({ onAbrirLogin }) => {
   const navigate = useNavigate();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleScrollToComoFunciona = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
@@ -53,6 +54,11 @@ const HeaderVendas: React.FC<HeaderVendasProps> = ({ onAbrirLogin }) => {
     if (section) {
       section.scrollIntoView({ behavior: 'smooth' });
     }
+    setMobileMenuOpen(false);
+  };
+
+  const handleLinkClick = () => {
+    setMobileMenuOpen(false);
   };
 
   return (
@@ -65,6 +71,8 @@ const HeaderVendas: React.FC<HeaderVendasProps> = ({ onAbrirLogin }) => {
             </span>
           </Link>
         </div>
+        
+        {/* Desktop Navigation */}
         <div className="hidden md:flex flex-grow justify-center">
           <NavigationMenu>
             <NavigationMenuList>
@@ -108,13 +116,97 @@ const HeaderVendas: React.FC<HeaderVendasProps> = ({ onAbrirLogin }) => {
             </NavigationMenuList>
           </NavigationMenu>
         </div>
+
+        {/* Mobile Menu Button */}
+        <div className="md:hidden flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="h-9 w-9"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
         
-        <div className="ml-auto flex items-center space-x-4">
+        {/* Desktop Login Button */}
+        <div className="hidden md:flex ml-auto items-center space-x-4">
           <Button onClick={onAbrirLogin}>
             <LogIn className="mr-2 h-4 w-4" /> Entrar
           </Button>
         </div>
       </div>
+
+      {/* Mobile Navigation Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t bg-background">
+          <div className="container py-4 space-y-4">
+            <a
+              href="#como-funciona"
+              onClick={handleScrollToComoFunciona}
+              className="block px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+            >
+              Como Funciona
+            </a>
+            
+            <div className="space-y-2">
+              <div className="px-3 py-2 text-sm font-medium text-gray-900">Serviços</div>
+              <div className="pl-6 space-y-1">
+                <Link
+                  to="/servicos/consultas"
+                  onClick={handleLinkClick}
+                  className="block px-3 py-2 text-sm hover:bg-accent rounded-md"
+                >
+                  Consultas Médicas
+                </Link>
+                <Link
+                  to="/servicos/exames-laboratoriais"
+                  onClick={handleLinkClick}
+                  className="block px-3 py-2 text-sm hover:bg-accent rounded-md"
+                >
+                  Exames Laboratoriais
+                </Link>
+                <Link
+                  to="/servicos/exames-imagem"
+                  onClick={handleLinkClick}
+                  className="block px-3 py-2 text-sm hover:bg-accent rounded-md"
+                >
+                  Exames de Imagem
+                </Link>
+                <Link
+                  to="/servicos/outros-exames"
+                  onClick={handleLinkClick}
+                  className="block px-3 py-2 text-sm hover:bg-accent rounded-md"
+                >
+                  Outros Exames
+                </Link>
+              </div>
+            </div>
+
+            <Link
+              to="/portal-parceiro"
+              onClick={handleLinkClick}
+              className="block px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+            >
+              Portal do Parceiro
+            </Link>
+            
+            <Link
+              to="/seja-franqueado"
+              onClick={handleLinkClick}
+              className="block px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+            >
+              Seja um Franqueado
+            </Link>
+
+            <div className="pt-4 border-t">
+              <Button onClick={onAbrirLogin} className="w-full">
+                <LogIn className="mr-2 h-4 w-4" /> Entrar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
