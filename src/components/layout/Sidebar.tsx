@@ -110,7 +110,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed, userProfile 
   const menuItems = userProfile === "prestador" ? prestadorMenu : agendajaMenu;
   const showGerenteMenu = userProfile === "agendaja"; // Temporariamente, mostra o menu de gerente para todos os usuários da AGENDAJA
   
-  if (collapsed && isMobile) {
+  // Mobile sidebar - renderiza quando NÃO está collapsed (ou seja, quando está aberto)
+  if (!collapsed && isMobile) {
     return (
       <div
         className="fixed inset-0 z-10 bg-black/50"
