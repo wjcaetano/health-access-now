@@ -147,6 +147,7 @@ export type Database = {
           id: string
           nivel_acesso: string
           nome: string
+          status_trabalho: string | null
         }
         Insert: {
           ativo?: boolean | null
@@ -156,6 +157,7 @@ export type Database = {
           id?: string
           nivel_acesso: string
           nome: string
+          status_trabalho?: string | null
         }
         Update: {
           ativo?: boolean | null
@@ -165,6 +167,7 @@ export type Database = {
           id?: string
           nivel_acesso?: string
           nome?: string
+          status_trabalho?: string | null
         }
         Relationships: []
       }
@@ -592,7 +595,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_ultimo_ponto_colaborador: {
+        Args: { colaborador_uuid: string }
+        Returns: {
+          tipo_ponto: string
+          data_ponto: string
+          created_at: string
+        }[]
+      }
+      ja_bateu_ponto_hoje: {
+        Args: { colaborador_uuid: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

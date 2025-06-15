@@ -1,58 +1,94 @@
 
 import React, { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
+import { useColaboradorByEmail } from "@/hooks/useColaboradores";
+import { useJaBateuPontoHoje } from "@/hooks/usePontoEletronico";
 import { Input } from "@/components/ui/input";
-import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import PontoInteligente from "@/components/ponto/PontoInteligente";
+import ModalPontoObrigatorio from "@/components/ponto/ModalPontoObrigatorio";
+import { Search } from "lucide-react";
 
 export default function PontoEletronicoPainel() {
-  const [colaboradorId, setColaboradorId] = useState("");
-  const [tipoPonto, setTipoPonto] = useState("entrada");
-  const [msg, setMsg] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [emailPesquisado, setEmailPesquisado] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
-  const registrarPonto = async () => {
-    setLoading(true);
-    setMsg("");
-    if (!colaboradorId) {
-      setMsg("Informe o ID do colaborador!");
-      setLoading(false);
-      return;
-    }
-    const { error } = await supabase.from("ponto_eletronico").insert([
-      {
-        colaborador_id: colaboradorId,
-        data_ponto: format(new Date(), "yyyy-MM-dd"),
-        tipo_ponto: tipoPonto,
-        // hora_entrada/hora_saida pode ser preenchido conforme o tipo, mas para simplicidade registramos só o tipo e preenchimento automático do campo timestamp
-      },
-    ]);
-    if (error) setMsg("Erro: " + error.message);
-    else setMsg("Ponto registrado como '" + tipoPonto + "' com sucesso!");
-    setLoading(false);
+  const { data: colaborador, isLoading: loadingColaborador } = useColaboradorByEmail(emailPesquisado);
+  const { data: jaBateuPonto, isLoading: loadingPonto } = useJaBateuPontoHoje(colaborador?.id || "");
+
+  const handlePesquisar = () => {
+    setEmailPesquisado(email);
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handlePesquisar();
+    }
+  };
+
+  const verificarPontoObrigatorio = () => {
+    if (colaborador && jaBateuPonto === false) {
+      setShowModal(true);
+    }
+  };
+
+  React.useEffect(() => {
+    verificarPontoObrigatorio();
+  }, [colaborador, jaBateuPonto]);
+
   return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
-      <h2 className="text-lg font-bold mb-4">Registrar Ponto Eletrônico</h2>
-      <Input
-        placeholder="ID do colaborador"
-        value={colaboradorId}
-        onChange={e => setColaboradorId(e.target.value)}
-        className="mb-2"
-      />
-      <select
-        value={tipoPonto}
-        onChange={e => setTipoPonto(e.target.value)}
-        className="w-full border border-gray-300 px-3 py-2 rounded mb-2"
-      >
-        <option value="entrada">Entrada</option>
-        <option value="saida">Saída</option>
-      </select>
-      <Button className="w-full" onClick={registrarPonto} disabled={loading}>
-        {loading ? "Registrando..." : "Registrar Ponto"}
-      </Button>
-      {msg && <div className="mt-2">{msg}</div>}
+    <div className="max-w-2xl mx-auto space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Sistema de Ponto Eletrônico</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Digite o email do colaborador"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className="flex-1"
+            />
+            <Button 
+              onClick={handlePesquisar}
+              disabled={!email || loadingColaborador}
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {loadingColaborador && (
+            <div className="text-center py-4">
+              <p>Buscando colaborador...</p>
+            </div>
+          )}
+
+          {emailPesquisado && !loadingColaborador && !colaborador && (
+            <div className="text-center py-4 text-red-600">
+              <p>Colaborador não encontrado com este email.</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {colaborador && !loadingPonto && (
+        <PontoInteligente 
+          colaboradorId={colaborador.id}
+          colaboradorNome={colaborador.nome}
+        />
+      )}
+
+      {colaborador && (
+        <ModalPontoObrigatorio
+          open={showModal}
+          colaboradorId={colaborador.id}
+          colaboradorNome={colaborador.nome}
+          onPontoRegistrado={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 }
