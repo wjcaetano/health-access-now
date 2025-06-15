@@ -9,6 +9,135 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      agenda_pagamentos: {
+        Row: {
+          ano: number
+          created_at: string | null
+          data_escolhida: string
+          id: string
+          mes: number
+          prestador_id: string | null
+        }
+        Insert: {
+          ano: number
+          created_at?: string | null
+          data_escolhida: string
+          id?: string
+          mes: number
+          prestador_id?: string | null
+        }
+        Update: {
+          ano?: number
+          created_at?: string | null
+          data_escolhida?: string
+          id?: string
+          mes?: number
+          prestador_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agenda_pagamentos_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agendamentos: {
+        Row: {
+          cliente_id: string | null
+          codigo_autenticacao: string
+          created_at: string | null
+          data_agendamento: string
+          horario: string
+          id: string
+          observacoes: string | null
+          prestador_id: string | null
+          servico_id: string | null
+          status: string
+        }
+        Insert: {
+          cliente_id?: string | null
+          codigo_autenticacao: string
+          created_at?: string | null
+          data_agendamento: string
+          horario: string
+          id?: string
+          observacoes?: string | null
+          prestador_id?: string | null
+          servico_id?: string | null
+          status: string
+        }
+        Update: {
+          cliente_id?: string | null
+          codigo_autenticacao?: string
+          created_at?: string | null
+          data_agendamento?: string
+          horario?: string
+          id?: string
+          observacoes?: string | null
+          prestador_id?: string | null
+          servico_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agendamentos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agendamentos_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agendamentos_servico_id_fkey"
+            columns: ["servico_id"]
+            isOneToOne: false
+            referencedRelation: "servicos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clientes: {
+        Row: {
+          cpf: string
+          data_cadastro: string | null
+          email: string
+          endereco: string | null
+          id: string
+          id_associado: string
+          nome: string
+          telefone: string
+        }
+        Insert: {
+          cpf: string
+          data_cadastro?: string | null
+          email: string
+          endereco?: string | null
+          id?: string
+          id_associado: string
+          nome: string
+          telefone: string
+        }
+        Update: {
+          cpf?: string
+          data_cadastro?: string | null
+          email?: string
+          endereco?: string | null
+          id?: string
+          id_associado?: string
+          nome?: string
+          telefone?: string
+        }
+        Relationships: []
+      }
       colaboradores: {
         Row: {
           ativo: boolean | null
@@ -38,6 +167,283 @@ export type Database = {
           nome?: string
         }
         Relationships: []
+      }
+      contas_pagar: {
+        Row: {
+          created_at: string | null
+          data_pagamento: string | null
+          data_vencimento: string
+          descricao: string | null
+          guias_ids: string[] | null
+          id: string
+          prestador_id: string | null
+          status: string
+          valor: number
+        }
+        Insert: {
+          created_at?: string | null
+          data_pagamento?: string | null
+          data_vencimento: string
+          descricao?: string | null
+          guias_ids?: string[] | null
+          id?: string
+          prestador_id?: string | null
+          status: string
+          valor: number
+        }
+        Update: {
+          created_at?: string | null
+          data_pagamento?: string | null
+          data_vencimento?: string
+          descricao?: string | null
+          guias_ids?: string[] | null
+          id?: string
+          prestador_id?: string | null
+          status?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contas_pagar_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contas_receber: {
+        Row: {
+          cliente_id: string | null
+          created_at: string | null
+          data_pagamento: string | null
+          data_vencimento: string
+          descricao: string | null
+          guias_ids: string[] | null
+          id: string
+          status: string
+          tipo_pagamento: string | null
+          valor: number
+        }
+        Insert: {
+          cliente_id?: string | null
+          created_at?: string | null
+          data_pagamento?: string | null
+          data_vencimento: string
+          descricao?: string | null
+          guias_ids?: string[] | null
+          id?: string
+          status: string
+          tipo_pagamento?: string | null
+          valor: number
+        }
+        Update: {
+          cliente_id?: string | null
+          created_at?: string | null
+          data_pagamento?: string | null
+          data_vencimento?: string
+          descricao?: string | null
+          guias_ids?: string[] | null
+          id?: string
+          status?: string
+          tipo_pagamento?: string | null
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contas_receber_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guias: {
+        Row: {
+          agendamento_id: string | null
+          cliente_id: string | null
+          codigo_autenticacao: string
+          data_emissao: string | null
+          data_faturamento: string | null
+          data_pagamento: string | null
+          data_realizacao: string | null
+          id: string
+          prestador_id: string | null
+          servico_id: string | null
+          status: string
+          valor: number
+        }
+        Insert: {
+          agendamento_id?: string | null
+          cliente_id?: string | null
+          codigo_autenticacao: string
+          data_emissao?: string | null
+          data_faturamento?: string | null
+          data_pagamento?: string | null
+          data_realizacao?: string | null
+          id?: string
+          prestador_id?: string | null
+          servico_id?: string | null
+          status: string
+          valor: number
+        }
+        Update: {
+          agendamento_id?: string | null
+          cliente_id?: string | null
+          codigo_autenticacao?: string
+          data_emissao?: string | null
+          data_faturamento?: string | null
+          data_pagamento?: string | null
+          data_realizacao?: string | null
+          id?: string
+          prestador_id?: string | null
+          servico_id?: string | null
+          status?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guias_agendamento_id_fkey"
+            columns: ["agendamento_id"]
+            isOneToOne: false
+            referencedRelation: "agendamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guias_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guias_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guias_servico_id_fkey"
+            columns: ["servico_id"]
+            isOneToOne: false
+            referencedRelation: "servicos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mensagens: {
+        Row: {
+          cliente_id: string | null
+          colaborador_id: string | null
+          created_at: string | null
+          id: string
+          lida: boolean | null
+          texto: string
+          tipo: string
+        }
+        Insert: {
+          cliente_id?: string | null
+          colaborador_id?: string | null
+          created_at?: string | null
+          id?: string
+          lida?: boolean | null
+          texto: string
+          tipo: string
+        }
+        Update: {
+          cliente_id?: string | null
+          colaborador_id?: string | null
+          created_at?: string | null
+          id?: string
+          lida?: boolean | null
+          texto?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mensagens_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mensagens_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orcamentos: {
+        Row: {
+          cliente_id: string | null
+          created_at: string | null
+          data_validade: string
+          id: string
+          observacoes: string | null
+          percentual_desconto: number | null
+          prestador_id: string | null
+          servico_id: string | null
+          status: string
+          valor_custo: number
+          valor_final: number
+          valor_venda: number
+        }
+        Insert: {
+          cliente_id?: string | null
+          created_at?: string | null
+          data_validade: string
+          id?: string
+          observacoes?: string | null
+          percentual_desconto?: number | null
+          prestador_id?: string | null
+          servico_id?: string | null
+          status: string
+          valor_custo: number
+          valor_final: number
+          valor_venda: number
+        }
+        Update: {
+          cliente_id?: string | null
+          created_at?: string | null
+          data_validade?: string
+          id?: string
+          observacoes?: string | null
+          percentual_desconto?: number | null
+          prestador_id?: string | null
+          servico_id?: string | null
+          status?: string
+          valor_custo?: number
+          valor_final?: number
+          valor_venda?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orcamentos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orcamentos_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orcamentos_servico_id_fkey"
+            columns: ["servico_id"]
+            isOneToOne: false
+            referencedRelation: "servicos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ponto_eletronico: {
         Row: {
@@ -76,6 +482,107 @@ export type Database = {
             columns: ["colaborador_id"]
             isOneToOne: false
             referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prestadores: {
+        Row: {
+          agencia: string | null
+          ativo: boolean | null
+          banco: string | null
+          cnpj: string
+          comissao: number | null
+          conta: string | null
+          data_cadastro: string | null
+          email: string
+          endereco: string
+          especialidades: string[] | null
+          id: string
+          nome: string
+          telefone: string
+          tipo: string
+          tipo_conta: string | null
+        }
+        Insert: {
+          agencia?: string | null
+          ativo?: boolean | null
+          banco?: string | null
+          cnpj: string
+          comissao?: number | null
+          conta?: string | null
+          data_cadastro?: string | null
+          email: string
+          endereco: string
+          especialidades?: string[] | null
+          id?: string
+          nome: string
+          telefone: string
+          tipo: string
+          tipo_conta?: string | null
+        }
+        Update: {
+          agencia?: string | null
+          ativo?: boolean | null
+          banco?: string | null
+          cnpj?: string
+          comissao?: number | null
+          conta?: string | null
+          data_cadastro?: string | null
+          email?: string
+          endereco?: string
+          especialidades?: string[] | null
+          id?: string
+          nome?: string
+          telefone?: string
+          tipo?: string
+          tipo_conta?: string | null
+        }
+        Relationships: []
+      }
+      servicos: {
+        Row: {
+          ativo: boolean | null
+          categoria: string
+          created_at: string | null
+          descricao: string | null
+          id: string
+          nome: string
+          prestador_id: string | null
+          tempo_estimado: string | null
+          valor_custo: number
+          valor_venda: number
+        }
+        Insert: {
+          ativo?: boolean | null
+          categoria: string
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          nome: string
+          prestador_id?: string | null
+          tempo_estimado?: string | null
+          valor_custo: number
+          valor_venda: number
+        }
+        Update: {
+          ativo?: boolean | null
+          categoria?: string
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          nome?: string
+          prestador_id?: string | null
+          tempo_estimado?: string | null
+          valor_custo?: number
+          valor_venda?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "servicos_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
             referencedColumns: ["id"]
           },
         ]
