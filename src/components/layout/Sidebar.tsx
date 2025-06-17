@@ -15,7 +15,8 @@ import {
   ListChecks,
   FileText,
   BarChart3,
-  ShoppingCart
+  ShoppingCart,
+  Clock
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -57,6 +58,11 @@ const agendajaMenu = [
     title: "Conversas",
     icon: <MessageSquare className="h-5 w-5" />,
     href: "/conversas",
+  },
+  {
+    title: "Colaboradores",
+    icon: <Clock className="h-5 w-5" />,
+    href: "/colaboradores",
   },
 ];
 

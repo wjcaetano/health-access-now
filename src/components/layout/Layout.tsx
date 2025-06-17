@@ -26,6 +26,7 @@ const pageInfo: { [key: string]: { title: string; subtitle?: string } } = {
   "/agenda-pagamentos": { title: "Agenda de Pagamentos", subtitle: "Calendário de pagamentos aos prestadores" },
   "/guias": { title: "Guias", subtitle: "Gerenciamento de guias de serviço" },
   "/configuracoes": { title: "Configurações", subtitle: "Ajustes do sistema" },
+  "/colaboradores": { title: "Colaboradores", subtitle: "Gestão de colaboradores e ponto eletrônico" },
   
   // Páginas do prestador
   "/prestador": { title: "Portal do Prestador", subtitle: "Bem-vindo ao seu portal" },

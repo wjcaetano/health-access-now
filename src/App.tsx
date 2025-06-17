@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -43,10 +44,7 @@ import CheckoutVendas from "./pages/CheckoutVendas";
 const queryClient = new QueryClient();
 
 import PaginaDeVendas from "./pages/PaginaDeVendas";
-
-const ColaboradoresPage = () => {
-  return <div>Colaboradores Page</div>;
-};
+import Colaboradores from "./pages/Colaboradores";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -89,8 +87,8 @@ const App = () => (
             <Route path="/agenda-pagamentos" element={<AgendaPagamentos />} />
             <Route path="/guias" element={<Guias />} />
 
-            {/* NOVA ROTA Gestão de colaboradores */}
-            <Route path="/colaboradores" element={<ColaboradoresPage />} />
+            {/* Gestão de colaboradores */}
+            <Route path="/colaboradores" element={<Colaboradores />} />
           </Route>
           
           {/* Layout para prestadores */}
