@@ -42,7 +42,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single();
       
       if (error) throw error;
-      setProfile(data);
+      
+      // Garantir que nivel_acesso está tipado corretamente
+      const typedProfile: UserProfile = {
+        id: data.id,
+        email: data.email,
+        nome: data.nome,
+        nivel_acesso: data.nivel_acesso as 'colaborador' | 'atendente' | 'gerente' | 'admin',
+        colaborador_id: data.colaborador_id,
+        prestador_id: data.prestador_id,
+      };
+      
+      setProfile(typedProfile);
     } catch (error) {
       console.error('Erro ao buscar perfil:', error);
       setProfile(null);
