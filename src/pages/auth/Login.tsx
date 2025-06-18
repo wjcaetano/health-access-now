@@ -7,51 +7,85 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
-const Login: React.FC = () => {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userType, setUserType] = useState("agendaja"); // "agendaja" ou "prestador"
+  const [nome, setNome] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { signIn, signUp, user } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  // Redirect if already logged in
+  React.useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulação de login - em um app real, isso seria uma chamada à API
-    setTimeout(() => {
-      setIsLoading(false);
-      
-      if (email && password) {
-        // Salvar um token de autenticação simulado
-        localStorage.setItem("agendaja_authenticated", "true");
-        localStorage.setItem("agendaja_user_type", userType);
-        
-        // Redirecionar para o painel apropriado
-        if (userType === "prestador") {
-          navigate("/prestador");
+    try {
+      let result;
+      if (isSignUp) {
+        if (!nome.trim()) {
           toast({
-            title: "Login realizado com sucesso!",
-            description: "Bem-vindo ao Portal do Prestador AGENDAJA",
+            variant: "destructive",
+            title: "Erro",
+            description: "Nome é obrigatório para cadastro"
           });
-        } else {
-          navigate("/dashboard");
-          toast({
-            title: "Login realizado com sucesso!",
-            description: "Bem-vindo ao Sistema AGENDAJA",
-          });
+          return;
         }
+        result = await signUp(email, password, nome);
       } else {
+        result = await signIn(email, password);
+      }
+      
+      if (result.error) {
+        let errorMessage = "Ocorreu um erro. Tente novamente.";
+        
+        if (result.error.message?.includes("Invalid login credentials")) {
+          errorMessage = "Email ou senha incorretos";
+        } else if (result.error.message?.includes("User already registered")) {
+          errorMessage = "Este email já está cadastrado. Faça login.";
+        } else if (result.error.message?.includes("Password should be")) {
+          errorMessage = "A senha deve ter pelo menos 6 caracteres";
+        }
+        
         toast({
           variant: "destructive",
-          title: "Erro de autenticação",
-          description: "Email ou senha inválidos. Tente novamente.",
+          title: isSignUp ? "Erro no cadastro" : "Erro no login",
+          description: errorMessage
         });
+      } else {
+        if (isSignUp) {
+          toast({
+            title: "Cadastro realizado!",
+            description: "Verifique seu email para confirmar a conta"
+          });
+        } else {
+          toast({
+            title: "Login realizado com sucesso!",
+            description: "Bem-vindo ao Sistema AGENDAJA"
+          });
+          navigate('/dashboard');
+        }
       }
-    }, 1000);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Ocorreu um erro inesperado"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -66,108 +100,93 @@ const Login: React.FC = () => {
         
         <Card>
           <CardHeader>
-            <CardTitle className="text-xl text-center">Acesso ao Sistema</CardTitle>
+            <CardTitle className="text-xl text-center">
+              {isSignUp ? "Criar Conta" : "Acesso ao Sistema"}
+            </CardTitle>
             <CardDescription className="text-center">
-              Escolha seu tipo de acesso e faça login para continuar
+              {isSignUp 
+                ? "Preencha os dados para criar sua conta" 
+                : "Faça login para continuar"
+              }
             </CardDescription>
           </CardHeader>
           
-          <Tabs defaultValue="agendaja" className="w-full" onValueChange={setUserType}>
-            <TabsList className="grid grid-cols-2 mb-2 mx-6">
-              <TabsTrigger value="agendaja">Equipe AGENDAJA</TabsTrigger>
-              <TabsTrigger value="prestador">Prestador</TabsTrigger>
-            </TabsList>
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-4">
+              {isSignUp && (
+                <div className="space-y-2">
+                  <Label htmlFor="nome">Nome completo</Label>
+                  <Input 
+                    id="nome" 
+                    type="text" 
+                    placeholder="Seu nome completo" 
+                    value={nome}
+                    onChange={(e) => setNome(e.target.value)}
+                    required={isSignUp}
+                  />
+                </div>
+              )}
+              
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="seu.email@empresa.com" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Senha</Label>
+                  {!isSignUp && (
+                    <Button variant="link" className="px-0 h-auto text-xs">
+                      Esqueceu a senha?
+                    </Button>
+                  )}
+                </div>
+                <Input 
+                  id="password" 
+                  type="password" 
+                  placeholder="••••••••" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                {isSignUp && (
+                  <p className="text-xs text-gray-500">Mínimo 6 caracteres</p>
+                )}
+              </div>
+            </CardContent>
             
-            <TabsContent value="agendaja">
-              <form onSubmit={handleLogin}>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input 
-                      id="email" 
-                      type="email" 
-                      placeholder="seu.email@agendaja.com" 
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="password">Senha</Label>
-                      <Button variant="link" className="px-0 h-auto text-xs">
-                        Esqueceu a senha?
-                      </Button>
-                    </div>
-                    <Input 
-                      id="password" 
-                      type="password" 
-                      placeholder="••••••••" 
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-agendaja-primary hover:bg-agendaja-secondary"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Autenticando..." : "Entrar"}
-                  </Button>
-                </CardFooter>
-              </form>
-            </TabsContent>
-            
-            <TabsContent value="prestador">
-              <form onSubmit={handleLogin}>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="prestador-email">Email do Prestador</Label>
-                    <Input 
-                      id="prestador-email" 
-                      type="email" 
-                      placeholder="email@clinica.com" 
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="prestador-password">Senha</Label>
-                      <Button variant="link" className="px-0 h-auto text-xs">
-                        Esqueceu a senha?
-                      </Button>
-                    </div>
-                    <Input 
-                      id="prestador-password" 
-                      type="password" 
-                      placeholder="••••••••" 
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-agendaja-primary hover:bg-agendaja-secondary"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Autenticando..." : "Acessar Portal"}
-                  </Button>
-                </CardFooter>
-              </form>
-            </TabsContent>
-          </Tabs>
+            <CardFooter className="flex flex-col space-y-4">
+              <Button 
+                type="submit" 
+                className="w-full bg-agendaja-primary hover:bg-agendaja-secondary"
+                disabled={isLoading}
+              >
+                {isLoading ? "Processando..." : (isSignUp ? "Criar Conta" : "Entrar")}
+              </Button>
+              
+              <Button 
+                type="button"
+                variant="link" 
+                className="text-sm"
+                onClick={() => setIsSignUp(!isSignUp)}
+                disabled={isLoading}
+              >
+                {isSignUp 
+                  ? "Já tem uma conta? Faça login" 
+                  : "Não tem conta? Cadastre-se"
+                }
+              </Button>
+            </CardFooter>
+          </form>
         </Card>
       </div>
     </div>
   );
-};
-
-export default Login;
+}

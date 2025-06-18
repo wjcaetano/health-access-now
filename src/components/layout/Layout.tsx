@@ -1,8 +1,10 @@
 
 import React, { useState, useEffect } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Informações de páginas por rota
 const pageInfo: { [key: string]: { title: string; subtitle?: string } } = {
@@ -39,28 +41,15 @@ const getProfileFromPath = (path: string) => {
   if (path.startsWith("/prestador")) {
     return "prestador";
   }
-  // Por padrão, assume o perfil de usuário AGENDAJA
   return "agendaja";
 };
 
-const Layout: React.FC = () => {
+export default function Layout() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
-  const [userProfile, setUserProfile] = useState("agendaja"); // Pode ser "agendaja" ou "prestador"
+  const { isPrestador } = useAuth();
   
-  useEffect(() => {
-    // Atualiza o perfil com base na URL atual
-    const profile = getProfileFromPath(location.pathname);
-    setUserProfile(profile);
-    
-    // Simulação de verificação de autenticação
-    const isAuthenticated = localStorage.getItem("agendaja_authenticated") === "true";
-    if (!isAuthenticated) {
-      // Se não estiver autenticado, redireciona para a página inicial (vendas/login)
-      navigate("/");
-    }
-  }, [location, navigate]);
+  const userProfile = isPrestador ? "prestador" : "agendaja";
   
   // Detectar se é uma página de visualização de orçamento
   const isOrcamentoView = location.pathname.startsWith("/orcamentos/");
@@ -78,24 +67,24 @@ const Layout: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} userProfile={userProfile} />
-      <main 
-        className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
-          !collapsed ? "sm:ml-20 md:ml-72" : ""
-        }`}
-      >
-        <Header 
-          title={title} 
-          subtitle={subtitle} 
-          toggleSidebar={toggleSidebar} 
-        />
-        <div className="flex-1 overflow-x-auto overflow-y-auto p-6">
-          <Outlet />
-        </div>
-      </main>
-    </div>
+    <ProtectedRoute>
+      <div className="flex h-screen bg-gray-50">
+        <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} userProfile={userProfile} />
+        <main 
+          className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
+            !collapsed ? "sm:ml-20 md:ml-72" : ""
+          }`}
+        >
+          <Header 
+            title={title} 
+            subtitle={subtitle} 
+            toggleSidebar={toggleSidebar} 
+          />
+          <div className="flex-1 overflow-x-auto overflow-y-auto p-6">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    </ProtectedRoute>
   );
-};
-
-export default Layout;
+}

@@ -543,6 +543,54 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          colaborador_id: string | null
+          created_at: string | null
+          email: string
+          id: string
+          nivel_acesso: string
+          nome: string | null
+          prestador_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          colaborador_id?: string | null
+          created_at?: string | null
+          email: string
+          id: string
+          nivel_acesso?: string
+          nome?: string | null
+          prestador_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          colaborador_id?: string | null
+          created_at?: string | null
+          email?: string
+          id?: string
+          nivel_acesso?: string
+          nome?: string | null
+          prestador_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       servicos: {
         Row: {
           ativo: boolean | null
@@ -602,6 +650,14 @@ export type Database = {
           data_ponto: string
           created_at: string
         }[]
+      }
+      get_user_level: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      is_admin_or_manager: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
       }
       ja_bateu_ponto_hoje: {
         Args: { colaborador_uuid: string }

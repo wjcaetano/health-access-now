@@ -1,10 +1,18 @@
 
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, LogOut, Menu, Search } from "lucide-react";
+import { LogOut, Menu, Search, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface HeaderProps {
   title: string;
@@ -12,27 +20,24 @@ interface HeaderProps {
   toggleSidebar: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ 
-  title, 
-  subtitle, 
-  toggleSidebar 
-}) => {
-  const navigate = useNavigate();
+export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) {
   const { toast } = useToast();
+  const { signOut, profile, user } = useAuth();
 
-  const handleLogout = () => {
-    // Remover o token de autenticação simulado
-    localStorage.removeItem("agendaja_authenticated");
-    localStorage.removeItem("agendaja_user_type");
-    
-    // Notificar o usuário
-    toast({
-      title: "Logout realizado com sucesso",
-      description: "Você foi desconectado do sistema"
-    });
-    
-    // Redirecionar para a tela inicial (home)
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Logout realizado com sucesso",
+        description: "Você foi desconectado do sistema"
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro no logout",
+        description: "Ocorreu um erro ao fazer logout"
+      });
+    }
   };
 
   return (
@@ -70,20 +75,35 @@ const Header: React.FC<HeaderProps> = ({
             <span>Buscar</span>
           </Button>
           
-          {/* Botão de logout */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleLogout} 
-            className="flex gap-1 text-gray-600 hover:bg-red-50 hover:text-red-600 ml-2"
-          >
-            <LogOut className="h-4 w-4" />
-            <span className="hidden sm:inline">Sair</span>
-          </Button>
+          {/* User menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="flex gap-2 ml-2">
+                <User className="h-4 w-4" />
+                <span className="hidden sm:inline">{profile?.nome || user?.email}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">{profile?.nome || 'Usuário'}</p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user?.email}
+                  </p>
+                  <p className="text-xs leading-none text-muted-foreground capitalize">
+                    {profile?.nivel_acesso}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sair</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
   );
-};
-
-export default Header;
+}

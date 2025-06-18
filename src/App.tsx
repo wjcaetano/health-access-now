@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import { AuthProvider } from "./contexts/AuthContext";
 import Layout from "./components/layout/Layout";
 import Index from "./pages/Index";
 import Clientes from "./pages/Clientes";
@@ -48,60 +49,62 @@ import Colaboradores from "./pages/Colaboradores";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* Rotas Públicas */}
-          <Route path="/" element={<PaginaDeVendas mostrarLogin />} />
-          <Route path="/vender" element={<PaginaDeVendas />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/servicos/consultas" element={<ConsultasMedicas />} />
-          <Route path="/servicos/exames-laboratoriais" element={<ExamesLaboratoriais />} />
-          <Route path="/servicos/exames-imagem" element={<ExamesDeImagem />} />
-          <Route path="/servicos/outros-exames" element={<OutrosExames />} />
-          <Route path="/portal-parceiro" element={<PortalParceiro />} />
-          <Route path="/seja-franqueado" element={<SejaFranqueado />} />
-          
-          {/* Layout padrão AGENDAJA (atendentes e gerentes) */}
-          <Route element={<Layout />}>
-            <Route path="/dashboard" element={<Index />} />
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            {/* Rotas Públicas */}
+            <Route path="/" element={<PaginaDeVendas mostrarLogin />} />
+            <Route path="/vender" element={<PaginaDeVendas />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/servicos/consultas" element={<ConsultasMedicas />} />
+            <Route path="/servicos/exames-laboratoriais" element={<ExamesLaboratoriais />} />
+            <Route path="/servicos/exames-imagem" element={<ExamesDeImagem />} />
+            <Route path="/servicos/outros-exames" element={<OutrosExames />} />
+            <Route path="/portal-parceiro" element={<PortalParceiro />} />
+            <Route path="/seja-franqueado" element={<SejaFranqueado />} />
             
-            {/* Rotas do MVP original */}
-            <Route path="/clientes" element={<Clientes />} />
-            <Route path="/novo-cliente" element={<NovoCliente />} />
-            <Route path="/vendas" element={<Vendas />} />
-            <Route path="/checkout-vendas" element={<CheckoutVendas />} />
-            <Route path="/novo-agendamento" element={<NovoAgendamento />} />
-            <Route path="/orcamentos" element={<Orcamentos />} />
-            <Route path="/orcamentos/:id" element={<VisualizarOrcamento />} />
-            <Route path="/conversas" element={<Conversas />} />
-            
-            {/* Novas rotas para o SaaS */}
-            <Route path="/prestadores" element={<Prestadores />} />
-            <Route path="/novo-prestador" element={<NovoPrestador />} />
-            <Route path="/servicos" element={<Servicos />} />
-            <Route path="/novo-servico" element={<NovoServico />} />
-            <Route path="/financeiro" element={<Financeiro />} />
-            <Route path="/agenda-pagamentos" element={<AgendaPagamentos />} />
-            <Route path="/guias" element={<Guias />} />
+            {/* Layout padrão AGENDAJA (atendentes e gerentes) */}
+            <Route element={<Layout />}>
+              <Route path="/dashboard" element={<Index />} />
+              
+              {/* Rotas do MVP original */}
+              <Route path="/clientes" element={<Clientes />} />
+              <Route path="/novo-cliente" element={<NovoCliente />} />
+              <Route path="/vendas" element={<Vendas />} />
+              <Route path="/checkout-vendas" element={<CheckoutVendas />} />
+              <Route path="/novo-agendamento" element={<NovoAgendamento />} />
+              <Route path="/orcamentos" element={<Orcamentos />} />
+              <Route path="/orcamentos/:id" element={<VisualizarOrcamento />} />
+              <Route path="/conversas" element={<Conversas />} />
+              
+              {/* Novas rotas para o SaaS */}
+              <Route path="/prestadores" element={<Prestadores />} />
+              <Route path="/novo-prestador" element={<NovoPrestador />} />
+              <Route path="/servicos" element={<Servicos />} />
+              <Route path="/novo-servico" element={<NovoServico />} />
+              <Route path="/financeiro" element={<Financeiro />} />
+              <Route path="/agenda-pagamentos" element={<AgendaPagamentos />} />
+              <Route path="/guias" element={<Guias />} />
 
-            {/* Gestão de colaboradores */}
-            <Route path="/colaboradores" element={<Colaboradores />} />
-          </Route>
-          
-          {/* Layout para prestadores */}
-          <Route path="/prestador" element={<Layout />}>
-            <Route index element={<PortalPrestador />} />
-            <Route path="guias" element={<GuiasPrestador />} />
-            <Route path="faturamento" element={<FaturamentoPrestador />} />
-          </Route>
-          
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+              {/* Gestão de colaboradores */}
+              <Route path="/colaboradores" element={<Colaboradores />} />
+            </Route>
+            
+            {/* Layout para prestadores */}
+            <Route path="/prestador" element={<Layout />}>
+              <Route index element={<PortalPrestador />} />
+              <Route path="guias" element={<GuiasPrestador />} />
+              <Route path="faturamento" element={<FaturamentoPrestador />} />
+            </Route>
+            
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
