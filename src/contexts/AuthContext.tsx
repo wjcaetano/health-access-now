@@ -10,6 +10,7 @@ type UserProfile = {
   nivel_acesso: 'colaborador' | 'atendente' | 'gerente' | 'admin';
   colaborador_id: string | null;
   prestador_id: string | null;
+  status: 'pendente' | 'aguardando_aprovacao' | 'ativo' | 'suspenso' | 'inativo';
 };
 
 type AuthContextType = {
@@ -20,9 +21,12 @@ type AuthContextType = {
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string, nome: string, nivel_acesso?: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  updateProfile: (updates: Partial<UserProfile>) => Promise<{ error: any }>;
+  updatePassword: (newPassword: string) => Promise<{ error: any }>;
   isAdmin: boolean;
   isManager: boolean;
   isPrestador: boolean;
+  isActive: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -43,7 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (error) throw error;
       
-      // Garantir que nivel_acesso está tipado corretamente
+      // Garantir que nivel_acesso e status estão tipados corretamente
       const typedProfile: UserProfile = {
         id: data.id,
         email: data.email,
@@ -51,6 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         nivel_acesso: data.nivel_acesso as 'colaborador' | 'atendente' | 'gerente' | 'admin',
         colaborador_id: data.colaborador_id,
         prestador_id: data.prestador_id,
+        status: data.status as 'pendente' | 'aguardando_aprovacao' | 'ativo' | 'suspenso' | 'inativo',
       };
       
       setProfile(typedProfile);
@@ -133,6 +138,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateProfile = async (updates: Partial<UserProfile>) => {
+    try {
+      if (!user) return { error: 'Usuário não autenticado' };
+
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      // Refresh profile data
+      await fetchUserProfile(user.id);
+      
+      return { error: null };
+    } catch (error) {
+      return { error };
+    }
+  };
+
+  const updatePassword = async (newPassword: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      
+      return { error };
+    } catch (error) {
+      return { error };
+    }
+  };
+
   const signOut = async () => {
     try {
       // Clean up localStorage
@@ -153,6 +190,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isAdmin = profile?.nivel_acesso === 'admin';
   const isManager = profile?.nivel_acesso === 'gerente' || isAdmin;
   const isPrestador = !!profile?.prestador_id;
+  const isActive = profile?.status === 'ativo';
 
   const value = {
     user,
@@ -162,9 +200,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signIn,
     signUp,
     signOut,
+    updateProfile,
+    updatePassword,
     isAdmin,
     isManager,
     isPrestador,
+    isActive,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

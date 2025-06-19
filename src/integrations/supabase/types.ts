@@ -552,6 +552,7 @@ export type Database = {
           nivel_acesso: string
           nome: string | null
           prestador_id: string | null
+          status: string | null
           updated_at: string | null
         }
         Insert: {
@@ -562,6 +563,7 @@ export type Database = {
           nivel_acesso?: string
           nome?: string | null
           prestador_id?: string | null
+          status?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -572,6 +574,7 @@ export type Database = {
           nivel_acesso?: string
           nome?: string | null
           prestador_id?: string | null
+          status?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -656,6 +659,10 @@ export type Database = {
         Returns: string
       }
       is_admin_or_manager: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_user_active: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
