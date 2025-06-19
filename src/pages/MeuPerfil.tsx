@@ -4,285 +4,216 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { User, Mail, Shield, Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react";
-
-const statusColors = {
-  ativo: "bg-green-100 text-green-800",
-  pendente: "bg-yellow-100 text-yellow-800", 
-  aguardando_aprovacao: "bg-blue-100 text-blue-800",
-  suspenso: "bg-red-100 text-red-800",
-  inativo: "bg-gray-100 text-gray-800"
-};
-
-const nivelAcessoLabels = {
-  admin: "Administrador",
-  gerente: "Gerente", 
-  atendente: "Atendente",
-  colaborador: "Colaborador"
-};
+import { User, Lock, Bell, Camera } from "lucide-react";
+import UploadFotoPerfil from "@/components/usuarios/UploadFotoPerfil";
+import NotificationsPanel from "@/components/usuarios/NotificationsPanel";
 
 export default function MeuPerfil() {
   const { profile, updateProfile, updatePassword } = useAuth();
   const { toast } = useToast();
   
-  const [editandoDados, setEditandoDados] = useState(false);
-  const [editandoSenha, setEditandoSenha] = useState(false);
-  const [mostrarSenha, setMostrarSenha] = useState(false);
-  const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
+  // Estados para edição do perfil
+  const [nome, setNome] = useState(profile?.nome || "");
+  const [editandoPerfil, setEditandoPerfil] = useState(false);
   
-  const [dadosForm, setDadosForm] = useState({
-    nome: profile?.nome || "",
-    email: profile?.email || "",
-  });
-  
-  const [senhaForm, setSenhaForm] = useState({
-    novaSenha: "",
-    confirmarSenha: "",
-  });
+  // Estados para alteração de senha
+  const [senhaAtual, setSenhaAtual] = useState("");
+  const [novaSenha, setNovaSenha] = useState("");
+  const [confirmaSenha, setConfirmaSenha] = useState("");
 
-  const handleSalvarDados = async () => {
+  const handleSalvarPerfil = async () => {
     try {
-      const { error } = await updateProfile({
-        nome: dadosForm.nome,
-        email: dadosForm.email,
-      });
-
-      if (error) throw error;
-
+      await updateProfile({ nome });
       toast({
-        title: "Dados atualizados",
-        description: "Seus dados pessoais foram atualizados com sucesso.",
+        title: "Perfil atualizado",
+        description: "Suas informações foram salvas com sucesso",
       });
-      setEditandoDados(false);
+      setEditandoPerfil(false);
     } catch (error) {
       toast({
         title: "Erro",
-        description: "Não foi possível atualizar seus dados.",
+        description: "Não foi possível atualizar o perfil",
         variant: "destructive",
       });
     }
   };
 
-  const handleAlterarSenha = async () => {
-    if (senhaForm.novaSenha !== senhaForm.confirmarSenha) {
+  const handleAlterarSenha = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (novaSenha !== confirmaSenha) {
       toast({
         title: "Erro",
-        description: "As senhas não coincidem.",
+        description: "As senhas não conferem",
         variant: "destructive",
       });
       return;
     }
 
-    if (senhaForm.novaSenha.length < 6) {
+    if (novaSenha.length < 6) {
       toast({
         title: "Erro",
-        description: "A senha deve ter pelo menos 6 caracteres.",
+        description: "A senha deve ter pelo menos 6 caracteres",
         variant: "destructive",
       });
       return;
     }
 
     try {
-      const { error } = await updatePassword(senhaForm.novaSenha);
-
-      if (error) throw error;
-
+      await updatePassword(novaSenha);
       toast({
         title: "Senha alterada",
-        description: "Sua senha foi alterada com sucesso.",
+        description: "Sua senha foi alterada com sucesso",
       });
-      setEditandoSenha(false);
-      setSenhaForm({ novaSenha: "", confirmarSenha: "" });
+      setSenhaAtual("");
+      setNovaSenha("");
+      setConfirmaSenha("");
     } catch (error) {
       toast({
         title: "Erro",
-        description: "Não foi possível alterar sua senha.",
+        description: "Não foi possível alterar a senha",
         variant: "destructive",
       });
     }
   };
 
-  if (!profile) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-agendaja-primary"></div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto py-8 px-4 max-w-4xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Meu Perfil</h1>
-        <p className="text-gray-600">Gerencie seus dados pessoais e configurações de acesso</p>
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Meu Perfil</h1>
       </div>
 
-      <div className="grid gap-6">
-        {/* Status da Conta */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Status da Conta
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <Badge className={statusColors[profile.status as keyof typeof statusColors]}>
-                    {profile.status === 'ativo' ? (
-                      <CheckCircle className="h-3 w-3 mr-1" />
-                    ) : (
-                      <AlertCircle className="h-3 w-3 mr-1" />
-                    )}
-                    {profile.status.replace('_', ' ')}
-                  </Badge>
-                  <Badge variant="outline">
-                    {nivelAcessoLabels[profile.nivel_acesso as keyof typeof nivelAcessoLabels]}
-                  </Badge>
-                </div>
-                <p className="text-sm text-gray-600">
-                  {profile.status === 'ativo' 
-                    ? "Sua conta está ativa e funcionando normalmente." 
-                    : "Sua conta possui restrições de acesso."}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <Tabs defaultValue="perfil" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="perfil">Perfil</TabsTrigger>
+          <TabsTrigger value="foto">Foto</TabsTrigger>
+          <TabsTrigger value="senha">Senha</TabsTrigger>
+          <TabsTrigger value="notificacoes">Notificações</TabsTrigger>
+        </TabsList>
 
-        {/* Dados Pessoais */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+        <TabsContent value="perfil">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5" />
-                Dados Pessoais
+                Informações Pessoais
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="nome">Nome</Label>
+                  <Input
+                    id="nome"
+                    value={nome}
+                    onChange={(e) => setNome(e.target.value)}
+                    disabled={!editandoPerfil}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    value={profile?.email || ""}
+                    disabled
+                    className="bg-gray-50"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="nivel">Nível de Acesso</Label>
+                  <Input
+                    id="nivel"
+                    value={profile?.nivel_acesso || ""}
+                    disabled
+                    className="bg-gray-50"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="status">Status</Label>
+                  <Input
+                    id="status"
+                    value={profile?.status || ""}
+                    disabled
+                    className="bg-gray-50"
+                  />
+                </div>
               </div>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  if (editandoDados) {
-                    setDadosForm({
-                      nome: profile.nome || "",
-                      email: profile.email || "",
-                    });
-                  }
-                  setEditandoDados(!editandoDados);
-                }}
-              >
-                {editandoDados ? "Cancelar" : "Editar"}
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="nome">Nome</Label>
-              <Input
-                id="nome"
-                value={dadosForm.nome}
-                onChange={(e) => setDadosForm(prev => ({ ...prev, nome: e.target.value }))}
-                disabled={!editandoDados}
-              />
-            </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={dadosForm.email}
-                onChange={(e) => setDadosForm(prev => ({ ...prev, email: e.target.value }))}
-                disabled={!editandoDados}
-              />
-            </div>
-            {editandoDados && (
-              <Button onClick={handleSalvarDados} className="w-full">
-                Salvar Alterações
-              </Button>
-            )}
-          </CardContent>
-        </Card>
+              
+              <div className="flex justify-end gap-2">
+                {editandoPerfil ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setEditandoPerfil(false);
+                        setNome(profile?.nome || "");
+                      }}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button onClick={handleSalvarPerfil}>
+                      Salvar
+                    </Button>
+                  </>
+                ) : (
+                  <Button onClick={() => setEditandoPerfil(true)}>
+                    Editar Perfil
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-        {/* Alterar Senha */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                Segurança
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  if (editandoSenha) {
-                    setSenhaForm({ novaSenha: "", confirmarSenha: "" });
-                  }
-                  setEditandoSenha(!editandoSenha);
-                }}
-              >
-                {editandoSenha ? "Cancelar" : "Alterar Senha"}
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {!editandoSenha ? (
-              <p className="text-gray-600">Clique em "Alterar Senha" para modificar sua senha de acesso.</p>
-            ) : (
-              <>
+        <TabsContent value="foto">
+          <UploadFotoPerfil />
+        </TabsContent>
+
+        <TabsContent value="senha">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lock className="h-5 w-5" />
+                Alterar Senha
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleAlterarSenha} className="space-y-4">
                 <div>
-                  <Label htmlFor="novaSenha">Nova Senha</Label>
-                  <div className="relative">
-                    <Input
-                      id="novaSenha"
-                      type={mostrarSenha ? "text" : "password"}
-                      value={senhaForm.novaSenha}
-                      onChange={(e) => setSenhaForm(prev => ({ ...prev, novaSenha: e.target.value }))}
-                      placeholder="Mínimo 6 caracteres"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-0 top-0 h-full px-3"
-                      onClick={() => setMostrarSenha(!mostrarSenha)}
-                    >
-                      {mostrarSenha ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
-                  </div>
+                  <Label htmlFor="nova-senha">Nova Senha</Label>
+                  <Input
+                    id="nova-senha"
+                    type="password"
+                    value={novaSenha}
+                    onChange={(e) => setNovaSenha(e.target.value)}
+                    placeholder="Digite sua nova senha"
+                  />
                 </div>
                 <div>
-                  <Label htmlFor="confirmarSenha">Confirmar Nova Senha</Label>
-                  <div className="relative">
-                    <Input
-                      id="confirmarSenha"
-                      type={mostrarConfirmacao ? "text" : "password"}
-                      value={senhaForm.confirmarSenha}
-                      onChange={(e) => setSenhaForm(prev => ({ ...prev, confirmarSenha: e.target.value }))}
-                      placeholder="Confirme a nova senha"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-0 top-0 h-full px-3"
-                      onClick={() => setMostrarConfirmacao(!mostrarConfirmacao)}
-                    >
-                      {mostrarConfirmacao ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
-                  </div>
+                  <Label htmlFor="confirma-senha">Confirmar Nova Senha</Label>
+                  <Input
+                    id="confirma-senha"
+                    type="password"
+                    value={confirmaSenha}
+                    onChange={(e) => setConfirmaSenha(e.target.value)}
+                    placeholder="Confirme sua nova senha"
+                  />
                 </div>
-                <Button onClick={handleAlterarSenha} className="w-full">
-                  Confirmar Alteração
+                <Button type="submit" className="w-full">
+                  Alterar Senha
                 </Button>
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+              </form>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="notificacoes">
+          <NotificationsPanel />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

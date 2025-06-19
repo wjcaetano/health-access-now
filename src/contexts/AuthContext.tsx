@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,6 +10,7 @@ type UserProfile = {
   colaborador_id: string | null;
   prestador_id: string | null;
   status: 'pendente' | 'aguardando_aprovacao' | 'ativo' | 'suspenso' | 'inativo';
+  foto_url: string | null;
 };
 
 type AuthContextType = {
@@ -56,6 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         colaborador_id: data.colaborador_id,
         prestador_id: data.prestador_id,
         status: data.status as 'pendente' | 'aguardando_aprovacao' | 'ativo' | 'suspenso' | 'inativo',
+        foto_url: data.foto_url,
       };
       
       setProfile(typedProfile);
