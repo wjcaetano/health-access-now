@@ -46,6 +46,9 @@ const queryClient = new QueryClient();
 
 import PaginaDeVendas from "./pages/PaginaDeVendas";
 import Colaboradores from "./pages/Colaboradores";
+import GestaoUsuarios from "./pages/GestaoUsuarios";
+import MeuPerfil from "./pages/MeuPerfil";
+import AnaliseDoSistema from "./pages/AnaliseDoSistema";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -91,6 +94,11 @@ const App = () => (
 
               {/* Gestão de colaboradores */}
               <Route path="/colaboradores" element={<Colaboradores />} />
+              
+              {/* Gestão de usuários e perfil */}
+              <Route path="/gestao-usuarios" element={<GestaoUsuarios />} />
+              <Route path="/meu-perfil" element={<MeuPerfil />} />
+              <Route path="/analise-sistema" element={<AnaliseDoSistema />} />
             </Route>
             
             {/* Layout para prestadores */}

@@ -2,9 +2,11 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LogOut, Menu, Search, User } from "lucide-react";
+import { LogOut, Menu, Search, User, Users, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "react-router-dom";
+import NotificationBell from "./NotificationBell";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +24,7 @@ interface HeaderProps {
 
 export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) {
   const { toast } = useToast();
-  const { signOut, profile, user } = useAuth();
+  const { signOut, profile, user, isAdmin, isManager } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -75,6 +77,9 @@ export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) 
             <span>Buscar</span>
           </Button>
           
+          {/* Notification Bell */}
+          <NotificationBell />
+          
           {/* User menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -95,6 +100,21 @@ export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) 
                   </p>
                 </div>
               </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/meu-perfil" className="flex items-center cursor-pointer">
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Meu Perfil</span>
+                </Link>
+              </DropdownMenuItem>
+              {(isAdmin || isManager) && (
+                <DropdownMenuItem asChild>
+                  <Link to="/gestao-usuarios" className="flex items-center cursor-pointer">
+                    <Users className="mr-2 h-4 w-4" />
+                    <span>Gestão de Usuários</span>
+                  </Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                 <LogOut className="mr-2 h-4 w-4" />

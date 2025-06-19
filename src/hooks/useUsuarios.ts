@@ -66,3 +66,21 @@ export function useUpdateUsuario() {
     },
   });
 }
+
+export function useDeleteUsuario() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const { error } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("id", userId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["usuarios"] });
+    },
+  });
+}
