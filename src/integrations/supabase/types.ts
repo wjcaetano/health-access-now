@@ -381,6 +381,36 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          read_at?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       orcamentos: {
         Row: {
           cliente_id: string | null
@@ -548,6 +578,7 @@ export type Database = {
           colaborador_id: string | null
           created_at: string | null
           email: string
+          foto_url: string | null
           id: string
           nivel_acesso: string
           nome: string | null
@@ -559,6 +590,7 @@ export type Database = {
           colaborador_id?: string | null
           created_at?: string | null
           email: string
+          foto_url?: string | null
           id: string
           nivel_acesso?: string
           nome?: string | null
@@ -570,6 +602,7 @@ export type Database = {
           colaborador_id?: string | null
           created_at?: string | null
           email?: string
+          foto_url?: string | null
           id?: string
           nivel_acesso?: string
           nome?: string | null
@@ -641,11 +674,97 @@ export type Database = {
           },
         ]
       }
+      user_audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          id: string
+          ip_address: string | null
+          performed_by: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          performed_by: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          performed_by?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_invites: {
+        Row: {
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string
+          nivel_acesso: string
+          nome: string
+          token: string
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          expires_at: string
+          id?: string
+          invited_by: string
+          nivel_acesso: string
+          nome: string
+          token: string
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          nivel_acesso?: string
+          nome?: string
+          token?: string
+          used_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      create_audit_log: {
+        Args: {
+          target_user_id: string
+          action_type: string
+          action_details?: Json
+        }
+        Returns: string
+      }
+      create_notification: {
+        Args: {
+          target_user_id: string
+          notification_title: string
+          notification_message: string
+          notification_type?: string
+        }
+        Returns: string
+      }
       get_ultimo_ponto_colaborador: {
         Args: { colaborador_uuid: string }
         Returns: {
