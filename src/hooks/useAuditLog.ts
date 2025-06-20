@@ -6,18 +6,44 @@ export function useAuditLog() {
   return useQuery({
     queryKey: ["auditLog"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Primeiro buscar os logs de auditoria
+      const { data: logs, error: logsError } = await supabase
         .from("user_audit_log")
-        .select(`
-          *,
-          user:profiles!user_audit_log_user_id_fkey(nome, email),
-          performed_by_user:profiles!user_audit_log_performed_by_fkey(nome, email)
-        `)
+        .select("*")
         .order("created_at", { ascending: false })
         .limit(100);
       
-      if (error) throw error;
-      return data || [];
+      if (logsError) throw logsError;
+      
+      if (!logs || logs.length === 0) return [];
+      
+      // Buscar os perfis dos usuários relacionados
+      const userIds = Array.from(new Set([
+        ...logs.map(log => log.user_id),
+        ...logs.map(log => log.performed_by)
+      ]));
+      
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, nome, email")
+        .in("id", userIds);
+      
+      if (profilesError) {
+        console.warn("Erro ao buscar perfis:", profilesError);
+        // Retornar logs sem informações de perfil em caso de erro
+        return logs.map(log => ({
+          ...log,
+          user: null,
+          performed_by_user: null
+        }));
+      }
+      
+      // Mapear os logs com as informações dos usuários
+      return logs.map(log => ({
+        ...log,
+        user: profiles?.find(p => p.id === log.user_id) || null,
+        performed_by_user: profiles?.find(p => p.id === log.performed_by) || null
+      }));
     },
   });
 }

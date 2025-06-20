@@ -6,16 +6,38 @@ export function useInvites() {
   return useQuery({
     queryKey: ["invites"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Primeiro buscar os convites
+      const { data: invites, error: invitesError } = await supabase
         .from("user_invites")
-        .select(`
-          *,
-          invited_by_user:profiles!user_invites_invited_by_fkey(nome, email)
-        `)
+        .select("*")
         .order("created_at", { ascending: false });
       
-      if (error) throw error;
-      return data || [];
+      if (invitesError) throw invitesError;
+      
+      if (!invites || invites.length === 0) return [];
+      
+      // Buscar os perfis dos usuários que criaram os convites
+      const inviterIds = Array.from(new Set(invites.map(invite => invite.invited_by)));
+      
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, nome, email")
+        .in("id", inviterIds);
+      
+      if (profilesError) {
+        console.warn("Erro ao buscar perfis dos convidadores:", profilesError);
+        // Retornar convites sem informações do convidador em caso de erro
+        return invites.map(invite => ({
+          ...invite,
+          invited_by_user: null
+        }));
+      }
+      
+      // Mapear os convites com as informações dos convidadores
+      return invites.map(invite => ({
+        ...invite,
+        invited_by_user: profiles?.find(p => p.id === invite.invited_by) || null
+      }));
     },
   });
 }
