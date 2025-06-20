@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCreateInvite } from "@/hooks/useInvites";
 import { useToast } from "@/hooks/use-toast";
@@ -22,18 +23,25 @@ export default function ConviteUsuario() {
     if (!email || !nome || !nivelAcesso) {
       toast({
         title: "Erro",
-        description: "Preencha todos os campos",
+        description: "Todos os campos são obrigatórios",
         variant: "destructive",
       });
       return;
     }
 
     try {
-      await createInvite.mutateAsync({ email, nome, nivel_acesso: nivelAcesso });
+      await createInvite.mutateAsync({
+        email,
+        nome,
+        nivel_acesso: nivelAcesso,
+      });
+      
       toast({
         title: "Convite enviado",
-        description: `Convite enviado para ${email}`,
+        description: `Convite enviado para ${email} com sucesso`,
       });
+      
+      // Limpar formulário
       setEmail("");
       setNome("");
       setNivelAcesso("");
@@ -51,36 +59,45 @@ export default function ConviteUsuario() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <UserPlus className="h-5 w-5" />
-          Convidar Usuário
+          Convidar Novo Usuário
         </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">Nome</label>
-            <Input
-              type="text"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-              placeholder="Nome completo"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="nome">Nome Completo</Label>
+              <Input
+                id="nome"
+                type="text"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                placeholder="Digite o nome completo"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="email@exemplo.com"
+                  className="pl-10"
+                  required
+                />
+              </div>
+            </div>
           </div>
           
           <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="email@exemplo.com"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium mb-2">Nível de Acesso</label>
+            <Label htmlFor="nivel_acesso">Nível de Acesso</Label>
             <Select value={nivelAcesso} onValueChange={setNivelAcesso}>
               <SelectTrigger>
-                <SelectValue placeholder="Selecione o nível" />
+                <SelectValue placeholder="Selecione o nível de acesso" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="colaborador">Colaborador</SelectItem>
@@ -96,7 +113,6 @@ export default function ConviteUsuario() {
             className="w-full"
             disabled={createInvite.isPending}
           >
-            <Mail className="h-4 w-4 mr-2" />
             {createInvite.isPending ? "Enviando..." : "Enviar Convite"}
           </Button>
         </form>

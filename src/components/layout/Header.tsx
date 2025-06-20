@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LogOut, Menu, Search, User, Users, Settings } from "lucide-react";
+import { LogOut, Menu, Search, User, Users, Settings, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
@@ -108,12 +108,22 @@ export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) 
                 </Link>
               </DropdownMenuItem>
               {(isAdmin || isManager) && (
-                <DropdownMenuItem asChild>
-                  <Link to="/gestao-usuarios" className="flex items-center cursor-pointer">
-                    <Users className="mr-2 h-4 w-4" />
-                    <span>Gestão de Usuários</span>
-                  </Link>
-                </DropdownMenuItem>
+                <>
+                  <DropdownMenuItem asChild>
+                    <Link to="/gestao-usuarios" className="flex items-center cursor-pointer">
+                      <Users className="mr-2 h-4 w-4" />
+                      <span>Gestão de Usuários</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/analise-sistema" className="flex items-center cursor-pointer">
+                        <BarChart3 className="mr-2 h-4 w-4" />
+                        <span>Análise do Sistema</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                </>
               )}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-red-600">

@@ -1,22 +1,21 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Tables, TablesInsert } from "@/integrations/supabase/types";
-
-type UserInvite = Tables<"user_invites">;
-type UserInviteInsert = TablesInsert<"user_invites">;
 
 export function useInvites() {
   return useQuery({
-    queryKey: ["user-invites"],
+    queryKey: ["invites"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("user_invites")
-        .select("*")
+        .select(`
+          *,
+          invited_by_user:profiles!user_invites_invited_by_fkey(nome, email)
+        `)
         .order("created_at", { ascending: false });
       
       if (error) throw error;
-      return data;
+      return data || [];
     },
   });
 }
@@ -25,15 +24,20 @@ export function useCreateInvite() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ email, nome, nivel_acesso }: { 
+    mutationFn: async ({ 
+      email, 
+      nome, 
+      nivel_acesso 
+    }: { 
       email: string; 
       nome: string; 
-      nivel_acesso: string;
+      nivel_acesso: string; 
     }) => {
+      // Gerar token único
       const token = crypto.randomUUID();
       const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + 7); // 7 dias para aceitar
-
+      expiresAt.setDate(expiresAt.getDate() + 7); // Expira em 7 dias
+      
       const { data, error } = await supabase
         .from("user_invites")
         .insert({
@@ -42,63 +46,34 @@ export function useCreateInvite() {
           nivel_acesso,
           token,
           expires_at: expiresAt.toISOString(),
-          invited_by: (await supabase.auth.getUser()).data.user!.id
+          invited_by: (await supabase.auth.getUser()).data.user?.id
         })
         .select()
         .single();
       
       if (error) throw error;
-      
-      // Enviar email de convite (implementação futura)
-      console.log(`Convite enviado para ${email} com token: ${token}`);
-      
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user-invites"] });
+      queryClient.invalidateQueries({ queryKey: ["invites"] });
     },
   });
 }
 
-export function useAcceptInvite() {
+export function useRevokeInvite() {
+  const queryClient = useQueryClient();
+  
   return useMutation({
-    mutationFn: async ({ token, password }: { token: string; password: string }) => {
-      // Buscar convite válido
-      const { data: invite, error: inviteError } = await supabase
+    mutationFn: async (inviteId: string) => {
+      const { error } = await supabase
         .from("user_invites")
-        .select("*")
-        .eq("token", token)
-        .is("used_at", null)
-        .gt("expires_at", new Date().toISOString())
-        .single();
+        .delete()
+        .eq("id", inviteId);
       
-      if (inviteError || !invite) {
-        throw new Error("Convite inválido ou expirado");
-      }
-
-      // Criar usuário
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: invite.email,
-        password,
-        options: {
-          data: {
-            nome: invite.nome,
-            nivel_acesso: invite.nivel_acesso
-          }
-        }
-      });
-
-      if (authError) throw authError;
-
-      // Marcar convite como usado
-      const { error: updateError } = await supabase
-        .from("user_invites")
-        .update({ used_at: new Date().toISOString() })
-        .eq("id", invite.id);
-
-      if (updateError) throw updateError;
-
-      return authData;
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["invites"] });
     },
   });
 }
