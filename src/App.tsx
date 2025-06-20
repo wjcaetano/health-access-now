@@ -1,4 +1,5 @@
 
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -41,14 +42,20 @@ import SejaFranqueado from "./pages/franquia/SejaFranqueado";
 import Login from "./pages/auth/Login";
 
 import CheckoutVendas from "./pages/CheckoutVendas";
-
-const queryClient = new QueryClient();
-
 import PaginaDeVendas from "./pages/PaginaDeVendas";
 import Colaboradores from "./pages/Colaboradores";
 import GestaoUsuarios from "./pages/GestaoUsuarios";
 import MeuPerfil from "./pages/MeuPerfil";
 import AnaliseDoSistema from "./pages/AnaliseDoSistema";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
