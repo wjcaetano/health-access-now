@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { User, Lock, Bell, Camera } from "lucide-react";
+import { User, Lock, Bell, Camera, Clock } from "lucide-react";
 import UploadFotoPerfil from "@/components/usuarios/UploadFotoPerfil";
 import NotificationsPanel from "@/components/usuarios/NotificationsPanel";
+import PontoEletronicoCompleto from "@/components/colaboradores/PontoEletronicoCompleto";
 
 export default function MeuPerfil() {
   const { profile, updateProfile, updatePassword } = useAuth();
@@ -80,6 +81,9 @@ export default function MeuPerfil() {
     }
   };
 
+  // Verificar se o usuário é colaborador para mostrar o ponto eletrônico
+  const isColaborador = profile?.nivel_acesso === 'colaborador';
+
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -87,11 +91,14 @@ export default function MeuPerfil() {
       </div>
 
       <Tabs defaultValue="perfil" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className={`grid w-full ${isColaborador ? 'grid-cols-5' : 'grid-cols-4'}`}>
           <TabsTrigger value="perfil">Perfil</TabsTrigger>
           <TabsTrigger value="foto">Foto</TabsTrigger>
           <TabsTrigger value="senha">Senha</TabsTrigger>
           <TabsTrigger value="notificacoes">Notificações</TabsTrigger>
+          {isColaborador && (
+            <TabsTrigger value="ponto">Ponto Eletrônico</TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="perfil">
@@ -213,6 +220,12 @@ export default function MeuPerfil() {
         <TabsContent value="notificacoes">
           <NotificationsPanel />
         </TabsContent>
+
+        {isColaborador && (
+          <TabsContent value="ponto">
+            <PontoEletronicoCompleto />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
