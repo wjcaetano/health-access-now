@@ -71,16 +71,17 @@ export function useDeleteUsuario() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (userId: string) => {
-      const { error } = await supabase
-        .from("profiles")
-        .delete()
-        .eq("id", userId);
+    mutationFn: async (userEmail: string) => {
+      // Usar a função SQL criada para exclusão completa
+      const { error } = await supabase.rpc('delete_colaborador_and_user', {
+        colaborador_email: userEmail
+      });
       
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["usuarios"] });
+      queryClient.invalidateQueries({ queryKey: ["colaboradores"] });
     },
   });
 }

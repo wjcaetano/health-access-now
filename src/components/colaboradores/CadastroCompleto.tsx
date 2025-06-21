@@ -1,7 +1,6 @@
 
 import React, { useState } from "react";
 import { useCreateColaborador } from "@/hooks/useColaboradores";
-import { useCreateInvite } from "@/hooks/useInvites";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { UserPlus, Mail } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const niveis = [
   { label: "Colaborador", value: "colaborador" },
@@ -24,13 +24,29 @@ export default function CadastroCompleto() {
   const [cargo, setCargo] = useState("");
   const [nivel, setNivel] = useState("colaborador");
   const [enviarConvite, setEnviarConvite] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   
   const createColaborador = useCreateColaborador();
-  const createInvite = useCreateInvite();
   const { toast } = useToast();
+
+  const sendInvite = async (email: string, nome: string, nivel_acesso: string) => {
+    const { data: userData } = await supabase.auth.getUser();
+    
+    const { data, error } = await supabase.functions.invoke('send-invite', {
+      body: { email, nome, nivel_acesso },
+      headers: {
+        'user-id': userData.user?.id,
+        'origin': window.location.origin
+      }
+    });
+
+    if (error) throw error;
+    return data;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     
     try {
       // Cadastrar colaborador
@@ -43,16 +59,22 @@ export default function CadastroCompleto() {
       
       // Enviar convite se solicitado
       if (enviarConvite) {
-        await createInvite.mutateAsync({
-          email,
-          nome,
-          nivel_acesso: nivel
-        });
-        
-        toast({
-          title: "Colaborador cadastrado",
-          description: `${nome} foi cadastrado e um convite foi enviado para ${email}`,
-        });
+        try {
+          const inviteResult = await sendInvite(email, nome, nivel);
+          console.log('Convite enviado:', inviteResult);
+          
+          toast({
+            title: "Colaborador cadastrado",
+            description: `${nome} foi cadastrado e um convite foi enviado para ${email}`,
+          });
+        } catch (inviteError) {
+          console.error("Erro ao enviar convite:", inviteError);
+          toast({
+            title: "Colaborador cadastrado",
+            description: `${nome} foi cadastrado, mas houve erro no envio do convite. Verifique os logs.`,
+            variant: "destructive",
+          });
+        }
       } else {
         toast({
           title: "Colaborador cadastrado",
@@ -73,10 +95,10 @@ export default function CadastroCompleto() {
         description: "Não foi possível cadastrar o colaborador",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  const isLoading = createColaborador.isPending || createInvite.isPending;
 
   return (
     <Card>
@@ -163,18 +185,6 @@ export default function CadastroCompleto() {
           >
             {isLoading ? "Cadastrando..." : "Cadastrar Colaborador"}
           </Button>
-          
-          {createColaborador.isSuccess && (
-            <div className="text-green-600 text-sm text-center">
-              Colaborador cadastrado com sucesso!
-            </div>
-          )}
-          
-          {(createColaborador.isError || createInvite.isError) && (
-            <div className="text-red-600 text-sm text-center">
-              Erro ao processar cadastro. Tente novamente.
-            </div>
-          )}
         </form>
       </CardContent>
     </Card>

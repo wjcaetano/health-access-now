@@ -75,18 +75,19 @@ export default function ListaColaboradores() {
     }
   };
 
-  const handleDelete = async (userId: string, userName: string) => {
-    if (!confirm(`Tem certeza que deseja excluir o usuário ${userName}?`)) {
+  const handleDelete = async (userEmail: string, userName: string) => {
+    if (!confirm(`Tem certeza que deseja excluir o usuário ${userName}? Esta ação também removerá o acesso ao sistema.`)) {
       return;
     }
     
     try {
-      await deleteUsuario.mutateAsync(userId);
+      await deleteUsuario.mutateAsync(userEmail);
       toast({
         title: "Usuário excluído",
-        description: `O usuário ${userName} foi removido do sistema`,
+        description: `O usuário ${userName} foi removido completamente do sistema`,
       });
     } catch (error) {
+      console.error("Erro ao excluir usuário:", error);
       toast({
         title: "Erro",
         description: "Não foi possível excluir o usuário",
@@ -245,7 +246,7 @@ export default function ListaColaboradores() {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => handleDelete(user.id, user.nome)}
+                        onClick={() => handleDelete(user.email, user.nome)}
                         disabled={deleteUsuario.isPending}
                       >
                         <Trash2 className="h-4 w-4" />

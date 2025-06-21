@@ -765,6 +765,10 @@ export type Database = {
         }
         Returns: string
       }
+      delete_colaborador_and_user: {
+        Args: { colaborador_email: string }
+        Returns: undefined
+      }
       get_ultimo_ponto_colaborador: {
         Args: { colaborador_uuid: string }
         Returns: {
