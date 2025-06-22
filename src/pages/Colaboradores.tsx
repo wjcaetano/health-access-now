@@ -9,20 +9,26 @@ import { UserPlus, Users } from "lucide-react";
 export default function ColaboradoresPage() {
   return (
     <ProtectedRoute requiredLevel="gerente">
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="container mx-auto p-4 md:p-6 space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Gestão de Colaboradores</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">Gestão de Colaboradores</h1>
         </div>
 
         <Tabs defaultValue="cadastrar" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="cadastrar" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 h-auto">
+            <TabsTrigger 
+              value="cadastrar" 
+              className="flex items-center gap-2 py-3 px-4 text-sm"
+            >
               <UserPlus className="h-4 w-4" />
-              Cadastrar Colaborador
+              <span className="whitespace-nowrap">Cadastrar Colaborador</span>
             </TabsTrigger>
-            <TabsTrigger value="listar" className="flex items-center gap-2">
+            <TabsTrigger 
+              value="listar" 
+              className="flex items-center gap-2 py-3 px-4 text-sm"
+            >
               <Users className="h-4 w-4" />
-              Listar Colaboradores
+              <span className="whitespace-nowrap">Listar Colaboradores</span>
             </TabsTrigger>
           </TabsList>
 
