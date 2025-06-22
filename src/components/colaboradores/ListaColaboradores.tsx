@@ -76,7 +76,7 @@ export default function ListaColaboradores() {
   };
 
   const handleDelete = async (userEmail: string, userName: string) => {
-    if (!confirm(`Tem certeza que deseja excluir o usuário ${userName}? Esta ação também removerá o acesso ao sistema.`)) {
+    if (!confirm(`Tem certeza que deseja excluir o usuário ${userName}? Esta ação não pode ser desfeita.`)) {
       return;
     }
     
@@ -84,7 +84,7 @@ export default function ListaColaboradores() {
       await deleteUsuario.mutateAsync(userEmail);
       toast({
         title: "Usuário excluído",
-        description: `O usuário ${userName} foi removido completamente do sistema`,
+        description: `O usuário ${userName} foi removido do sistema`,
       });
     } catch (error) {
       console.error("Erro ao excluir usuário:", error);

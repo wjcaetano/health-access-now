@@ -707,42 +707,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_invites: {
-        Row: {
-          created_at: string
-          email: string
-          expires_at: string
-          id: string
-          invited_by: string
-          nivel_acesso: string
-          nome: string
-          token: string
-          used_at: string | null
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          expires_at: string
-          id?: string
-          invited_by: string
-          nivel_acesso: string
-          nome: string
-          token: string
-          used_at?: string | null
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          expires_at?: string
-          id?: string
-          invited_by?: string
-          nivel_acesso?: string
-          nome?: string
-          token?: string
-          used_at?: string | null
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
@@ -765,8 +729,8 @@ export type Database = {
         }
         Returns: string
       }
-      delete_colaborador_and_user: {
-        Args: { colaborador_email: string }
+      delete_user_and_colaborador: {
+        Args: { user_email: string }
         Returns: undefined
       }
       get_ultimo_ponto_colaborador: {

@@ -67,14 +67,69 @@ export function useUpdateUsuario() {
   });
 }
 
+export function useCreateUsuario() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ 
+      nome, 
+      email, 
+      cargo, 
+      nivel_acesso 
+    }: { 
+      nome: string; 
+      email: string; 
+      cargo?: string; 
+      nivel_acesso: string; 
+    }) => {
+      // Gerar senha provisória
+      const senhaProvisoria = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+      
+      // Criar usuário no Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email,
+        password: senhaProvisoria,
+        email_confirm: true,
+        user_metadata: {
+          nome,
+          nivel_acesso,
+          senha_provisoria: true
+        }
+      });
+      
+      if (authError) throw authError;
+      
+      // Criar colaborador na tabela colaboradores
+      const { error: colaboradorError } = await supabase
+        .from("colaboradores")
+        .insert({
+          nome,
+          email,
+          cargo: cargo || '',
+          nivel_acesso
+        });
+      
+      if (colaboradorError) throw colaboradorError;
+      
+      return { 
+        user: authData.user, 
+        senha_provisoria: senhaProvisoria 
+      };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["usuarios"] });
+      queryClient.invalidateQueries({ queryKey: ["colaboradores"] });
+    },
+  });
+}
+
 export function useDeleteUsuario() {
   const queryClient = useQueryClient();
   
   return useMutation({
     mutationFn: async (userEmail: string) => {
-      // Usar a função SQL criada para exclusão completa
-      const { error } = await supabase.rpc('delete_colaborador_and_user', {
-        colaborador_email: userEmail
+      const { error } = await supabase.rpc('delete_user_and_colaborador', {
+        user_email: userEmail
       });
       
       if (error) throw error;

@@ -11,9 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Search, User, CheckCircle, XCircle, Clock, AlertCircle } from "lucide-react";
 import { createAuditLog } from "@/hooks/useAuditLog";
 
-// Componentes das novas funcionalidades
-import ConviteUsuario from "@/components/usuarios/ConviteUsuario";
-import ListaConvites from "@/components/usuarios/ListaConvites";
+// Componentes das funcionalidades
 import HistoricoAuditoria from "@/components/usuarios/HistoricoAuditoria";
 import NotificationsPanel from "@/components/usuarios/NotificationsPanel";
 
@@ -87,12 +85,10 @@ export default function GestaoUsuarios() {
       </div>
 
       <Tabs defaultValue="usuarios" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="usuarios">Usuários</TabsTrigger>
-          <TabsTrigger value="convites">Convites</TabsTrigger>
           <TabsTrigger value="auditoria">Auditoria</TabsTrigger>
           <TabsTrigger value="notificacoes">Notificações</TabsTrigger>
-          <TabsTrigger value="convidar">Novo Convite</TabsTrigger>
         </TabsList>
 
         <TabsContent value="usuarios" className="space-y-4">
@@ -197,20 +193,12 @@ export default function GestaoUsuarios() {
           </div>
         </TabsContent>
 
-        <TabsContent value="convites">
-          <ListaConvites />
-        </TabsContent>
-
         <TabsContent value="auditoria">
           <HistoricoAuditoria />
         </TabsContent>
 
         <TabsContent value="notificacoes">
           <NotificationsPanel />
-        </TabsContent>
-
-        <TabsContent value="convidar">
-          <ConviteUsuario />
         </TabsContent>
       </Tabs>
     </div>
