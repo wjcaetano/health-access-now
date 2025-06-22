@@ -3,12 +3,10 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useUsuarios } from '@/hooks/useUsuarios';
-import { useInvites } from '@/hooks/useInvites';
 import { useAuditLog } from '@/hooks/useAuditLog';
 import { useUnreadNotifications } from '@/hooks/useNotifications';
 import { 
   Users, 
-  Mail, 
   Shield, 
   Bell, 
   CheckCircle, 
@@ -19,14 +17,12 @@ import {
 
 export default function SystemAnalysis() {
   const { data: usuarios, isLoading: loadingUsuarios } = useUsuarios();
-  const { data: invites, isLoading: loadingInvites } = useInvites();
   const { data: auditLogs, isLoading: loadingAudit } = useAuditLog();
   const { data: notifications, isLoading: loadingNotifications } = useUnreadNotifications();
 
   const getSystemHealth = () => {
     const components = [
       { name: 'Usuários', status: !loadingUsuarios, data: usuarios?.length || 0 },
-      { name: 'Convites', status: !loadingInvites, data: invites?.length || 0 },
       { name: 'Auditoria', status: !loadingAudit, data: auditLogs?.length || 0 },
       { name: 'Notificações', status: !loadingNotifications, data: notifications?.length || 0 },
     ];
@@ -46,13 +42,6 @@ export default function SystemAnalysis() {
     admins: usuarios.filter(u => u.nivel_acesso === 'admin').length,
     gerentes: usuarios.filter(u => u.nivel_acesso === 'gerente').length,
     colaboradores: usuarios.filter(u => u.nivel_acesso === 'colaborador').length,
-  } : null;
-
-  const inviteStats = invites ? {
-    total: invites.length,
-    pendentes: invites.filter(i => !i.used_at && new Date(i.expires_at) > new Date()).length,
-    expirados: invites.filter(i => !i.used_at && new Date(i.expires_at) <= new Date()).length,
-    usados: invites.filter(i => i.used_at).length,
   } : null;
 
   return (
@@ -95,7 +84,7 @@ export default function SystemAnalysis() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Estatísticas de Usuários */}
         <Card>
           <CardHeader className="pb-3">
@@ -124,39 +113,6 @@ export default function SystemAnalysis() {
                   <div className="flex justify-between">
                     <span>Gerentes:</span>
                     <Badge variant="default">{userStats.gerentes}</Badge>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center text-gray-500">Carregando...</div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Estatísticas de Convites */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" />
-              Convites
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {inviteStats ? (
-              <div className="space-y-2">
-                <div className="text-2xl font-bold">{inviteStats.total}</div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span>Pendentes:</span>
-                    <Badge variant="secondary">{inviteStats.pendentes}</Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Expirados:</span>
-                    <Badge variant="destructive">{inviteStats.expirados}</Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Usados:</span>
-                    <Badge variant="default">{inviteStats.usados}</Badge>
                   </div>
                 </div>
               </div>
@@ -224,10 +180,10 @@ export default function SystemAnalysis() {
               <div className="space-y-2">
                 {[
                   { name: 'Gestão de Usuários', status: true },
-                  { name: 'Sistema de Convites', status: true },
                   { name: 'Auditoria de Segurança', status: true },
                   { name: 'Notificações', status: true },
                   { name: 'Autenticação', status: true },
+                  { name: 'Cadastro Direto', status: true },
                 ].map((module) => (
                   <div key={module.name} className="flex items-center justify-between">
                     <span className="text-sm">{module.name}</span>
