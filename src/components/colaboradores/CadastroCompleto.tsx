@@ -7,8 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { UserPlus } from "lucide-react";
+import { UserPlus, AlertTriangle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const niveis = [
   { label: "Colaborador", value: "colaborador" },
@@ -23,6 +24,7 @@ export default function CadastroCompleto() {
   const [cargo, setCargo] = useState("");
   const [nivel, setNivel] = useState("colaborador");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [senhaDialog, setSenhaDialog] = useState({ isOpen: false, senha: "", email: "" });
   
   const createUsuario = useCreateUsuario();
@@ -31,25 +33,51 @@ export default function CadastroCompleto() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
+    
+    // Validações básicas
+    if (!nome.trim()) {
+      setError("Nome é obrigatório");
+      setIsLoading(false);
+      return;
+    }
+    
+    if (!email.trim()) {
+      setError("Email é obrigatório");
+      setIsLoading(false);
+      return;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setError("Por favor, insira um email válido");
+      setIsLoading(false);
+      return;
+    }
     
     try {
+      console.log("=== INICIANDO CADASTRO NO COMPONENTE ===");
+      console.log("Dados do formulário:", { nome: nome.trim(), email: email.trim(), cargo, nivel });
+      
       const result = await createUsuario.mutateAsync({
-        nome,
-        email,
-        cargo,
+        nome: nome.trim(),
+        email: email.trim(),
+        cargo: cargo.trim() || undefined,
         nivel_acesso: nivel
       });
+      
+      console.log("=== CADASTRO CONCLUÍDO COM SUCESSO ===");
       
       // Mostrar senha provisória
       setSenhaDialog({
         isOpen: true,
         senha: result.senha_provisoria,
-        email: email
+        email: email.trim()
       });
       
       toast({
-        title: "Usuário criado com sucesso",
-        description: `${nome} foi cadastrado. A senha provisória será exibida.`,
+        title: "✅ Usuário criado com sucesso!",
+        description: `${nome.trim()} foi cadastrado. A senha provisória será exibida.`,
       });
       
       // Limpar formulário
@@ -57,11 +85,19 @@ export default function CadastroCompleto() {
       setEmail("");
       setCargo("");
       setNivel("colaborador");
+      
     } catch (error) {
-      console.error("Erro ao criar usuário:", error);
+      console.error("=== ERRO NO COMPONENTE ===");
+      console.error("Erro capturado:", error);
+      
+      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido ao criar usuário";
+      console.error("Mensagem do erro:", errorMessage);
+      
+      setError(errorMessage);
+      
       toast({
-        title: "Erro",
-        description: "Não foi possível criar o usuário",
+        title: "❌ Erro ao criar usuário",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -79,6 +115,13 @@ export default function CadastroCompleto() {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -89,6 +132,7 @@ export default function CadastroCompleto() {
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
                   required
+                  disabled={isLoading}
                 />
               </div>
               
@@ -101,6 +145,7 @@ export default function CadastroCompleto() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -113,12 +158,13 @@ export default function CadastroCompleto() {
                   placeholder="Cargo/Função do colaborador"
                   value={cargo}
                   onChange={(e) => setCargo(e.target.value)}
+                  disabled={isLoading}
                 />
               </div>
               
               <div>
                 <Label htmlFor="nivel">Nível de Acesso *</Label>
-                <Select value={nivel} onValueChange={setNivel}>
+                <Select value={nivel} onValueChange={setNivel} disabled={isLoading}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione o nível de acesso" />
                   </SelectTrigger>
@@ -147,7 +193,7 @@ export default function CadastroCompleto() {
       <Dialog open={senhaDialog.isOpen} onOpenChange={(open) => setSenhaDialog({...senhaDialog, isOpen: open})}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Usuário Criado com Sucesso!</DialogTitle>
+            <DialogTitle>✅ Usuário Criado com Sucesso!</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
