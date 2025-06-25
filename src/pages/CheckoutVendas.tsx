@@ -146,11 +146,26 @@ const CheckoutVendas: React.FC = () => {
 
           console.log('Redirecionando para página de venda finalizada...');
           
+          // Preparar dados dos serviços com informações completas para impressão
+          const servicosCompletos = data.servicos.map((servicoVenda: any, index: number) => {
+            const servicoOriginal = dadosVenda.servicos[index];
+            return {
+              ...servicoVenda,
+              servicos: {
+                nome: servicoOriginal.nome,
+                categoria: servicoOriginal.categoria
+              },
+              prestadores: {
+                nome: servicoOriginal.prestadorNome
+              }
+            };
+          });
+          
           // Redirecionar para página de sucesso com dados da venda
           navigate('/venda-finalizada', { 
             state: { 
               venda: data.venda,
-              servicos: data.servicos,
+              servicos: servicosCompletos,
               guias: data.guias,
               cliente: dadosVenda.cliente,
               metodoPagamento: metodoPagamentoTexto
@@ -230,9 +245,11 @@ const CheckoutVendas: React.FC = () => {
                 <User className="h-5 w-5 text-agendaja-primary mr-2" />
                 <h4 className="font-medium">Cliente</h4>
               </div>
-              <p className="font-semibold">{dadosVenda.cliente.nome}</p>
-              <p className="text-sm text-gray-600">{dadosVenda.cliente.telefone}</p>
-              <p className="text-sm text-gray-600">CPF: {dadosVenda.cliente.cpf}</p>
+              <div className="space-y-1">
+                <p className="font-semibold text-sm">{dadosVenda.cliente.nome}</p>
+                <p className="text-xs text-gray-600">{dadosVenda.cliente.telefone}</p>
+                <p className="text-xs text-gray-600">CPF: {dadosVenda.cliente.cpf}</p>
+              </div>
             </div>
 
             {/* Lista de Serviços */}
@@ -243,15 +260,15 @@ const CheckoutVendas: React.FC = () => {
                   <Card key={index} className="border-l-4 border-l-agendaja-primary">
                     <CardContent className="p-4">
                       <div className="flex justify-between items-start mb-2">
-                        <h5 className="font-medium">{servico.nome}</h5>
-                        <span className="font-semibold text-agendaja-primary">
+                        <h5 className="font-medium text-sm">{servico.nome}</h5>
+                        <span className="font-semibold text-agendaja-primary text-sm">
                           {formatarMoeda(servico.valorVenda)}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">
+                      <p className="text-xs text-gray-600 mb-1">
                         Categoria: {servico.categoria}
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-xs text-gray-600">
                         Prestador: {servico.prestadorNome}
                       </p>
                       {servico.descricao && (

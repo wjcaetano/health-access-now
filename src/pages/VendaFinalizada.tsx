@@ -55,19 +55,37 @@ const VendaFinalizada: React.FC = () => {
   const imprimirRecibo = () => {
     console.log('Preparando impressão do recibo...');
     setShowRecibo(true);
+    
+    // Aguardar o componente renderizar antes de imprimir
     setTimeout(() => {
-      window.print();
+      const printContent = document.querySelector('.recibo-print');
+      if (printContent) {
+        const originalBody = document.body.innerHTML;
+        document.body.innerHTML = printContent.outerHTML;
+        window.print();
+        document.body.innerHTML = originalBody;
+        window.location.reload(); // Recarregar para restaurar os event listeners
+      }
       setShowRecibo(false);
-    }, 500);
+    }, 1000);
   };
 
   const imprimirGuias = () => {
     console.log('Preparando impressão das guias...');
     setShowGuias(true);
+    
+    // Aguardar os componentes renderizarem antes de imprimir
     setTimeout(() => {
-      window.print();
+      const printContent = document.querySelector('.guias-print');
+      if (printContent) {
+        const originalBody = document.body.innerHTML;
+        document.body.innerHTML = printContent.outerHTML;
+        window.print();
+        document.body.innerHTML = originalBody;
+        window.location.reload(); // Recarregar para restaurar os event listeners
+      }
       setShowGuias(false);
-    }, 500);
+    }, 1000);
   };
 
   const voltarParaVendas = () => {
@@ -186,16 +204,18 @@ const VendaFinalizada: React.FC = () => {
 
       {/* Componentes de Impressão */}
       {showRecibo && (
-        <ReciboVenda
-          venda={venda}
-          cliente={cliente}
-          servicos={servicos}
-          metodoPagamento={metodoPagamento}
-        />
+        <div className="recibo-print">
+          <ReciboVenda
+            venda={venda}
+            cliente={cliente}
+            servicos={servicos}
+            metodoPagamento={metodoPagamento}
+          />
+        </div>
       )}
 
       {showGuias && (
-        <div className="print:block hidden">
+        <div className="guias-print">
           {servicos.map((servico: any, index: number) => (
             <GuiaServico
               key={servico.id}

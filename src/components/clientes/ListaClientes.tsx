@@ -49,38 +49,38 @@ export default function ListaClientes() {
                 <div className="h-12 w-12 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary flex-shrink-0">
                   <User className="h-6 w-6" />
                 </div>
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 overflow-hidden">
                   <h3 className="font-medium text-lg text-gray-900 truncate">{cliente.nome}</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 text-sm text-gray-500 mt-1">
-                    <span className="flex items-center truncate">
+                    <span className="flex items-center min-w-0">
                       <User className="h-3 w-3 mr-1 flex-shrink-0" />
                       <span className="truncate">{cliente.cpf}</span>
                     </span>
-                    <span className="flex items-center truncate">
+                    <span className="flex items-center min-w-0">
                       <Phone className="h-3 w-3 mr-1 flex-shrink-0" />
                       <span className="truncate">{cliente.telefone}</span>
                     </span>
-                    <span className="flex items-center truncate">
+                    <span className="flex items-center min-w-0">
                       <Mail className="h-3 w-3 mr-1 flex-shrink-0" />
-                      <span className="truncate">{cliente.email}</span>
+                      <span className="truncate" title={cliente.email}>{cliente.email}</span>
                     </span>
                     {cliente.endereco && (
-                      <span className="flex items-center truncate">
+                      <span className="flex items-center min-w-0">
                         <MapPin className="h-3 w-3 mr-1 flex-shrink-0" />
-                        <span className="truncate">{cliente.endereco}</span>
+                        <span className="truncate" title={cliente.endereco}>{cliente.endereco}</span>
                       </span>
                     )}
                   </div>
                 </div>
               </div>
               <div className="flex items-center justify-end lg:justify-start space-x-2 flex-shrink-0">
-                <Badge variant="outline" className="bg-green-50 text-green-700 whitespace-nowrap">
+                <Badge variant="outline" className="bg-green-50 text-green-700 whitespace-nowrap text-xs">
                   ID: {cliente.id_associado}
                 </Badge>
-                <Button variant="ghost" size="sm" className="flex-shrink-0">
+                <Button variant="ghost" size="sm" className="flex-shrink-0 h-8 w-8 p-0">
                   <Edit className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="sm" className="text-red-600 flex-shrink-0">
+                <Button variant="ghost" size="sm" className="text-red-600 flex-shrink-0 h-8 w-8 p-0">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
