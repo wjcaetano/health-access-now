@@ -142,6 +142,15 @@ export function useCancelarVenda() {
   
   return useMutation({
     mutationFn: async (vendaId: string) => {
+      // Primeiro buscar os serviços da venda
+      const { data: vendaServicos, error: servicosError } = await supabase
+        .from("vendas_servicos")
+        .select("servico_id")
+        .eq("venda_id", vendaId);
+      
+      if (servicosError) throw servicosError;
+
+      // Atualizar o status da venda
       const { data, error } = await supabase
         .from("vendas")
         .update({ status: 'cancelada' })
@@ -152,12 +161,15 @@ export function useCancelarVenda() {
       if (error) throw error;
       
       // Cancelar todas as guias relacionadas à venda
-      const { error: guiasError } = await supabase
-        .from("guias")
-        .update({ status: 'cancelada' })
-        .in("servico_id", data.vendas_servicos?.map(vs => vs.servico_id) || []);
-        
-      if (guiasError) throw guiasError;
+      if (vendaServicos && vendaServicos.length > 0) {
+        const servicoIds = vendaServicos.map(vs => vs.servico_id);
+        const { error: guiasError } = await supabase
+          .from("guias")
+          .update({ status: 'cancelada' })
+          .in("servico_id", servicoIds);
+          
+        if (guiasError) throw guiasError;
+      }
       
       return data;
     },
@@ -173,6 +185,15 @@ export function useEstornarVenda() {
   
   return useMutation({
     mutationFn: async (vendaId: string) => {
+      // Primeiro buscar os serviços da venda
+      const { data: vendaServicos, error: servicosError } = await supabase
+        .from("vendas_servicos")
+        .select("servico_id")
+        .eq("venda_id", vendaId);
+      
+      if (servicosError) throw servicosError;
+
+      // Atualizar o status da venda
       const { data, error } = await supabase
         .from("vendas")
         .update({ status: 'estornada' })
@@ -183,12 +204,15 @@ export function useEstornarVenda() {
       if (error) throw error;
       
       // Estornar todas as guias relacionadas à venda
-      const { error: guiasError } = await supabase
-        .from("guias")
-        .update({ status: 'estornada' })
-        .in("servico_id", data.vendas_servicos?.map(vs => vs.servico_id) || []);
-        
-      if (guiasError) throw guiasError;
+      if (vendaServicos && vendaServicos.length > 0) {
+        const servicoIds = vendaServicos.map(vs => vs.servico_id);
+        const { error: guiasError } = await supabase
+          .from("guias")
+          .update({ status: 'estornada' })
+          .in("servico_id", servicoIds);
+          
+        if (guiasError) throw guiasError;
+      }
       
       return data;
     },
