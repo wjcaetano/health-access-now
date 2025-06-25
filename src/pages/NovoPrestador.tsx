@@ -1,5 +1,6 @@
 
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { 
   Card, 
   CardContent, 
@@ -10,7 +11,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { 
   Select, 
   SelectContent, 
@@ -30,6 +30,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
+import { useCreatePrestador } from "@/hooks/usePrestadores";
+import ConfirmacaoCadastro from "@/components/prestadores/ConfirmacaoCadastro";
 
 const formSchema = z.object({
   nome: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
@@ -47,7 +49,11 @@ const formSchema = z.object({
 });
 
 const NovoPrestador = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
+  const createPrestador = useCreatePrestador();
+  const [showConfirmacao, setShowConfirmacao] = useState(false);
+  const [ultimoPrestadorNome, setUltimoPrestadorNome] = useState("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,14 +73,59 @@ const NovoPrestador = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log("Dados do prestador:", values);
-    
-    // Simulando sucesso ao cadastrar
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      console.log("Dados do formulário:", values);
+      
+      // Preparar dados para inserção no banco
+      const dadosPrestador = {
+        nome: values.nome,
+        tipo: values.tipo,
+        especialidades: values.especialidades ? [values.especialidades] : null,
+        cnpj: values.cnpj,
+        endereco: values.endereco,
+        telefone: values.telefone,
+        email: values.email,
+        banco: values.banco,
+        agencia: values.agencia,
+        conta: values.conta,
+        tipo_conta: values.tipoConta,
+        comissao: values.comissao,
+      };
+
+      console.log("Dados preparados para o banco:", dadosPrestador);
+      
+      await createPrestador.mutateAsync(dadosPrestador);
+      
+      setUltimoPrestadorNome(values.nome);
+      setShowConfirmacao(true);
+      
+    } catch (error) {
+      console.error("Erro ao cadastrar prestador:", error);
+      toast({
+        title: "Erro ao cadastrar prestador",
+        description: "Ocorreu um erro ao tentar cadastrar o prestador. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCadastrarNovo = () => {
+    setShowConfirmacao(false);
+    form.reset();
     toast({
-      title: "Prestador cadastrado com sucesso!",
-      description: `${values.nome} foi adicionado como prestador.`,
+      title: "Formulário limpo",
+      description: "Você pode cadastrar um novo prestador agora.",
     });
+  };
+
+  const handleVoltarInicio = () => {
+    setShowConfirmacao(false);
+    navigate("/prestadores");
+  };
+
+  const handleCancelar = () => {
+    navigate("/prestadores");
   };
 
   return (
@@ -120,7 +171,7 @@ const NovoPrestador = () => {
                         <FormLabel>Tipo de Prestador</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -266,7 +317,7 @@ const NovoPrestador = () => {
                           <FormLabel>Tipo de Conta</FormLabel>
                           <Select
                             onValueChange={field.onChange}
-                            defaultValue={field.value}
+                            value={field.value}
                           >
                             <FormControl>
                               <SelectTrigger>
@@ -307,17 +358,29 @@ const NovoPrestador = () => {
               </div>
 
               <div className="flex justify-end space-x-2">
-                <Button variant="outline" type="button">
+                <Button variant="outline" type="button" onClick={handleCancelar}>
                   Cancelar
                 </Button>
-                <Button type="submit" className="bg-agendaja-primary hover:bg-agendaja-secondary">
-                  Cadastrar Prestador
+                <Button 
+                  type="submit" 
+                  className="bg-agendaja-primary hover:bg-agendaja-secondary"
+                  disabled={createPrestador.isPending}
+                >
+                  {createPrestador.isPending ? "Cadastrando..." : "Cadastrar Prestador"}
                 </Button>
               </div>
             </form>
           </Form>
         </CardContent>
       </Card>
+
+      <ConfirmacaoCadastro
+        isOpen={showConfirmacao}
+        onClose={() => setShowConfirmacao(false)}
+        onCadastrarNovo={handleCadastrarNovo}
+        onVoltarInicio={handleVoltarInicio}
+        nomePrestador={ultimoPrestadorNome}
+      />
     </div>
   );
 };

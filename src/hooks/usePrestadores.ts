@@ -26,13 +26,20 @@ export function useCreatePrestador() {
   
   return useMutation({
     mutationFn: async (prestador: NovoPrestador) => {
+      console.log('Dados sendo enviados para o banco:', prestador);
+      
       const { data, error } = await supabase
         .from("prestadores")
         .insert([prestador])
         .select()
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Erro ao inserir prestador:', error);
+        throw error;
+      }
+      
+      console.log('Prestador criado com sucesso:', data);
       return data;
     },
     onSuccess: () => {
