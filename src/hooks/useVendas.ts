@@ -6,7 +6,7 @@ import { Tables, TablesInsert } from "@/integrations/supabase/types";
 type Venda = Tables<"vendas">;
 type NovaVenda = TablesInsert<"vendas">;
 type VendaServico = Tables<"vendas_servicos">;
-type NovoVendaServico = TablesInsert<"vendas_servicos">;
+type NovoVendaServico = Omit<TablesInsert<"vendas_servicos">, "venda_id">;
 
 export function useVendas() {
   return useQuery({
