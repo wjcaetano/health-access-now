@@ -24,10 +24,11 @@ const CheckoutVendas: React.FC = () => {
   useEffect(() => {
     const vendaData = location.state?.vendaData;
     
+    console.log('=== CHECKOUT CARREGADO ===');
     console.log('Dados recebidos no checkout:', vendaData);
     
     if (!vendaData?.cliente || !vendaData?.servicos || vendaData.servicos.length === 0) {
-      console.error('Dados da venda inválidos:', vendaData);
+      console.error('❌ Dados da venda inválidos:', vendaData);
       toast({
         title: "Dados não encontrados",
         description: "Não foi possível carregar os dados da venda.",
@@ -37,6 +38,7 @@ const CheckoutVendas: React.FC = () => {
       return;
     }
     
+    console.log('✅ Dados da venda válidos - definindo estado');
     setDadosVenda(vendaData);
   }, [location, navigate, toast]);
 
@@ -46,6 +48,8 @@ const CheckoutVendas: React.FC = () => {
   };
 
   const finalizarPagamento = async () => {
+    console.log('=== INICIANDO FINALIZAÇÃO DO PAGAMENTO ===');
+    
     if (!metodoPagamento) {
       toast({
         title: "Selecione o método de pagamento",
@@ -73,15 +77,14 @@ const CheckoutVendas: React.FC = () => {
       : "Dinheiro";
 
     try {
-      console.log('=== INICIANDO PROCESSO DE PAGAMENTO ===');
-      console.log('Dados da venda:', dadosVenda);
+      console.log('Dados da venda a processar:', dadosVenda);
       
       const novaVenda = {
         cliente_id: dadosVenda.cliente.id,
         valor_total: calcularTotal(),
         metodo_pagamento: metodoPagamentoTexto,
         status: 'concluida'
-      };
+      } as const;
 
       const servicosVenda = dadosVenda.servicos.map((servico: any) => ({
         servico_id: servico.id,
@@ -89,34 +92,46 @@ const CheckoutVendas: React.FC = () => {
         valor: servico.valorVenda
       }));
 
-      console.log('Venda a ser criada:', novaVenda);
+      console.log('=== DADOS PARA CRIAÇÃO DA VENDA ===');
+      console.log('Nova venda:', novaVenda);
       console.log('Serviços da venda:', servicosVenda);
+      console.log('Cliente ID:', dadosVenda.cliente.id);
+      console.log('Quantidade de serviços:', servicosVenda.length);
 
       criarVenda({ venda: novaVenda, servicos: servicosVenda }, {
         onSuccess: (data) => {
           console.log('=== VENDA CRIADA COM SUCESSO ===');
-          console.log('Dados retornados:', data);
-          console.log('Venda:', data.venda);
-          console.log('Serviços:', data.servicos);
-          console.log('Guias geradas:', data.guias);
-          console.log('Quantidade de guias:', data.guias?.length);
+          console.log('Resposta completa:', data);
+          console.log('Venda criada:', data.venda);
+          console.log('Serviços criados:', data.servicos?.length || 0);
+          console.log('Guias criadas:', data.guias?.length || 0);
           
-          // Verificar se as guias foram criadas corretamente
+          // Verificar se as guias foram criadas
           if (!data.guias || data.guias.length === 0) {
-            console.error('ERRO: Nenhuma guia foi criada!');
+            console.error('❌ PROBLEMA: Nenhuma guia foi criada!');
+            if (data.erro_guias) {
+              console.error('Erro específico das guias:', data.erro_guias);
+            }
+            
             toast({
-              title: "Aviso",
-              description: "Venda criada, mas houve problema na geração das guias.",
+              title: "Venda criada com problema",
+              description: "A venda foi criada mas houve problema na geração das guias de atendimento.",
               variant: "destructive"
             });
           } else {
-            console.log('✅ Guias criadas com sucesso:', data.guias.map((guia: any) => ({
-              id: guia.id,
-              codigo: guia.codigo_autenticacao,
-              servico_id: guia.servico_id
-            })));
+            console.log('✅ Guias criadas com sucesso!');
+            data.guias.forEach((guia: any, index: number) => {
+              console.log(`Guia ${index + 1}:`, {
+                id: guia.id,
+                codigo: guia.codigo_autenticacao,
+                servico_id: guia.servico_id,
+                prestador_id: guia.prestador_id,
+                valor: guia.valor
+              });
+            });
           }
           
+          // Atualizar orçamento se existir
           if (dadosVenda.orcamentoId) {
             console.log('Atualizando status do orçamento:', dadosVenda.orcamentoId);
             updateOrcamento({ 
@@ -126,12 +141,17 @@ const CheckoutVendas: React.FC = () => {
             });
           }
 
+          const mensagemSucesso = data.guias && data.guias.length > 0 
+            ? `Venda finalizada via ${metodoPagamentoTexto}. ${data.guias.length} guia(s) de atendimento gerada(s).`
+            : `Venda finalizada via ${metodoPagamentoTexto}, mas houve problema na geração das guias.`;
+
           toast({
-            title: "Pagamento processado com sucesso!",
-            description: `Venda finalizada via ${metodoPagamentoTexto}. ${data.guias?.length || 0} guia(s) de atendimento gerada(s).`
+            title: "Pagamento processado!",
+            description: mensagemSucesso,
+            variant: data.guias && data.guias.length > 0 ? "default" : "destructive"
           });
 
-          // Preparar dados completos dos serviços para a página finalizada
+          // Preparar dados completos para a página finalizada
           const servicosCompletos = data.servicos.map((servicoVenda: any, index: number) => {
             const servicoOriginal = dadosVenda.servicos[index];
             return {
@@ -154,9 +174,13 @@ const CheckoutVendas: React.FC = () => {
             metodoPagamento: metodoPagamentoTexto
           };
 
-          console.log('=== DADOS SENDO ENVIADOS PARA PÁGINA FINALIZADA ===');
-          console.log('Dados completos:', dadosParaFinalizada);
-          console.log('Quantidade de guias sendo enviadas:', dadosParaFinalizada.guias.length);
+          console.log('=== NAVEGANDO PARA PÁGINA FINALIZADA ===');
+          console.log('Dados sendo enviados:', {
+            venda_id: dadosParaFinalizada.venda.id,
+            quantidade_servicos: dadosParaFinalizada.servicos.length,
+            quantidade_guias: dadosParaFinalizada.guias.length,
+            cliente: dadosParaFinalizada.cliente.nome
+          });
           
           navigate('/venda-finalizada', { 
             state: dadosParaFinalizada,
@@ -165,7 +189,7 @@ const CheckoutVendas: React.FC = () => {
         },
         onError: (error) => {
           console.error('=== ERRO AO CRIAR VENDA ===');
-          console.error('Erro:', error);
+          console.error('Erro completo:', error);
           toast({
             title: "Erro ao processar pagamento",
             description: "Ocorreu um erro ao finalizar a venda. Tente novamente.",
@@ -176,7 +200,7 @@ const CheckoutVendas: React.FC = () => {
       });
 
     } catch (error) {
-      console.error('=== ERRO INESPERADO ===');
+      console.error('=== ERRO INESPERADO NO CHECKOUT ===');
       console.error('Erro:', error);
       toast({
         title: "Erro ao processar pagamento",
