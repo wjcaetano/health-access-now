@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/contexts/AuthContext";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import PasswordChangeGuard from "@/components/auth/PasswordChangeGuard";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { PasswordChangeGuard } from "@/components/auth/PasswordChangeGuard";
 import Layout from "@/components/layout/Layout";
 
 // Pages
