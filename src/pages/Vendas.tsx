@@ -60,6 +60,7 @@ const Vendas: React.FC = () => {
   const [estadoAtual, setEstadoAtual] = useState<EstadoVenda>('inicial');
   const [clienteSelecionado, setClienteSelecionado] = useState<any>(null);
   const [servicosSelecionados, setServicosSelecionados] = useState<ServicoSelecionado[]>([]);
+  const [orcamentoSelecionado, setOrcamentoSelecionado] = useState<OrcamentoPendente | null>(null);
   
   const { data: clientes } = useClientes();
   const { data: orcamentosPendentes } = useOrcamentosPorCliente(clienteSelecionado?.id);
@@ -109,6 +110,7 @@ const Vendas: React.FC = () => {
     setTermoBusca("");
     setClienteSelecionado(null);
     setServicosSelecionados([]);
+    setOrcamentoSelecionado(null);
     setEstadoAtual('inicial');
   };
 
@@ -159,11 +161,31 @@ const Vendas: React.FC = () => {
   };
 
   const voltarDoCheckout = () => {
+    setOrcamentoSelecionado(null);
     setEstadoAtual('cadastro_servicos');
   };
 
   const concluirVenda = (metodoPagamento: string, observacoes?: string) => {
-    const valorTotal = servicosSelecionados.reduce((total, servico) => total + servico.valorVenda, 0);
+    let valorTotal: number;
+    let servicosVenda: any[];
+
+    if (orcamentoSelecionado) {
+      // Venda a partir de orçamento
+      valorTotal = orcamentoSelecionado.valor_final;
+      servicosVenda = [{
+        servico_id: orcamentoSelecionado.servico_id!,
+        prestador_id: orcamentoSelecionado.prestador_id!,
+        valor: orcamentoSelecionado.valor_final
+      }];
+    } else {
+      // Venda normal
+      valorTotal = servicosSelecionados.reduce((total, servico) => total + servico.valorVenda, 0);
+      servicosVenda = servicosSelecionados.map(servico => ({
+        servico_id: servico.id,
+        prestador_id: servico.prestadorId,
+        valor: servico.valorVenda
+      }));
+    }
     
     const novaVenda = {
       cliente_id: clienteSelecionado.id,
@@ -172,12 +194,6 @@ const Vendas: React.FC = () => {
       status: 'concluida',
       observacoes
     };
-
-    const servicosVenda = servicosSelecionados.map(servico => ({
-      servico_id: servico.id,
-      prestador_id: servico.prestadorId,
-      valor: servico.valorVenda
-    }));
 
     criarVenda({ venda: novaVenda, servicos: servicosVenda }, {
       onSuccess: () => {
@@ -246,45 +262,8 @@ const Vendas: React.FC = () => {
   };
 
   const concluirVendaDoOrcamento = (orcamento: OrcamentoPendente) => {
-    if (!orcamento.servicos) {
-      toast({
-        title: "Erro",
-        description: "Dados do serviço não encontrados.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const novaVenda = {
-      cliente_id: clienteSelecionado.id,
-      valor_total: orcamento.valor_final,
-      metodo_pagamento: 'pix', // Padrão, pode ser alterado no checkout
-      status: 'concluida'
-    };
-
-    const servicosVenda = [{
-      servico_id: orcamento.servico_id!,
-      prestador_id: orcamento.prestador_id!,
-      valor: orcamento.valor_final
-    }];
-
-    criarVenda({ venda: novaVenda, servicos: servicosVenda }, {
-      onSuccess: () => {
-        toast({
-          title: "Venda concluída",
-          description: "A venda foi realizada com sucesso a partir do orçamento!"
-        });
-        cancelarOperacao();
-      },
-      onError: (error) => {
-        toast({
-          title: "Erro ao concluir venda",
-          description: "Ocorreu um erro ao processar a venda.",
-          variant: "destructive"
-        });
-        console.error('Erro ao criar venda:', error);
-      }
-    });
+    setOrcamentoSelecionado(orcamento);
+    setEstadoAtual('checkout');
   };
 
   const handleCancelarOrcamento = (orcamentoId: string) => {
@@ -308,10 +287,28 @@ const Vendas: React.FC = () => {
 
   // Estado checkout
   if (estadoAtual === 'checkout') {
+    let servicosParaCheckout: ServicoSelecionado[] = [];
+    
+    if (orcamentoSelecionado) {
+      // Checkout a partir de orçamento
+      servicosParaCheckout = [{
+        id: orcamentoSelecionado.servico_id!,
+        nome: orcamentoSelecionado.servicos?.nome || "Serviço",
+        categoria: orcamentoSelecionado.servicos?.categoria || "Categoria",
+        prestadorId: orcamentoSelecionado.prestador_id!,
+        prestadorNome: orcamentoSelecionado.prestadores?.nome || "Prestador",
+        valorVenda: orcamentoSelecionado.valor_final,
+        descricao: orcamentoSelecionado.observacoes || undefined
+      }];
+    } else {
+      // Checkout normal
+      servicosParaCheckout = servicosSelecionados;
+    }
+
     return (
       <div className="space-y-6 animate-fade-in">
         <CheckoutVenda
-          servicos={servicosSelecionados}
+          servicos={servicosParaCheckout}
           cliente={clienteSelecionado}
           onVoltar={voltarDoCheckout}
           onConcluirVenda={concluirVenda}

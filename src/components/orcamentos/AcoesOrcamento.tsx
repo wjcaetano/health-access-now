@@ -14,14 +14,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { CheckCircle, XCircle, Edit, ShoppingCart } from "lucide-react";
 import { Tables } from "@/integrations/supabase/types";
-import { useNavigate } from "react-router-dom";
 
 type Orcamento = Tables<"orcamentos">;
 
 interface AcoesOrcamentoProps {
   orcamento: Orcamento;
   onCancelar: (id: string) => void;
-  onConcluirVenda: (orcamento: Orcamento) => void;
+  onConcluirVenda: () => void;
   isLoading?: boolean;
 }
 
@@ -31,8 +30,6 @@ const AcoesOrcamento: React.FC<AcoesOrcamentoProps> = ({
   onConcluirVenda,
   isLoading = false
 }) => {
-  const navigate = useNavigate();
-  
   const isExpired = new Date() > new Date(orcamento.data_validade);
   const isPendente = orcamento.status === 'pendente' && !isExpired;
   const isCancelado = orcamento.status === 'cancelado';
@@ -64,12 +61,12 @@ const AcoesOrcamento: React.FC<AcoesOrcamentoProps> = ({
       {isPendente && (
         <>
           <Button
-            onClick={() => onConcluirVenda(orcamento)}
+            onClick={onConcluirVenda}
             className="w-full bg-green-600 hover:bg-green-700"
             disabled={isLoading}
           >
             <ShoppingCart className="h-4 w-4 mr-2" />
-            Concluir Venda
+            Ir para Checkout
           </Button>
 
           <Button
@@ -113,7 +110,7 @@ const AcoesOrcamento: React.FC<AcoesOrcamentoProps> = ({
 
       {isAprovado && (
         <Button
-          onClick={() => onConcluirVenda(orcamento)}
+          onClick={onConcluirVenda}
           className="w-full bg-green-600 hover:bg-green-700"
           disabled={isLoading}
         >

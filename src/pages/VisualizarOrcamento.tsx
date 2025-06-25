@@ -2,82 +2,94 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Calendar,
-  User,
-  Clock,
-  MapPin,
-  FileText,
-  ArrowLeft
-} from "lucide-react";
+import { ArrowLeft, Calendar, User, MapPin, Phone, Mail, FileText } from "lucide-react";
+import { useOrcamento } from "@/hooks/useOrcamentos";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { useToast } from "@/hooks/use-toast";
-import { useOrcamento, useCancelarOrcamento } from "@/hooks/useOrcamentos";
-import { useCreateVenda } from "@/hooks/useVendas";
 import AcoesOrcamento from "@/components/orcamentos/AcoesOrcamento";
-
-const statusMap = {
-  pendente: {
-    label: "Pendente",
-    color: "bg-yellow-100 hover:bg-yellow-100 text-yellow-800"
-  },
-  aprovado: {
-    label: "Aprovado",
-    color: "bg-green-100 hover:bg-green-100 text-green-800"
-  },
-  cancelado: {
-    label: "Cancelado",
-    color: "bg-red-100 hover:bg-red-100 text-red-800"
-  },
-  expirado: {
-    label: "Expirado",
-    color: "bg-gray-100 hover:bg-gray-100 text-gray-800"
-  }
-};
-
-const formatarValor = (valor: number) => {
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(valor);
-};
+import { useCreateVenda } from "@/hooks/useVendas";
+import { useCancelarOrcamento } from "@/hooks/useOrcamentos";
+import { useToast } from "@/hooks/use-toast";
 
 const VisualizarOrcamento: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
-  const { data: orcamento, isLoading, error } = useOrcamento(id || '');
-  const { mutate: cancelarOrcamento, isPending: isCancelingOrcamento } = useCancelarOrcamento();
+  const { data: orcamento, isLoading } = useOrcamento(id!);
   const { mutate: criarVenda, isPending: isCreatingVenda } = useCreateVenda();
-  
+  const { mutate: cancelarOrcamento, isPending: isCancelingOrcamento } = useCancelarOrcamento();
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-gray-500">Carregando orçamento...</p>
+        <div className="text-center">
+          <p className="text-gray-500">Carregando orçamento...</p>
+        </div>
       </div>
     );
   }
 
-  if (error || !orcamento) {
+  if (!orcamento) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-gray-500">Orçamento não encontrado</p>
+        <div className="text-center">
+          <p className="text-red-500">Orçamento não encontrado</p>
+          <Button onClick={() => navigate('/orcamentos')} className="mt-4">
+            Voltar para Orçamentos
+          </Button>
+        </div>
       </div>
     );
   }
 
   const isExpired = new Date() > new Date(orcamento.data_validade);
-  const currentStatus = isExpired && orcamento.status === 'pendente' ? 'expirado' : orcamento.status;
+  const isPendente = orcamento.status === 'pendente' && !isExpired;
+
+  const getStatusColor = () => {
+    if (orcamento.status === 'aprovado') return "bg-green-100 text-green-800";
+    if (orcamento.status === 'cancelado') return "bg-red-100 text-red-800";
+    if (isExpired) return "bg-red-100 text-red-800";
+    return "bg-yellow-100 text-yellow-800";
+  };
+
+  const getStatusLabel = () => {
+    if (orcamento.status === 'aprovado') return "Aprovado";
+    if (orcamento.status === 'cancelado') return "Cancelado";
+    if (isExpired) return "Expirado";
+    return "Pendente";
+  };
+
+  const handleConcluirVenda = () => {
+    if (!orcamento.clientes || !orcamento.servicos) {
+      toast({
+        title: "Erro",
+        description: "Dados do orçamento incompletos.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Redirecionar para o checkout com os dados do orçamento
+    navigate('/checkout-vendas', {
+      state: {
+        vendaData: {
+          cliente: orcamento.clientes,
+          servicos: [{
+            id: orcamento.servico_id,
+            nome: orcamento.servicos.nome,
+            categoria: orcamento.servicos.categoria,
+            prestadorId: orcamento.prestador_id,
+            prestadorNome: orcamento.prestadores?.nome || "Prestador",
+            valorVenda: orcamento.valor_final,
+            descricao: orcamento.observacoes
+          }],
+          orcamentoId: orcamento.id
+        }
+      }
+    });
+  };
 
   const handleCancelar = (orcamentoId: string) => {
     cancelarOrcamento(orcamentoId, {
@@ -99,176 +111,163 @@ const VisualizarOrcamento: React.FC = () => {
     });
   };
 
-  const handleConcluirVenda = (orcamento: any) => {
-    const novaVenda = {
-      cliente_id: orcamento.cliente_id,
-      valor_total: orcamento.valor_final,
-      metodo_pagamento: 'pix',
-      status: 'concluida'
-    };
-
-    const servicosVenda = [{
-      servico_id: orcamento.servico_id,
-      prestador_id: orcamento.prestador_id,
-      valor: orcamento.valor_final
-    }];
-
-    criarVenda({ venda: novaVenda, servicos: servicosVenda }, {
-      onSuccess: () => {
-        toast({
-          title: "Venda concluída",
-          description: "A venda foi realizada com sucesso!"
-        });
-        navigate('/vendas');
-      },
-      onError: (error) => {
-        toast({
-          title: "Erro ao concluir venda",
-          description: "Ocorreu um erro ao processar a venda.",
-          variant: "destructive"
-        });
-        console.error('Erro ao criar venda:', error);
-      }
-    });
-  };
-
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center gap-4">
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={() => navigate('/orcamentos')}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Voltar
-        </Button>
-        <div>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/orcamentos')}
+            className="flex items-center"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Voltar
+          </Button>
           <h2 className="text-3xl font-bold text-gray-900">Visualizar Orçamento</h2>
-          <p className="text-gray-500 mt-1">
-            Orçamento #{orcamento.id.substring(0, 8)}
-          </p>
         </div>
+        <Badge variant="outline" className={getStatusColor()}>
+          {getStatusLabel()}
+        </Badge>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Informações do Cliente */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              Dados do Cliente
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-gray-500">Nome</label>
-              <p className="font-semibold">{orcamento.clientes?.nome}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">CPF</label>
-              <p>{orcamento.clientes?.cpf}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">Telefone</label>
-              <p>{orcamento.clientes?.telefone}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">Email</label>
-              <p>{orcamento.clientes?.email}</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Informações do Serviço */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              Dados do Serviço
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-gray-500">Serviço</label>
-              <p className="font-semibold">{orcamento.servicos?.nome}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">Categoria</label>
-              <p>{orcamento.servicos?.categoria}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">Prestador</label>
-              <p className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-gray-400" />
-                {orcamento.prestadores?.nome}
-              </p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">Valor Original</label>
-              <p className="text-lg font-bold text-gray-400 line-through">
-                {formatarValor(orcamento.valor_venda)}
-              </p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">Desconto</label>
-              <p className="text-green-600 font-semibold">{orcamento.percentual_desconto}%</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">Valor Final</label>
-              <p className="text-2xl font-bold text-agendaja-primary">
-                {formatarValor(orcamento.valor_final)}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Status e Ações */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Status e Ações
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-gray-500">Status Atual</label>
-              <div className="mt-1">
-                <Badge variant="outline" className={statusMap[currentStatus as keyof typeof statusMap].color}>
-                  {statusMap[currentStatus as keyof typeof statusMap].label}
-                </Badge>
+        {/* Informações do Orçamento */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Dados do Cliente */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <User className="h-5 w-5 mr-2" />
+                Dados do Cliente
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold mb-3">{orcamento.clientes?.nome}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center text-gray-600">
+                    <FileText className="h-4 w-4 mr-2" />
+                    <span className="font-medium mr-2">CPF:</span>
+                    <span>{orcamento.clientes?.cpf}</span>
+                  </div>
+                  
+                  <div className="flex items-center text-gray-600">
+                    <Phone className="h-4 w-4 mr-2" />
+                    <span className="font-medium mr-2">Telefone:</span>
+                    <span>{orcamento.clientes?.telefone}</span>
+                  </div>
+                  
+                  <div className="flex items-center text-gray-600">
+                    <Mail className="h-4 w-4 mr-2" />
+                    <span className="font-medium mr-2">E-mail:</span>
+                    <span>{orcamento.clientes?.email}</span>
+                  </div>
+                </div>
               </div>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium text-gray-500">Data do Orçamento</label>
-              <p className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-gray-400" />
-                {format(new Date(orcamento.created_at || ''), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-              </p>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium text-gray-500">Data de Validade</label>
-              <p className={`flex items-center gap-2 ${isExpired ? 'text-red-600' : ''}`}>
-                <Calendar className="h-4 w-4 text-gray-400" />
-                {format(new Date(orcamento.data_validade), "dd/MM/yyyy", { locale: ptBR })}
-                {isExpired && <span className="text-xs">(Expirado)</span>}
-              </p>
-            </div>
+            </CardContent>
+          </Card>
 
-            <div className="pt-4">
+          {/* Detalhes do Serviço */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Detalhes do Serviço</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-blue-800 mb-2">{orcamento.servicos?.nome}</h4>
+                <p className="text-blue-600 mb-2">Categoria: {orcamento.servicos?.categoria}</p>
+                <p className="text-blue-600">Prestador: {orcamento.prestadores?.nome}</p>
+              </div>
+              
+              {orcamento.observacoes && (
+                <div>
+                  <h5 className="font-medium mb-2">Observações:</h5>
+                  <p className="text-gray-600 bg-gray-50 p-3 rounded">{orcamento.observacoes}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Sidebar com Resumo e Ações */}
+        <div className="space-y-6">
+          {/* Resumo Financeiro */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Resumo Financeiro</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Valor de Custo:</span>
+                <span className="font-medium">R$ {orcamento.valor_custo.toFixed(2)}</span>
+              </div>
+              
+              <div className="flex justify-between">
+                <span className="text-gray-600">Valor de Venda:</span>
+                <span className="font-medium">R$ {orcamento.valor_venda.toFixed(2)}</span>
+              </div>
+              
+              {orcamento.percentual_desconto > 0 && (
+                <div className="flex justify-between text-red-600">
+                  <span>Desconto ({orcamento.percentual_desconto}%):</span>
+                  <span>- R$ {((orcamento.valor_venda * orcamento.percentual_desconto) / 100).toFixed(2)}</span>
+                </div>
+              )}
+              
+              <div className="border-t pt-3">
+                <div className="flex justify-between items-center text-lg font-bold">
+                  <span>Valor Final:</span>
+                  <span className="text-green-600">R$ {orcamento.valor_final.toFixed(2)}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Informações de Data */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Informações de Data</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center text-gray-600">
+                <Calendar className="h-4 w-4 mr-2" />
+                <div>
+                  <p className="text-sm">Criado em:</p>
+                  <p className="font-medium">
+                    {format(new Date(orcamento.created_at || ''), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center text-gray-600">
+                <Calendar className="h-4 w-4 mr-2" />
+                <div>
+                  <p className="text-sm">Válido até:</p>
+                  <p className={`font-medium ${isExpired ? 'text-red-600' : 'text-green-600'}`}>
+                    {format(new Date(orcamento.data_validade), "dd/MM/yyyy", { locale: ptBR })}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Ações */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Ações</CardTitle>
+            </CardHeader>
+            <CardContent>
               <AcoesOrcamento
                 orcamento={orcamento}
                 onCancelar={handleCancelar}
                 onConcluirVenda={handleConcluirVenda}
-                isLoading={isCancelingOrcamento || isCreatingVenda}
+                isLoading={isCreatingVenda || isCancelingOrcamento}
               />
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
