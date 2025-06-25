@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,6 +27,7 @@ type AuthContextType = {
   isManager: boolean;
   isPrestador: boolean;
   isActive: boolean;
+  requiresPasswordChange: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,6 +37,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Verificar se o usuário precisa trocar a senha
+  const requiresPasswordChange = user?.user_metadata?.senha_provisoria === true;
 
   const fetchUserProfile = async (userId: string) => {
     try {
@@ -163,10 +166,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const updatePassword = async (newPassword: string) => {
     try {
       const { error } = await supabase.auth.updateUser({
-        password: newPassword
+        password: newPassword,
+        data: {
+          senha_provisoria: false // Remove a flag de senha provisória
+        }
       });
       
-      return { error };
+      if (error) throw error;
+      
+      // Atualizar o user state localmente
+      if (user) {
+        setUser({
+          ...user,
+          user_metadata: {
+            ...user.user_metadata,
+            senha_provisoria: false
+          }
+        });
+      }
+      
+      return { error: null };
     } catch (error) {
       return { error };
     }
@@ -208,6 +227,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isManager,
     isPrestador,
     isActive,
+    requiresPasswordChange,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

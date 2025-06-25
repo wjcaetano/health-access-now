@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { AuthProvider } from "./contexts/AuthContext";
+import { PasswordChangeGuard } from "./components/auth/PasswordChangeGuard";
 import Layout from "./components/layout/Layout";
 import Index from "./pages/Index";
 import Clientes from "./pages/Clientes";
@@ -40,6 +41,7 @@ import SejaFranqueado from "./pages/franquia/SejaFranqueado";
 
 // Área de autenticação
 import Login from "./pages/auth/Login";
+import TrocaSenhaObrigatoria from "./components/auth/TrocaSenhaObrigatoria";
 
 import CheckoutVendas from "./pages/CheckoutVendas";
 import PaginaDeVendas from "./pages/PaginaDeVendas";
@@ -76,8 +78,15 @@ const App = () => (
             <Route path="/portal-parceiro" element={<PortalParceiro />} />
             <Route path="/seja-franqueado" element={<SejaFranqueado />} />
             
-            {/* Layout padrão AGENDAJA (atendentes e gerentes) */}
-            <Route element={<Layout />}>
+            {/* Rota de troca de senha obrigatória */}
+            <Route path="/troca-senha-obrigatoria" element={<TrocaSenhaObrigatoria />} />
+            
+            {/* Layout padrão AGENDAJA (atendentes e gerentes) - com proteção de senha */}
+            <Route element={
+              <PasswordChangeGuard>
+                <Layout />
+              </PasswordChangeGuard>
+            }>
               <Route path="/dashboard" element={<Index />} />
               
               {/* Rotas do MVP original */}
@@ -108,8 +117,12 @@ const App = () => (
               <Route path="/analise-sistema" element={<AnaliseDoSistema />} />
             </Route>
             
-            {/* Layout para prestadores */}
-            <Route path="/prestador" element={<Layout />}>
+            {/* Layout para prestadores - com proteção de senha */}
+            <Route path="/prestador" element={
+              <PasswordChangeGuard>
+                <Layout />
+              </PasswordChangeGuard>
+            }>
               <Route index element={<PortalPrestador />} />
               <Route path="guias" element={<GuiasPrestador />} />
               <Route path="faturamento" element={<FaturamentoPrestador />} />
