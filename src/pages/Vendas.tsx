@@ -16,21 +16,40 @@ import {
   Mail,
   MapPin,
   Calendar,
-  UserPlus
+  UserPlus,
+  ShoppingCart,
+  Save,
+  X
 } from "lucide-react";
 import { useClientes } from "@/hooks/useClientes";
+import { useCreateOrcamento } from "@/hooks/useOrcamentos";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import BuscaServicos from "@/components/vendas/BuscaServicos";
+import ListaServicos from "@/components/vendas/ListaServicos";
 
 type EstadoVenda = 'inicial' | 'nao_encontrado' | 'cliente_selecionado' | 'cadastro_servicos';
+
+interface ServicoSelecionado {
+  id: string;
+  nome: string;
+  categoria: string;
+  prestadorId: string;
+  prestadorNome: string;
+  valorVenda: number;
+  descricao?: string;
+}
 
 const Vendas: React.FC = () => {
   const [termoBusca, setTermoBusca] = useState("");
   const [estadoAtual, setEstadoAtual] = useState<EstadoVenda>('inicial');
   const [clienteSelecionado, setClienteSelecionado] = useState<any>(null);
+  const [servicosSelecionados, setServicosSelecionados] = useState<ServicoSelecionado[]>([]);
+  
   const { data: clientes } = useClientes();
+  const { mutate: criarOrcamento } = useCreateOrcamento();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -67,13 +86,13 @@ const Vendas: React.FC = () => {
   };
 
   const alterarCliente = () => {
-    // Navegar para página de edição do cliente
     navigate(`/editar-cliente/${clienteSelecionado.id}`);
   };
 
   const cancelarOperacao = () => {
     setTermoBusca("");
     setClienteSelecionado(null);
+    setServicosSelecionados([]);
     setEstadoAtual('inicial');
   };
 
@@ -87,12 +106,105 @@ const Vendas: React.FC = () => {
     }
   };
 
+  const adicionarServico = (servico: ServicoSelecionado) => {
+    setServicosSelecionados(prev => [...prev, servico]);
+    toast({
+      title: "Serviço adicionado",
+      description: `${servico.nome} foi adicionado à lista.`
+    });
+  };
+
+  const removerServico = (index: number) => {
+    setServicosSelecionados(prev => prev.filter((_, i) => i !== index));
+    toast({
+      title: "Serviço removido",
+      description: "Serviço foi removido da lista."
+    });
+  };
+
+  const limparListaServicos = () => {
+    setServicosSelecionados([]);
+    toast({
+      title: "Lista limpa",
+      description: "Todos os serviços foram removidos da lista."
+    });
+  };
+
+  const salvarOrcamento = () => {
+    if (servicosSelecionados.length === 0) {
+      toast({
+        title: "Nenhum serviço selecionado",
+        description: "Adicione pelo menos um serviço para salvar o orçamento.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const valorTotal = servicosSelecionados.reduce((total, servico) => total + servico.valorVenda, 0);
+    const dataValidade = new Date();
+    dataValidade.setDate(dataValidade.getDate() + 30); // 30 dias de validade
+
+    // Para simplicidade, vamos usar o primeiro serviço para criar o orçamento
+    // Em uma implementação real, seria necessário criar múltiplos orçamentos ou uma estrutura diferente
+    const primeiroServico = servicosSelecionados[0];
+    
+    criarOrcamento({
+      cliente_id: clienteSelecionado.id,
+      servico_id: primeiroServico.id,
+      prestador_id: primeiroServico.prestadorId,
+      valor_custo: primeiroServico.valorVenda * 0.7, // Exemplo: 70% é custo
+      valor_venda: primeiroServico.valorVenda,
+      valor_final: valorTotal,
+      percentual_desconto: 0,
+      data_validade: dataValidade.toISOString().split('T')[0],
+      status: 'pendente',
+      observacoes: `Orçamento com ${servicosSelecionados.length} serviço(s): ${servicosSelecionados.map(s => s.nome).join(', ')}`
+    }, {
+      onSuccess: () => {
+        toast({
+          title: "Orçamento salvo",
+          description: "O orçamento foi salvo com sucesso!"
+        });
+        cancelarOperacao();
+      },
+      onError: (error) => {
+        toast({
+          title: "Erro ao salvar",
+          description: "Ocorreu um erro ao salvar o orçamento.",
+          variant: "destructive"
+        });
+        console.error('Erro ao salvar orçamento:', error);
+      }
+    });
+  };
+
+  const concluirVenda = () => {
+    if (servicosSelecionados.length === 0) {
+      toast({
+        title: "Nenhum serviço selecionado",
+        description: "Adicione pelo menos um serviço para concluir a venda.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Aqui seria implementada a lógica de finalização da venda
+    // Por exemplo: criar agendamentos, guias, etc.
+    toast({
+      title: "Funcionalidade em desenvolvimento",
+      description: "A finalização da venda será implementada em breve."
+    });
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
         <h2 className="text-3xl font-bold text-gray-900">Vendas</h2>
         <p className="text-gray-500 mt-1">
-          Busque um cliente para iniciar uma venda
+          {estadoAtual === 'cadastro_servicos' 
+            ? `Cadastrando serviços para ${clienteSelecionado?.nome}`
+            : "Busque um cliente para iniciar uma venda"
+          }
         </p>
       </div>
 
@@ -114,9 +226,14 @@ const Vendas: React.FC = () => {
                 value={termoBusca}
                 onChange={(e) => setTermoBusca(e.target.value)}
                 onKeyPress={handleKeyPress}
+                disabled={estadoAtual === 'cadastro_servicos'}
               />
             </div>
-            <Button onClick={buscarCliente} className="bg-agendaja-primary hover:bg-agendaja-secondary">
+            <Button 
+              onClick={buscarCliente} 
+              className="bg-agendaja-primary hover:bg-agendaja-secondary"
+              disabled={estadoAtual === 'cadastro_servicos'}
+            >
               <Search className="h-4 w-4 mr-2" />
               Buscar
             </Button>
@@ -233,27 +350,70 @@ const Vendas: React.FC = () => {
 
       {/* Estado: Cadastro de Serviços */}
       {estadoAtual === 'cadastro_servicos' && (
-        <Card className="border-blue-200 bg-blue-50">
-          <CardHeader>
-            <CardTitle className="text-blue-800">Cadastro de Serviços</CardTitle>
-            <CardDescription className="text-blue-600">
-              Cliente: {clienteSelecionado?.nome} | CPF: {clienteSelecionado?.cpf}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8">
-              <h3 className="text-lg font-medium text-blue-800 mb-2">
-                Funcionalidade em Desenvolvimento
-              </h3>
-              <p className="text-blue-600 mb-4">
-                A tela de cadastro de serviços será implementada em breve
-              </p>
-              <Button onClick={cancelarOperacao} variant="outline">
-                Voltar ao Início
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="space-y-6">
+          {/* Informações do Cliente Selecionado */}
+          <Card className="border-blue-200 bg-blue-50">
+            <CardContent className="pt-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-blue-800">{clienteSelecionado?.nome}</h3>
+                  <p className="text-blue-600">CPF: {clienteSelecionado?.cpf}</p>
+                </div>
+                <Button
+                  onClick={cancelarOperacao}
+                  variant="outline"
+                  size="sm"
+                  className="text-red-600 border-red-200 hover:bg-red-50"
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Cancelar
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Busca e Seleção de Serviços */}
+          <BuscaServicos onServicoSelecionado={adicionarServico} />
+
+          {/* Lista de Serviços Selecionados */}
+          <ListaServicos
+            servicos={servicosSelecionados}
+            onRemoverServico={removerServico}
+            onLimparLista={limparListaServicos}
+          />
+
+          {/* Botões de Ação Final */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button
+                  onClick={concluirVenda}
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                  disabled={servicosSelecionados.length === 0}
+                >
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Concluir Venda
+                </Button>
+                <Button
+                  onClick={salvarOrcamento}
+                  variant="outline"
+                  className="flex-1"
+                  disabled={servicosSelecionados.length === 0}
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  Salvar Orçamento
+                </Button>
+                <Button
+                  onClick={cancelarOperacao}
+                  variant="outline"
+                  className="flex-1 text-red-600 border-red-200 hover:bg-red-50"
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   );
