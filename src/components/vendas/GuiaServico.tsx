@@ -24,7 +24,7 @@ const GuiaServico: React.FC<GuiaServicoProps> = ({
   };
 
   return (
-    <div className="bg-white p-6 max-w-lg mx-auto mb-8 page-break-after border border-gray-300">
+    <div className="bg-white p-6 max-w-lg mx-auto mb-8 page-break-after border border-gray-300 print:max-w-none">
       {/* Cabeçalho */}
       <div className="text-center mb-6 border-b-2 border-gray-300 pb-4">
         <h1 className="text-xl font-bold text-gray-900 mb-1">GUIA DE SERVIÇO</h1>
@@ -44,7 +44,7 @@ const GuiaServico: React.FC<GuiaServicoProps> = ({
         <div className="grid grid-cols-1 gap-1 text-sm">
           <p><strong>Nome:</strong> {cliente.nome}</p>
           <p><strong>CPF:</strong> {cliente.cpf}</p>
-          <p><strong>Telefone:</strong> {cliente.telefone}</p>
+          {cliente.telefone && <p><strong>Telefone:</strong> {cliente.telefone}</p>}
           {cliente.email && <p><strong>E-mail:</strong> {cliente.email}</p>}
           {cliente.id_associado && <p><strong>ID Associado:</strong> {cliente.id_associado}</p>}
         </div>

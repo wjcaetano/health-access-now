@@ -24,7 +24,7 @@ const ReciboVenda: React.FC<ReciboVendaProps> = ({
   };
 
   return (
-    <div className="print:block hidden bg-white p-8 max-w-md mx-auto">
+    <div className="bg-white p-8 max-w-md mx-auto print:max-w-none">
       <div className="text-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">RECIBO DE PAGAMENTO</h1>
         <div className="border-t-2 border-gray-300 pt-2">
@@ -44,7 +44,8 @@ const ReciboVenda: React.FC<ReciboVendaProps> = ({
           <h4 className="font-medium text-gray-700 mb-1">DADOS DO CLIENTE:</h4>
           <p className="text-sm"><strong>Nome:</strong> {cliente.nome}</p>
           <p className="text-sm"><strong>CPF:</strong> {cliente.cpf}</p>
-          <p className="text-sm"><strong>Telefone:</strong> {cliente.telefone}</p>
+          {cliente.telefone && <p className="text-sm"><strong>Telefone:</strong> {cliente.telefone}</p>}
+          {cliente.id_associado && <p className="text-sm"><strong>ID Associado:</strong> {cliente.id_associado}</p>}
         </div>
 
         {/* Serviços */}
@@ -72,12 +73,14 @@ const ReciboVenda: React.FC<ReciboVendaProps> = ({
         <div>
           <p className="text-sm"><strong>Forma de Pagamento:</strong> {metodoPagamento}</p>
           <p className="text-sm"><strong>Data do Pagamento:</strong> {format(new Date(venda.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</p>
+          <p className="text-sm"><strong>Status:</strong> <span className="text-green-600 font-semibold">PAGO</span></p>
         </div>
       </div>
 
       <div className="text-center text-xs text-gray-500 border-t pt-3">
         <p>Este recibo comprova o pagamento dos serviços relacionados.</p>
         <p>Para dúvidas, entre em contato conosco.</p>
+        <p className="mt-2">Recibo emitido em {format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</p>
       </div>
     </div>
   );
