@@ -29,6 +29,14 @@ const VendaFinalizada: React.FC = () => {
 
     if (!guias || guias.length === 0) {
       console.warn('Nenhuma guia foi recebida ou criada para esta venda');
+    } else {
+      console.log('Guias encontradas:', guias.map((guia: any, index: number) => ({
+        index,
+        id: guia.id,
+        codigo: guia.codigo_autenticacao,
+        servico_id: guia.servico_id,
+        prestador_id: guia.prestador_id
+      })));
     }
   }, [venda, servicos, cliente, guias, navigate]);
 
@@ -43,17 +51,27 @@ const VendaFinalizada: React.FC = () => {
     );
   }
 
-  const gerarCodigoGuia = (guiaId: string, index: number) => {
-    console.log('Gerando código para guia:', { guiaId, index, guias });
+  const gerarCodigoGuia = (vendaId: string, index: number) => {
+    console.log('Gerando código para guia:', { vendaId, index, guias });
     
-    if (guias && guias[index]) {
+    // Se existe uma guia correspondente ao serviço, usa o código dela
+    if (guias && guias[index] && guias[index].codigo_autenticacao) {
       console.log('Usando código da guia existente:', guias[index].codigo_autenticacao);
       return guias[index].codigo_autenticacao;
     }
     
-    const codigoGerado = `AG${Date.now()}${(index + 1).toString().padStart(2, '0')}`;
-    console.log('Código gerado automaticamente:', codigoGerado);
-    return codigoGerado;
+    // Caso contrário, gera um código baseado no serviço
+    const servicoAtual = servicos[index];
+    if (servicoAtual && servicoAtual.id) {
+      const codigoGerado = `AG${servicoAtual.id.slice(0, 6).toUpperCase()}${(index + 1).toString().padStart(2, '0')}`;
+      console.log('Código gerado baseado no serviço:', codigoGerado);
+      return codigoGerado;
+    }
+    
+    // Fallback final
+    const codigoFallback = `AG${Date.now().toString().slice(-6)}${(index + 1).toString().padStart(2, '0')}`;
+    console.log('Código fallback gerado:', codigoFallback);
+    return codigoFallback;
   };
 
   const imprimirRecibo = () => {
@@ -63,7 +81,6 @@ const VendaFinalizada: React.FC = () => {
     setTimeout(() => {
       const printContent = document.querySelector('.recibo-print');
       if (printContent) {
-        const originalBody = document.body.innerHTML;
         const printWindow = window.open('', '_blank');
         if (printWindow) {
           printWindow.document.write(`
@@ -93,6 +110,11 @@ const VendaFinalizada: React.FC = () => {
     console.log('Preparando impressão das guias...');
     console.log('Serviços para impressão:', servicos);
     console.log('Guias disponíveis:', guias);
+    
+    if (!servicos || servicos.length === 0) {
+      console.error('Não há serviços para imprimir guias');
+      return;
+    }
     
     setShowGuias(true);
     
@@ -153,7 +175,7 @@ const VendaFinalizada: React.FC = () => {
           quantidadeServicos={servicos.length}
         />
 
-        {/* Debug Info */}
+        {/* Debug Info Melhorada */}
         <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
           <h4 className="font-semibold text-yellow-800 mb-2">Debug - Informações das Guias</h4>
           <p className="text-sm text-yellow-700">
@@ -165,6 +187,26 @@ const VendaFinalizada: React.FC = () => {
           <p className="text-sm text-yellow-700">
             Guias disponíveis: {guias ? 'Sim' : 'Não'}
           </p>
+          {guias && guias.length > 0 && (
+            <div className="mt-2">
+              <p className="text-sm text-yellow-700 font-semibold">Códigos das guias:</p>
+              {guias.map((guia: any, index: number) => (
+                <p key={index} className="text-xs text-yellow-600">
+                  Guia {index + 1}: {guia.codigo_autenticacao || 'Sem código'}
+                </p>
+              ))}
+            </div>
+          )}
+          {servicos && servicos.length > 0 && (
+            <div className="mt-2">
+              <p className="text-sm text-yellow-700 font-semibold">Serviços:</p>
+              {servicos.map((servico: any, index: number) => (
+                <p key={index} className="text-xs text-yellow-600">
+                  Serviço {index + 1}: {servico.servicos?.nome || servico.nome || 'Nome não encontrado'}
+                </p>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -183,13 +225,16 @@ const VendaFinalizada: React.FC = () => {
         <div className="guias-print hidden">
           {servicos.map((servico: any, index: number) => {
             console.log(`Renderizando guia ${index + 1}:`, servico);
+            const codigoGuia = gerarCodigoGuia(venda.id, index);
+            console.log(`Código gerado para guia ${index + 1}:`, codigoGuia);
+            
             return (
               <GuiaServico
-                key={servico.id}
+                key={`${servico.id}-${index}`}
                 venda={venda}
                 cliente={cliente}
                 servico={servico}
-                codigoGuia={gerarCodigoGuia(venda.id, index)}
+                codigoGuia={codigoGuia}
               />
             );
           })}

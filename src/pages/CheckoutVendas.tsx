@@ -73,7 +73,8 @@ const CheckoutVendas: React.FC = () => {
       : "Dinheiro";
 
     try {
-      console.log('Iniciando processo de pagamento...');
+      console.log('=== INICIANDO PROCESSO DE PAGAMENTO ===');
+      console.log('Dados da venda:', dadosVenda);
       
       const novaVenda = {
         cliente_id: dadosVenda.cliente.id,
@@ -88,13 +89,33 @@ const CheckoutVendas: React.FC = () => {
         valor: servico.valorVenda
       }));
 
-      console.log('Dados da venda a serem criados:', { novaVenda, servicosVenda });
+      console.log('Venda a ser criada:', novaVenda);
+      console.log('Serviços da venda:', servicosVenda);
 
       criarVenda({ venda: novaVenda, servicos: servicosVenda }, {
         onSuccess: (data) => {
-          console.log('Venda criada com sucesso:', data);
+          console.log('=== VENDA CRIADA COM SUCESSO ===');
+          console.log('Dados retornados:', data);
+          console.log('Venda:', data.venda);
+          console.log('Serviços:', data.servicos);
           console.log('Guias geradas:', data.guias);
           console.log('Quantidade de guias:', data.guias?.length);
+          
+          // Verificar se as guias foram criadas corretamente
+          if (!data.guias || data.guias.length === 0) {
+            console.error('ERRO: Nenhuma guia foi criada!');
+            toast({
+              title: "Aviso",
+              description: "Venda criada, mas houve problema na geração das guias.",
+              variant: "destructive"
+            });
+          } else {
+            console.log('✅ Guias criadas com sucesso:', data.guias.map((guia: any) => ({
+              id: guia.id,
+              codigo: guia.codigo_autenticacao,
+              servico_id: guia.servico_id
+            })));
+          }
           
           if (dadosVenda.orcamentoId) {
             console.log('Atualizando status do orçamento:', dadosVenda.orcamentoId);
@@ -107,11 +128,10 @@ const CheckoutVendas: React.FC = () => {
 
           toast({
             title: "Pagamento processado com sucesso!",
-            description: `Venda finalizada via ${metodoPagamentoTexto}. Guias de atendimento geradas automaticamente.`
+            description: `Venda finalizada via ${metodoPagamentoTexto}. ${data.guias?.length || 0} guia(s) de atendimento gerada(s).`
           });
 
-          console.log('Redirecionando para página de venda finalizada...');
-          
+          // Preparar dados completos dos serviços para a página finalizada
           const servicosCompletos = data.servicos.map((servicoVenda: any, index: number) => {
             const servicoOriginal = dadosVenda.servicos[index];
             return {
@@ -126,27 +146,26 @@ const CheckoutVendas: React.FC = () => {
             };
           });
 
-          console.log('Dados sendo enviados para página finalizada:', {
+          const dadosParaFinalizada = {
             venda: data.venda,
             servicos: servicosCompletos,
-            guias: data.guias,
+            guias: data.guias || [],
             cliente: dadosVenda.cliente,
             metodoPagamento: metodoPagamentoTexto
-          });
+          };
+
+          console.log('=== DADOS SENDO ENVIADOS PARA PÁGINA FINALIZADA ===');
+          console.log('Dados completos:', dadosParaFinalizada);
+          console.log('Quantidade de guias sendo enviadas:', dadosParaFinalizada.guias.length);
           
           navigate('/venda-finalizada', { 
-            state: { 
-              venda: data.venda,
-              servicos: servicosCompletos,
-              guias: data.guias,
-              cliente: dadosVenda.cliente,
-              metodoPagamento: metodoPagamentoTexto
-            },
+            state: dadosParaFinalizada,
             replace: true
           });
         },
         onError: (error) => {
-          console.error('Erro ao criar venda:', error);
+          console.error('=== ERRO AO CRIAR VENDA ===');
+          console.error('Erro:', error);
           toast({
             title: "Erro ao processar pagamento",
             description: "Ocorreu um erro ao finalizar a venda. Tente novamente.",
@@ -157,7 +176,8 @@ const CheckoutVendas: React.FC = () => {
       });
 
     } catch (error) {
-      console.error('Erro ao finalizar pagamento:', error);
+      console.error('=== ERRO INESPERADO ===');
+      console.error('Erro:', error);
       toast({
         title: "Erro ao processar pagamento",
         description: "Ocorreu um erro inesperado. Tente novamente.",
