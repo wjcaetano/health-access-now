@@ -79,38 +79,37 @@ function App() {
               path="/*"
               element={
                 <ProtectedRoute>
-                  <PasswordChangeGuard>
-                    <Layout>
-                      <Routes>
-                        <Route path="/" element={<Index />} />
-                        <Route path="/clientes" element={<Clientes />} />
-                        <Route path="/novo-cliente" element={<NovoCliente />} />
-                        <Route path="/editar-cliente/:id" element={<NovoCliente />} />
-                        <Route path="/prestadores" element={<Prestadores />} />
-                        <Route path="/novo-prestador" element={<NovoPrestador />} />
-                        <Route path="/editar-prestador/:id" element={<NovoPrestador />} />
-                        <Route path="/servicos" element={<Servicos />} />
-                        <Route path="/novo-servico" element={<NovoServico />} />
-                        <Route path="/editar-servico/:id" element={<NovoServico />} />
-                        <Route path="/orcamentos" element={<Orcamentos />} />
-                        <Route path="/orcamento/:id" element={<VisualizarOrcamento />} />
-                        <Route path="/vendas" element={<Vendas />} />
-                        <Route path="/checkout-vendas" element={<CheckoutVendas />} />
-                        <Route path="/venda-finalizada" element={<VendaFinalizada />} />
-                        <Route path="/agendamentos" element={<Agendamentos />} />
-                        <Route path="/novo-agendamento" element={<NovoAgendamento />} />
-                        <Route path="/colaboradores" element={<Colaboradores />} />
-                        <Route path="/financeiro" element={<Financeiro />} />
-                        <Route path="/agenda-pagamentos" element={<AgendaPagamentos />} />
-                        <Route path="/guias" element={<Guias />} />
-                        <Route path="/conversas" element={<Conversas />} />
-                        <Route path="/gestao-usuarios" element={<GestaoUsuarios />} />
-                        <Route path="/meu-perfil" element={<MeuPerfil />} />
-                        <Route path="/analise-sistema" element={<AnaliseDoSistema />} />
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    </Layout>
-                  </PasswordChangeGuard>
+                  <PasswordChangeGuard />
+                  <Layout>
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/clientes" element={<Clientes />} />
+                      <Route path="/novo-cliente" element={<NovoCliente />} />
+                      <Route path="/editar-cliente/:id" element={<NovoCliente />} />
+                      <Route path="/prestadores" element={<Prestadores />} />
+                      <Route path="/novo-prestador" element={<NovoPrestador />} />
+                      <Route path="/editar-prestador/:id" element={<NovoPrestador />} />
+                      <Route path="/servicos" element={<Servicos />} />
+                      <Route path="/novo-servico" element={<NovoServico />} />
+                      <Route path="/editar-servico/:id" element={<NovoServico />} />
+                      <Route path="/orcamentos" element={<Orcamentos />} />
+                      <Route path="/orcamento/:id" element={<VisualizarOrcamento />} />
+                      <Route path="/vendas" element={<Vendas />} />
+                      <Route path="/checkout-vendas" element={<CheckoutVendas />} />
+                      <Route path="/venda-finalizada" element={<VendaFinalizada />} />
+                      <Route path="/agendamentos" element={<Agendamentos />} />
+                      <Route path="/novo-agendamento" element={<NovoAgendamento />} />
+                      <Route path="/colaboradores" element={<Colaboradores />} />
+                      <Route path="/financeiro" element={<Financeiro />} />
+                      <Route path="/agenda-pagamentos" element={<AgendaPagamentos />} />
+                      <Route path="/guias" element={<Guias />} />
+                      <Route path="/conversas" element={<Conversas />} />
+                      <Route path="/gestao-usuarios" element={<GestaoUsuarios />} />
+                      <Route path="/meu-perfil" element={<MeuPerfil />} />
+                      <Route path="/analise-sistema" element={<AnaliseDoSistema />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </Layout>
                 </ProtectedRoute>
               }
             />
