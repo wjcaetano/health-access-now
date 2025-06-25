@@ -93,6 +93,8 @@ const CheckoutVendas: React.FC = () => {
       criarVenda({ venda: novaVenda, servicos: servicosVenda }, {
         onSuccess: (data) => {
           console.log('Venda criada com sucesso:', data);
+          console.log('Guias geradas:', data.guias);
+          console.log('Quantidade de guias:', data.guias?.length);
           
           if (dadosVenda.orcamentoId) {
             console.log('Atualizando status do orçamento:', dadosVenda.orcamentoId);
@@ -122,6 +124,14 @@ const CheckoutVendas: React.FC = () => {
                 nome: servicoOriginal.prestadorNome
               }
             };
+          });
+
+          console.log('Dados sendo enviados para página finalizada:', {
+            venda: data.venda,
+            servicos: servicosCompletos,
+            guias: data.guias,
+            cliente: dadosVenda.cliente,
+            metodoPagamento: metodoPagamentoTexto
           });
           
           navigate('/venda-finalizada', { 

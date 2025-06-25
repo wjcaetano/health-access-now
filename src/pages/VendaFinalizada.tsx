@@ -16,14 +16,21 @@ const VendaFinalizada: React.FC = () => {
   const { venda, servicos, guias, cliente, metodoPagamento } = location.state || {};
 
   useEffect(() => {
+    console.log('=== PÁGINA VENDA FINALIZADA ===');
     console.log('Dados recebidos na página finalizada:', { venda, servicos, guias, cliente, metodoPagamento });
+    console.log('Quantidade de guias recebidas:', guias?.length);
+    console.log('Detalhes das guias:', guias);
     
     if (!venda || !servicos || !cliente) {
       console.error('Dados da venda não encontrados:', { venda, servicos, cliente });
       navigate('/dashboard/vendas');
       return;
     }
-  }, [venda, servicos, cliente, navigate]);
+
+    if (!guias || guias.length === 0) {
+      console.warn('Nenhuma guia foi recebida ou criada para esta venda');
+    }
+  }, [venda, servicos, cliente, guias, navigate]);
 
   if (!venda || !servicos || !cliente) {
     return (
@@ -37,10 +44,16 @@ const VendaFinalizada: React.FC = () => {
   }
 
   const gerarCodigoGuia = (guiaId: string, index: number) => {
+    console.log('Gerando código para guia:', { guiaId, index, guias });
+    
     if (guias && guias[index]) {
+      console.log('Usando código da guia existente:', guias[index].codigo_autenticacao);
       return guias[index].codigo_autenticacao;
     }
-    return `AG${Date.now()}${(index + 1).toString().padStart(2, '0')}`;
+    
+    const codigoGerado = `AG${Date.now()}${(index + 1).toString().padStart(2, '0')}`;
+    console.log('Código gerado automaticamente:', codigoGerado);
+    return codigoGerado;
   };
 
   const imprimirRecibo = () => {
@@ -78,6 +91,9 @@ const VendaFinalizada: React.FC = () => {
 
   const imprimirGuias = () => {
     console.log('Preparando impressão das guias...');
+    console.log('Serviços para impressão:', servicos);
+    console.log('Guias disponíveis:', guias);
+    
     setShowGuias(true);
     
     setTimeout(() => {
@@ -136,6 +152,20 @@ const VendaFinalizada: React.FC = () => {
           showGuias={showGuias}
           quantidadeServicos={servicos.length}
         />
+
+        {/* Debug Info */}
+        <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+          <h4 className="font-semibold text-yellow-800 mb-2">Debug - Informações das Guias</h4>
+          <p className="text-sm text-yellow-700">
+            Quantidade de serviços: {servicos.length}
+          </p>
+          <p className="text-sm text-yellow-700">
+            Quantidade de guias: {guias?.length || 0}
+          </p>
+          <p className="text-sm text-yellow-700">
+            Guias disponíveis: {guias ? 'Sim' : 'Não'}
+          </p>
+        </div>
       </div>
 
       {showRecibo && (
@@ -151,15 +181,18 @@ const VendaFinalizada: React.FC = () => {
 
       {showGuias && (
         <div className="guias-print hidden">
-          {servicos.map((servico: any, index: number) => (
-            <GuiaServico
-              key={servico.id}
-              venda={venda}
-              cliente={cliente}
-              servico={servico}
-              codigoGuia={gerarCodigoGuia(venda.id, index)}
-            />
-          ))}
+          {servicos.map((servico: any, index: number) => {
+            console.log(`Renderizando guia ${index + 1}:`, servico);
+            return (
+              <GuiaServico
+                key={servico.id}
+                venda={venda}
+                cliente={cliente}
+                servico={servico}
+                codigoGuia={gerarCodigoGuia(venda.id, index)}
+              />
+            );
+          })}
         </div>
       )}
     </>
