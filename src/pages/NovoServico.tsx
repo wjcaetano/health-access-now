@@ -10,7 +10,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { 
   Form, 
   FormControl, 
@@ -26,78 +25,17 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { 
-  Switch 
-} from "@/components/ui/switch";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Prestador } from "@/types";
-
-// Dados fictícios para demonstração
-const prestadores: Prestador[] = [
-  {
-    id: "prest-001",
-    nome: "Clínica CardioSaúde",
-    tipo: "clinica",
-    cnpj: "12.345.678/0001-90",
-    endereco: "Rua das Palmeiras, 123 - Centro",
-    telefone: "(11) 99999-8888",
-    email: "contato@cardiosaude.com",
-    contaBancaria: {
-      banco: "Banco do Brasil",
-      agencia: "1234",
-      conta: "56789-0",
-      tipoConta: "corrente"
-    },
-    comissao: 15,
-    dataCadastro: new Date(2023, 1, 15),
-    ativo: true
-  },
-  {
-    id: "prest-002",
-    nome: "Laboratório Análises Clínicas",
-    tipo: "laboratorio",
-    cnpj: "98.765.432/0001-10",
-    endereco: "Avenida Brasil, 500 - Jardim América",
-    telefone: "(11) 3333-4444",
-    email: "lab@analisesclinicas.com",
-    contaBancaria: {
-      banco: "Itaú",
-      agencia: "5678",
-      conta: "12345-6",
-      tipoConta: "corrente"
-    },
-    comissao: 12,
-    dataCadastro: new Date(2022, 11, 7),
-    ativo: true
-  },
-  {
-    id: "prest-003",
-    nome: "Dra. Ana Silva",
-    tipo: "profissional",
-    especialidades: ["Dermatologia", "Dermatologia Estética"],
-    cnpj: "76.543.210/0001-54",
-    endereco: "Rua Flores, 29 - Jardim Paulista",
-    telefone: "(11) 97777-6666",
-    email: "dra.anasilva@dermaclinica.com",
-    contaBancaria: {
-      banco: "Santander",
-      agencia: "9876",
-      conta: "54321-0",
-      tipoConta: "poupanca"
-    },
-    comissao: 10,
-    dataCadastro: new Date(2023, 3, 22),
-    ativo: true
-  }
-];
+import { useCreateServico } from "@/hooks/useServicos";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   nome: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
   categoria: z.string().min(1, "Selecione uma categoria"),
-  prestadorId: z.string().min(1, "Selecione um prestador"),
   valorCusto: z.number().min(0, "O valor deve ser maior que zero"),
   valorVenda: z.number().min(0, "O valor deve ser maior que zero"),
   descricao: z.string().optional(),
@@ -107,13 +45,14 @@ const formSchema = z.object({
 
 const NovoServico = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { mutate: criarServico } = useCreateServico();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       nome: "",
       categoria: "",
-      prestadorId: "",
       valorCusto: 0,
       valorVenda: 0,
       descricao: "",
@@ -123,49 +62,54 @@ const NovoServico = () => {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const prestador = prestadores.find(p => p.id === values.prestadorId);
-    console.log("Dados do serviço:", { ...values, prestador });
-    
-    toast({
-      title: "Serviço cadastrado com sucesso!",
-      description: `${values.nome} foi adicionado como serviço.`,
+    criarServico({
+      nome: values.nome,
+      categoria: values.categoria,
+      valor_custo: values.valorCusto,
+      valor_venda: values.valorVenda,
+      descricao: values.descricao || null,
+      tempo_estimado: values.tempoEstimado || null,
+      ativo: values.ativo
+    }, {
+      onSuccess: () => {
+        toast({
+          title: "Serviço cadastrado com sucesso!",
+          description: `${values.nome} foi adicionado como serviço.`,
+        });
+        navigate("/servicos");
+      },
+      onError: (error) => {
+        toast({
+          title: "Erro ao cadastrar serviço",
+          description: "Ocorreu um erro ao cadastrar o serviço. Tente novamente.",
+          variant: "destructive"
+        });
+        console.error('Erro ao cadastrar serviço:', error);
+      }
     });
   };
 
-  // Calcular valor de venda quando o valor de custo ou prestador muda
-  const calcularValorVenda = (valorCusto: number, prestadorId: string) => {
-    const prestador = prestadores.find(p => p.id === prestadorId);
-    if (prestador && valorCusto > 0) {
-      const comissao = prestador.comissao / 100;
-      const valorVenda = valorCusto * (1 + comissao);
-      return Math.round(valorVenda * 100) / 100; // Arredonda para 2 casas decimais
-    }
-    return 0;
-  };
-
-  // Atualiza o valor de venda quando o valor de custo ou prestador mudar
+  // Calcular valor de venda sugerido baseado no custo (margem de 30%)
   React.useEffect(() => {
     const subscription = form.watch((value, { name }) => {
-      if (name === 'valorCusto' || name === 'prestadorId') {
+      if (name === 'valorCusto') {
         const valorCusto = Number(value.valorCusto);
-        const prestadorId = String(value.prestadorId);
-        
-        if (valorCusto > 0 && prestadorId) {
-          const novoValor = calcularValorVenda(valorCusto, prestadorId);
-          form.setValue('valorVenda', novoValor);
+        if (valorCusto > 0) {
+          const valorVendaSugerido = valorCusto * 1.3; // 30% de margem
+          form.setValue('valorVenda', Math.round(valorVendaSugerido * 100) / 100);
         }
       }
     });
     
     return () => subscription.unsubscribe();
-  }, [form, form.watch]);
+  }, [form]);
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
         <h2 className="text-3xl font-bold text-gray-900">Novo Serviço</h2>
         <p className="text-gray-500 mt-1">
-          Cadastre um novo serviço oferecido por um prestador
+          Cadastre um novo serviço na plataforma
         </p>
       </div>
 
@@ -179,34 +123,6 @@ const NovoServico = () => {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="prestadorId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Prestador</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o prestador" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {prestadores.map((prestador) => (
-                          <SelectItem key={prestador.id} value={prestador.id}>
-                            {prestador.nome} ({prestador.tipo})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <div className="grid md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -293,7 +209,7 @@ const NovoServico = () => {
                       </FormControl>
                       <FormMessage />
                       <p className="text-xs text-gray-500">
-                        Valor calculado com base no custo e na comissão do prestador
+                        Valor sugerido automaticamente com base no custo
                       </p>
                     </FormItem>
                   )}
@@ -341,7 +257,7 @@ const NovoServico = () => {
                       <div className="space-y-0.5">
                         <FormLabel className="text-base">Ativo</FormLabel>
                         <p className="text-sm text-gray-500">
-                          Serviço disponível para agendamento
+                          Serviço disponível para uso
                         </p>
                       </div>
                       <FormControl>
@@ -356,7 +272,11 @@ const NovoServico = () => {
               </div>
 
               <div className="flex justify-end space-x-2">
-                <Button variant="outline" type="button">
+                <Button 
+                  variant="outline" 
+                  type="button"
+                  onClick={() => navigate("/servicos")}
+                >
                   Cancelar
                 </Button>
                 <Button type="submit" className="bg-agendaja-primary hover:bg-agendaja-secondary">

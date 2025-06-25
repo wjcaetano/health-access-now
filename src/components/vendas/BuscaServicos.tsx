@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Plus } from "lucide-react";
 import { useServicos } from "@/hooks/useServicos";
-import { usePrestadores } from "@/hooks/usePrestadores";
+import { usePrestadoresPorServico } from "@/hooks/useServicoPrestadores";
 
 interface ServicoSelecionado {
   id: string;
@@ -27,23 +27,17 @@ const BuscaServicos: React.FC<BuscaServicosProps> = ({ onServicoSelecionado }) =
   const [prestadorSelecionado, setPrestadorSelecionado] = useState<string>("");
   
   const { data: servicos, isLoading: carregandoServicos } = useServicos();
-  const { data: prestadores, isLoading: carregandoPrestadores } = usePrestadores();
+  const { data: prestadoresDisponiveis, isLoading: carregandoPrestadores } = usePrestadoresPorServico(
+    servicoSelecionado?.id || ""
+  );
 
   console.log("Serviços carregados:", servicos);
-  console.log("Prestadores carregados:", prestadores);
+  console.log("Prestadores disponíveis para serviço:", prestadoresDisponiveis);
 
   const servicosFiltrados = servicos?.filter((servico) =>
     servico.nome.toLowerCase().includes(termoBusca.toLowerCase()) ||
     servico.categoria.toLowerCase().includes(termoBusca.toLowerCase())
   ) || [];
-
-  // Buscar prestadores que oferecem o serviço selecionado
-  const prestadoresDisponiveis = prestadores?.filter((prestador) => {
-    if (!servicoSelecionado) return false;
-    // Por enquanto, assumimos que todos os prestadores podem oferecer qualquer serviço
-    // Em uma implementação futura, isso poderia ser baseado em especialidades
-    return prestador.ativo;
-  }) || [];
 
   const handleSelecionarServico = (servico: any) => {
     console.log("Serviço selecionado:", servico);
@@ -53,7 +47,7 @@ const BuscaServicos: React.FC<BuscaServicosProps> = ({ onServicoSelecionado }) =
 
   const handleAdicionarServico = () => {
     if (servicoSelecionado && prestadorSelecionado) {
-      const prestador = prestadores?.find(p => p.id === prestadorSelecionado);
+      const prestador = prestadoresDisponiveis?.find(p => p.id === prestadorSelecionado);
       
       const servicoParaAdicionar: ServicoSelecionado = {
         id: servicoSelecionado.id,
@@ -73,7 +67,7 @@ const BuscaServicos: React.FC<BuscaServicosProps> = ({ onServicoSelecionado }) =
     }
   };
 
-  if (carregandoServicos || carregandoPrestadores) {
+  if (carregandoServicos) {
     return (
       <Card className="mb-6">
         <CardContent className="pt-6">
@@ -142,51 +136,60 @@ const BuscaServicos: React.FC<BuscaServicosProps> = ({ onServicoSelecionado }) =
         )}
 
         {/* Seleção de Prestador */}
-        {servicoSelecionado && prestadoresDisponiveis.length > 0 && (
+        {servicoSelecionado && (
           <div className="space-y-3">
             <h4 className="font-medium">Selecione o Prestador:</h4>
-            <div className="grid gap-2">
-              {prestadoresDisponiveis.map((prestador) => (
-                <label
-                  key={prestador.id}
-                  className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
-                >
-                  <input
-                    type="radio"
-                    name="prestador"
-                    value={prestador.id}
-                    checked={prestadorSelecionado === prestador.id}
-                    onChange={(e) => setPrestadorSelecionado(e.target.value)}
-                    className="text-agendaja-primary"
-                  />
-                  <div className="flex-1">
-                    <p className="font-medium">{prestador.nome}</p>
-                    <p className="text-sm text-gray-600 capitalize">{prestador.tipo}</p>
-                    {prestador.especialidades && prestador.especialidades.length > 0 && (
-                      <p className="text-xs text-gray-500">
-                        {prestador.especialidades.join(", ")}
-                      </p>
-                    )}
-                  </div>
-                </label>
-              ))}
-            </div>
+            
+            {carregandoPrestadores ? (
+              <div className="text-center py-4">
+                <p className="text-gray-500">Carregando prestadores...</p>
+              </div>
+            ) : prestadoresDisponiveis && prestadoresDisponiveis.length > 0 ? (
+              <div className="grid gap-2">
+                {prestadoresDisponiveis.map((prestador) => (
+                  <label
+                    key={prestador.id}
+                    className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
+                  >
+                    <input
+                      type="radio"
+                      name="prestador"
+                      value={prestador.id}
+                      checked={prestadorSelecionado === prestador.id}
+                      onChange={(e) => setPrestadorSelecionado(e.target.value)}
+                      className="text-agendaja-primary"
+                    />
+                    <div className="flex-1">
+                      <p className="font-medium">{prestador.nome}</p>
+                      <p className="text-sm text-gray-600 capitalize">{prestador.tipo}</p>
+                      {prestador.especialidades && prestador.especialidades.length > 0 && (
+                        <p className="text-xs text-gray-500">
+                          {prestador.especialidades.join(", ")}
+                        </p>
+                      )}
+                    </div>
+                  </label>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-amber-600">
+                <p>Nenhum prestador vinculado a este serviço</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Vincule prestadores na aba "Gerenciar Vínculos" da página de Serviços
+                </p>
+              </div>
+            )}
 
-            <Button
-              onClick={handleAdicionarServico}
-              disabled={!prestadorSelecionado}
-              className="w-full bg-agendaja-primary hover:bg-agendaja-secondary"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Adicionar Serviço
-            </Button>
-          </div>
-        )}
-
-        {/* Mensagem quando nenhum prestador está disponível */}
-        {servicoSelecionado && prestadoresDisponiveis.length === 0 && (
-          <div className="text-center py-8 text-amber-600">
-            <p>Nenhum prestador ativo disponível para este serviço</p>
+            {prestadoresDisponiveis && prestadoresDisponiveis.length > 0 && (
+              <Button
+                onClick={handleAdicionarServico}
+                disabled={!prestadorSelecionado}
+                className="w-full bg-agendaja-primary hover:bg-agendaja-secondary"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Adicionar Serviço
+              </Button>
+            )}
           </div>
         )}
 

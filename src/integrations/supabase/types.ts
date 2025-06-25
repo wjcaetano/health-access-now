@@ -627,6 +627,45 @@ export type Database = {
           },
         ]
       }
+      servico_prestadores: {
+        Row: {
+          ativo: boolean | null
+          created_at: string | null
+          id: string
+          prestador_id: string | null
+          servico_id: string | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          created_at?: string | null
+          id?: string
+          prestador_id?: string | null
+          servico_id?: string | null
+        }
+        Update: {
+          ativo?: boolean | null
+          created_at?: string | null
+          id?: string
+          prestador_id?: string | null
+          servico_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "servico_prestadores_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "servico_prestadores_servico_id_fkey"
+            columns: ["servico_id"]
+            isOneToOne: false
+            referencedRelation: "servicos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       servicos: {
         Row: {
           ativo: boolean | null
