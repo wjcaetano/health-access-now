@@ -12,8 +12,8 @@ export default function ListaClientes() {
   const { data: clientes, isLoading, error } = useClientes();
   const [searchTerm, setSearchTerm] = useState("");
 
-  if (isLoading) return <div>Carregando clientes...</div>;
-  if (error) return <div>Erro ao carregar clientes: {error.message}</div>;
+  if (isLoading) return <div className="p-4">Carregando clientes...</div>;
+  if (error) return <div className="p-4 text-red-600">Erro ao carregar clientes: {error.message}</div>;
 
   const clientesFiltrados = clientes?.filter((cliente) =>
     cliente.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -24,17 +24,21 @@ export default function ListaClientes() {
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <span className="text-lg sm:text-xl">Clientes Cadastrados ({clientesFiltrados.length})</span>
-          <div className="relative w-full sm:w-72">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-            <Input
-              placeholder="Buscar por nome, CPF, telefone ou email..."
-              className="pl-8"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+      <CardHeader className="p-4 md:p-6">
+        <CardTitle className="flex flex-col space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <span className="text-lg md:text-xl">
+              Clientes Cadastrados ({clientesFiltrados.length})
+            </span>
+            <div className="relative w-full sm:w-72">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+              <Input
+                placeholder="Buscar por nome, CPF, telefone ou email..."
+                className="pl-8 w-full"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
         </CardTitle>
       </CardHeader>
@@ -43,29 +47,31 @@ export default function ListaClientes() {
           {clientesFiltrados.map((cliente) => (
             <div
               key={cliente.id}
-              className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-4 border-b last:border-b-0 hover:bg-gray-50 gap-4"
+              className="flex flex-col space-y-3 p-4 border-b last:border-b-0 hover:bg-gray-50"
             >
-              <div className="flex items-start lg:items-center space-x-4 min-w-0 flex-1">
-                <div className="h-12 w-12 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary flex-shrink-0">
-                  <User className="h-6 w-6" />
+              <div className="flex items-start space-x-3">
+                <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary flex-shrink-0">
+                  <User className="h-5 w-5 md:h-6 md:w-6" />
                 </div>
-                <div className="min-w-0 flex-1 overflow-hidden">
-                  <h3 className="font-medium text-lg text-gray-900 truncate">{cliente.nome}</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 text-sm text-gray-500 mt-1">
-                    <span className="flex items-center min-w-0">
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-medium text-base md:text-lg text-gray-900 truncate">
+                    {cliente.nome}
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-500 mt-1">
+                    <span className="flex items-center">
                       <User className="h-3 w-3 mr-1 flex-shrink-0" />
                       <span className="truncate">{cliente.cpf}</span>
                     </span>
-                    <span className="flex items-center min-w-0">
+                    <span className="flex items-center">
                       <Phone className="h-3 w-3 mr-1 flex-shrink-0" />
                       <span className="truncate">{cliente.telefone}</span>
                     </span>
-                    <span className="flex items-center min-w-0">
+                    <span className="flex items-center sm:col-span-2">
                       <Mail className="h-3 w-3 mr-1 flex-shrink-0" />
                       <span className="truncate" title={cliente.email}>{cliente.email}</span>
                     </span>
                     {cliente.endereco && (
-                      <span className="flex items-center min-w-0">
+                      <span className="flex items-center sm:col-span-2">
                         <MapPin className="h-3 w-3 mr-1 flex-shrink-0" />
                         <span className="truncate" title={cliente.endereco}>{cliente.endereco}</span>
                       </span>
@@ -73,22 +79,25 @@ export default function ListaClientes() {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center justify-end lg:justify-start space-x-2 flex-shrink-0">
-                <Badge variant="outline" className="bg-green-50 text-green-700 whitespace-nowrap text-xs">
+              
+              <div className="flex items-center justify-between pt-2 border-t">
+                <Badge variant="outline" className="bg-green-50 text-green-700 text-xs">
                   ID: {cliente.id_associado}
                 </Badge>
-                <Button variant="ghost" size="sm" className="flex-shrink-0 h-8 w-8 p-0">
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="sm" className="text-red-600 flex-shrink-0 h-8 w-8 p-0">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm" className="text-red-600 h-8 w-8 p-0">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
           {clientesFiltrados.length === 0 && (
-            <div className="text-center text-gray-500 py-8">
-              {searchTerm ? "Nenhum cliente encontrado" : "Nenhum cliente cadastrado"}
+            <div className="text-center text-gray-500 py-8 px-4">
+              {searchTerm ? "Nenhum cliente encontrado com os critérios de busca" : "Nenhum cliente cadastrado ainda"}
             </div>
           )}
         </div>

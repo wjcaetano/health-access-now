@@ -49,49 +49,51 @@ const Layout: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 w-full">
       <Sidebar 
         collapsed={collapsed} 
         setCollapsed={setCollapsed} 
         userProfile={userProfile} 
       />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <Header 
           title="Dashboard" 
           toggleSidebar={toggleSidebar}
         />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/clientes" element={<Clientes />} />
-            <Route path="/clientes/novo" element={<NovoCliente />} />
-            <Route path="/prestadores" element={<Prestadores />} />
-            <Route path="/prestadores/novo" element={<NovoPrestador />} />
-            <Route path="/servicos" element={<Servicos />} />
-            <Route path="/servicos/novo" element={<NovoServico />} />
-            <Route path="/orcamentos" element={<Orcamentos />} />
-            <Route path="/orcamentos/:id" element={<VisualizarOrcamento />} />
-            <Route path="/vendas" element={<Vendas />} />
-            <Route path="/checkout-vendas" element={<CheckoutVendas />} />
-            <Route path="/venda-finalizada" element={<VendaFinalizada />} />
-            <Route path="/agendamentos" element={<Agendamentos />} />
-            <Route path="/agendamentos/novo" element={<NovoAgendamento />} />
-            <Route path="/colaboradores" element={<Colaboradores />} />
-            <Route path="/financeiro" element={<Financeiro />} />
-            <Route path="/agenda-pagamentos" element={<AgendaPagamentos />} />
-            <Route path="/guias" element={<Guias />} />
-            <Route path="/conversas" element={<Conversas />} />
-            <Route path="/gestao-usuarios" element={<GestaoUsuarios />} />
-            <Route path="/meu-perfil" element={<MeuPerfil />} />
-            <Route path="/analise-sistema" element={<AnaliseDoSistema />} />
-            
-            {/* Prestador routes */}
-            <Route path="/prestador" element={<Portal />} />
-            <Route path="/prestador/faturamento" element={<Faturamento />} />
-            <Route path="/prestador/guias" element={<GuiasPrestador />} />
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-3 md:p-6">
+          <div className="max-w-full">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/clientes" element={<Clientes />} />
+              <Route path="/clientes/novo" element={<NovoCliente />} />
+              <Route path="/prestadores" element={<Prestadores />} />
+              <Route path="/prestadores/novo" element={<NovoPrestador />} />
+              <Route path="/servicos" element={<Servicos />} />
+              <Route path="/servicos/novo" element={<NovoServico />} />
+              <Route path="/orcamentos" element={<Orcamentos />} />
+              <Route path="/orcamentos/:id" element={<VisualizarOrcamento />} />
+              <Route path="/vendas" element={<Vendas />} />
+              <Route path="/checkout-vendas" element={<CheckoutVendas />} />
+              <Route path="/venda-finalizada" element={<VendaFinalizada />} />
+              <Route path="/agendamentos" element={<Agendamentos />} />
+              <Route path="/agendamentos/novo" element={<NovoAgendamento />} />
+              <Route path="/colaboradores" element={<Colaboradores />} />
+              <Route path="/financeiro" element={<Financeiro />} />
+              <Route path="/agenda-pagamentos" element={<AgendaPagamentos />} />
+              <Route path="/guias" element={<Guias />} />
+              <Route path="/conversas" element={<Conversas />} />
+              <Route path="/gestao-usuarios" element={<GestaoUsuarios />} />
+              <Route path="/meu-perfil" element={<MeuPerfil />} />
+              <Route path="/analise-sistema" element={<AnaliseDoSistema />} />
+              
+              {/* Prestador routes */}
+              <Route path="/prestador" element={<Portal />} />
+              <Route path="/prestador/faturamento" element={<Faturamento />} />
+              <Route path="/prestador/guias" element={<GuiasPrestador />} />
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
         </main>
       </div>
     </div>

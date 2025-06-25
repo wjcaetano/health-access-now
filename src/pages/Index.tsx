@@ -5,6 +5,8 @@ import AgendamentosRecentes from "@/components/dashboard/AgendamentosRecentes";
 import OrcamentosRecentes from "@/components/dashboard/OrcamentosRecentes";
 import ResumoWhatsapp from "@/components/dashboard/ResumoWhatsapp";
 import { Calendar, User, MessageSquare, CalendarCheck } from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { agendamentos, clientes, orcamentos } from "@/data/mock";
 
 const mensagensRecentes = [
@@ -56,40 +58,42 @@ const Index = () => {
   }).length;
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="container mx-auto px-4 py-6 space-y-6 animate-fade-in max-w-7xl">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <StatCard
           title="Clientes Cadastrados"
           value={clientes.length}
-          icon={<User className="h-5 w-5" />}
+          icon={<User className="h-4 w-4 md:h-5 md:w-5" />}
           description="Total de clientes na base"
           trend={{ value: 12, isPositive: true }}
         />
         <StatCard
           title="Agendamentos Confirmados"
           value={agendamentosAgendados}
-          icon={<Calendar className="h-5 w-5" />}
+          icon={<Calendar className="h-4 w-4 md:h-5 md:w-5" />}
           description="Agendamentos ativos"
           trend={{ value: 5, isPositive: true }}
         />
         <StatCard
           title="Atendimentos Hoje"
           value={agendamentosHoje}
-          icon={<CalendarCheck className="h-5 w-5" />}
+          icon={<CalendarCheck className="h-4 w-4 md:h-5 md:w-5" />}
           description="Agendados para hoje"
         />
         <StatCard
           title="Mensagens Não Lidas"
           value={mensagensRecentes.filter(m => m.naoLida).length}
-          icon={<MessageSquare className="h-5 w-5" />}
+          icon={<MessageSquare className="h-4 w-4 md:h-5 md:w-5" />}
           description="Via WhatsApp"
           trend={{ value: 8, isPositive: false }}
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <AgendamentosRecentes agendamentos={agendamentosRecentes} />
-        <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="lg:col-span-2">
+          <AgendamentosRecentes agendamentos={agendamentosRecentes} />
+        </div>
+        <div className="space-y-4 md:space-y-6">
           <OrcamentosRecentes orcamentos={orcamentosRecentes} />
           <ResumoWhatsapp mensagens={mensagensRecentes} />
         </div>

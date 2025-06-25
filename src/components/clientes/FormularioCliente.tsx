@@ -53,80 +53,88 @@ export default function FormularioCliente() {
   };
 
   return (
-    <Card className="mb-6">
+    <Card className="mb-6 w-full">
       <CardHeader>
-        <CardTitle>Cadastrar Novo Cliente</CardTitle>
+        <CardTitle className="text-lg md:text-xl">Cadastrar Novo Cliente</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4 md:p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="nome">Nome Completo *</Label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="space-y-2 sm:col-span-2 lg:col-span-2">
+              <Label htmlFor="nome" className="text-sm font-medium">Nome Completo *</Label>
               <Input
                 id="nome"
                 value={formData.nome}
                 onChange={(e) => handleChange("nome", e.target.value)}
+                className="w-full"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cpf">CPF *</Label>
+              <Label htmlFor="cpf" className="text-sm font-medium">CPF *</Label>
               <Input
                 id="cpf"
                 value={formData.cpf}
                 onChange={(e) => handleChange("cpf", e.target.value)}
                 placeholder="000.000.000-00"
+                className="w-full"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="telefone">Telefone *</Label>
+              <Label htmlFor="telefone" className="text-sm font-medium">Telefone *</Label>
               <Input
                 id="telefone"
                 value={formData.telefone}
                 onChange={(e) => handleChange("telefone", e.target.value)}
                 placeholder="(11) 99999-9999"
+                className="w-full"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email *</Label>
+              <Label htmlFor="email" className="text-sm font-medium">Email *</Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleChange("email", e.target.value)}
+                className="w-full"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="id_associado">ID do Associado *</Label>
+              <Label htmlFor="id_associado" className="text-sm font-medium">ID do Associado *</Label>
               <Input
                 id="id_associado"
                 value={formData.id_associado}
                 onChange={(e) => handleChange("id_associado", e.target.value)}
                 placeholder="Ex: ASS001"
+                className="w-full"
                 required
               />
             </div>
-            <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="endereco">Endereço</Label>
+            <div className="space-y-2 sm:col-span-2 lg:col-span-3">
+              <Label htmlFor="endereco" className="text-sm font-medium">Endereço</Label>
               <Input
                 id="endereco"
                 value={formData.endereco}
                 onChange={(e) => handleChange("endereco", e.target.value)}
                 placeholder="Rua, número, bairro, cidade"
+                className="w-full"
               />
             </div>
           </div>
           
-          <Button 
-            type="submit" 
-            className="w-full bg-agendaja-primary hover:bg-agendaja-secondary"
-            disabled={createCliente.isPending}
-          >
-            {createCliente.isPending ? "Cadastrando..." : "Cadastrar Cliente"}
-          </Button>
+          <div className="pt-4">
+            <Button 
+              type="submit" 
+              className="w-full sm:w-auto sm:min-w-[200px] bg-agendaja-primary hover:bg-agendaja-secondary"
+              disabled={createCliente.isPending}
+            >
+              {createCliente.isPending ? "Cadastrando..." : "Cadastrar Cliente"}
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>

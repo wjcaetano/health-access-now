@@ -43,38 +43,42 @@ export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) 
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 py-4 px-6">
+    <header className="bg-white border-b border-gray-200 py-3 md:py-4 px-4 md:px-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={toggleSidebar} 
-            className="lg:hidden"
+            className="lg:hidden h-8 w-8"
           >
-            <Menu className="h-5 w-5" />
+            <Menu className="h-4 w-4" />
           </Button>
           
-          <div>
-            <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
-            {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+          <div className="min-w-0 flex-1">
+            <h1 className="text-lg md:text-xl font-semibold text-gray-900 truncate">{title}</h1>
+            {subtitle && <p className="text-xs md:text-sm text-gray-500 truncate">{subtitle}</p>}
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
-          <div className="hidden md:block w-64">
+        <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+          <div className="hidden lg:block w-48 xl:w-64">
             <div className="relative">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
               <Input 
                 placeholder="Buscar..." 
-                className="pl-8 bg-gray-50 border-gray-200 focus:bg-white" 
+                className="pl-8 bg-gray-50 border-gray-200 focus:bg-white text-sm" 
               />
             </div>
           </div>
           
-          <Button variant="outline" size="sm" className="hidden md:flex gap-1">
-            <Search className="h-4 w-4 md:hidden" />
-            <span>Buscar</span>
+          <Button variant="outline" size="sm" className="hidden md:flex gap-1 text-sm">
+            <Search className="h-4 w-4" />
+            <span className="hidden lg:inline">Buscar</span>
+          </Button>
+          
+          <Button variant="outline" size="sm" className="md:hidden">
+            <Search className="h-4 w-4" />
           </Button>
           
           {/* Notification Bell */}
@@ -83,16 +87,18 @@ export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) 
           {/* User menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="flex gap-2 ml-2">
+              <Button variant="ghost" size="sm" className="flex gap-1 md:gap-2 ml-1 md:ml-2">
                 <User className="h-4 w-4" />
-                <span className="hidden sm:inline">{profile?.nome || user?.email}</span>
+                <span className="hidden sm:inline text-sm truncate max-w-24 md:max-w-none">
+                  {profile?.nome || user?.email}
+                </span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{profile?.nome || 'Usuário'}</p>
-                  <p className="text-xs leading-none text-muted-foreground">
+                  <p className="text-sm font-medium leading-none truncate">{profile?.nome || 'Usuário'}</p>
+                  <p className="text-xs leading-none text-muted-foreground truncate">
                     {user?.email}
                   </p>
                   <p className="text-xs leading-none text-muted-foreground capitalize">
