@@ -425,6 +425,7 @@ export type Database = {
           valor_custo: number
           valor_final: number
           valor_venda: number
+          venda_id: string | null
         }
         Insert: {
           cliente_id?: string | null
@@ -439,6 +440,7 @@ export type Database = {
           valor_custo: number
           valor_final: number
           valor_venda: number
+          venda_id?: string | null
         }
         Update: {
           cliente_id?: string | null
@@ -453,6 +455,7 @@ export type Database = {
           valor_custo?: number
           valor_final?: number
           valor_venda?: number
+          venda_id?: string | null
         }
         Relationships: [
           {
@@ -474,6 +477,13 @@ export type Database = {
             columns: ["servico_id"]
             isOneToOne: false
             referencedRelation: "servicos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orcamentos_venda_id_fkey"
+            columns: ["venda_id"]
+            isOneToOne: false
+            referencedRelation: "vendas"
             referencedColumns: ["id"]
           },
         ]
@@ -745,6 +755,102 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      vendas: {
+        Row: {
+          cliente_id: string
+          created_at: string
+          id: string
+          metodo_pagamento: string
+          observacoes: string | null
+          status: string
+          valor_total: number
+        }
+        Insert: {
+          cliente_id: string
+          created_at?: string
+          id?: string
+          metodo_pagamento: string
+          observacoes?: string | null
+          status?: string
+          valor_total: number
+        }
+        Update: {
+          cliente_id?: string
+          created_at?: string
+          id?: string
+          metodo_pagamento?: string
+          observacoes?: string | null
+          status?: string
+          valor_total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendas_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendas_servicos: {
+        Row: {
+          created_at: string
+          data_agendamento: string | null
+          horario: string | null
+          id: string
+          prestador_id: string
+          servico_id: string
+          status: string
+          valor: number
+          venda_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_agendamento?: string | null
+          horario?: string | null
+          id?: string
+          prestador_id: string
+          servico_id: string
+          status?: string
+          valor: number
+          venda_id: string
+        }
+        Update: {
+          created_at?: string
+          data_agendamento?: string | null
+          horario?: string | null
+          id?: string
+          prestador_id?: string
+          servico_id?: string
+          status?: string
+          valor?: number
+          venda_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendas_servicos_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendas_servicos_servico_id_fkey"
+            columns: ["servico_id"]
+            isOneToOne: false
+            referencedRelation: "servicos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendas_servicos_venda_id_fkey"
+            columns: ["venda_id"]
+            isOneToOne: false
+            referencedRelation: "vendas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

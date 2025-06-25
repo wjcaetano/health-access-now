@@ -17,20 +17,23 @@ import {
   MapPin,
   Calendar,
   UserPlus,
-  ShoppingCart,
   Save,
   X
 } from "lucide-react";
 import { useClientes } from "@/hooks/useClientes";
 import { useCreateOrcamento } from "@/hooks/useOrcamentos";
+import { useOrcamentosPorCliente } from "@/hooks/useOrcamentos";
+import { useCreateVenda } from "@/hooks/useVendas";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import BuscaServicos from "@/components/vendas/BuscaServicos";
 import ListaServicos from "@/components/vendas/ListaServicos";
+import CheckoutVenda from "@/components/vendas/CheckoutVenda";
+import OrcamentosPendentes from "@/components/vendas/OrcamentosPendentes";
 
-type EstadoVenda = 'inicial' | 'nao_encontrado' | 'cliente_selecionado' | 'cadastro_servicos';
+type EstadoVenda = 'inicial' | 'nao_encontrado' | 'cliente_selecionado' | 'cadastro_servicos' | 'checkout';
 
 interface ServicoSelecionado {
   id: string;
@@ -49,7 +52,9 @@ const Vendas: React.FC = () => {
   const [servicosSelecionados, setServicosSelecionados] = useState<ServicoSelecionado[]>([]);
   
   const { data: clientes } = useClientes();
+  const { data: orcamentosPendentes } = useOrcamentosPorCliente(clienteSelecionado?.id);
   const { mutate: criarOrcamento } = useCreateOrcamento();
+  const { mutate: criarVenda, isPending: isCreatingVenda } = useCreateVenda();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -130,6 +135,58 @@ const Vendas: React.FC = () => {
     });
   };
 
+  const irParaCheckout = () => {
+    if (servicosSelecionados.length === 0) {
+      toast({
+        title: "Nenhum serviço selecionado",
+        description: "Adicione pelo menos um serviço para prosseguir.",
+        variant: "destructive"
+      });
+      return;
+    }
+    setEstadoAtual('checkout');
+  };
+
+  const voltarDoCheckout = () => {
+    setEstadoAtual('cadastro_servicos');
+  };
+
+  const concluirVenda = (metodoPagamento: string, observacoes?: string) => {
+    const valorTotal = servicosSelecionados.reduce((total, servico) => total + servico.valorVenda, 0);
+    
+    const novaVenda = {
+      cliente_id: clienteSelecionado.id,
+      valor_total: valorTotal,
+      metodo_pagamento: metodoPagamento,
+      status: 'concluida',
+      observacoes
+    };
+
+    const servicosVenda = servicosSelecionados.map(servico => ({
+      servico_id: servico.id,
+      prestador_id: servico.prestadorId,
+      valor: servico.valorVenda
+    }));
+
+    criarVenda({ venda: novaVenda, servicos: servicosVenda }, {
+      onSuccess: () => {
+        toast({
+          title: "Venda concluída",
+          description: "A venda foi realizada com sucesso!"
+        });
+        cancelarOperacao();
+      },
+      onError: (error) => {
+        toast({
+          title: "Erro ao concluir venda",
+          description: "Ocorreu um erro ao processar a venda.",
+          variant: "destructive"
+        });
+        console.error('Erro ao criar venda:', error);
+      }
+    });
+  };
+
   const salvarOrcamento = () => {
     if (servicosSelecionados.length === 0) {
       toast({
@@ -144,15 +201,13 @@ const Vendas: React.FC = () => {
     const dataValidade = new Date();
     dataValidade.setDate(dataValidade.getDate() + 30); // 30 dias de validade
 
-    // Para simplicidade, vamos usar o primeiro serviço para criar o orçamento
-    // Em uma implementação real, seria necessário criar múltiplos orçamentos ou uma estrutura diferente
     const primeiroServico = servicosSelecionados[0];
     
     criarOrcamento({
       cliente_id: clienteSelecionado.id,
       servico_id: primeiroServico.id,
       prestador_id: primeiroServico.prestadorId,
-      valor_custo: primeiroServico.valorVenda * 0.7, // Exemplo: 70% é custo
+      valor_custo: primeiroServico.valorVenda * 0.7,
       valor_venda: primeiroServico.valorVenda,
       valor_final: valorTotal,
       percentual_desconto: 0,
@@ -178,23 +233,28 @@ const Vendas: React.FC = () => {
     });
   };
 
-  const concluirVenda = () => {
-    if (servicosSelecionados.length === 0) {
-      toast({
-        title: "Nenhum serviço selecionado",
-        description: "Adicione pelo menos um serviço para concluir a venda.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Aqui seria implementada a lógica de finalização da venda
-    // Por exemplo: criar agendamentos, guias, etc.
+  const adicionarOrcamentoPendente = (orcamentoId: string) => {
+    // Implementar lógica para adicionar orçamento à venda
     toast({
       title: "Funcionalidade em desenvolvimento",
-      description: "A finalização da venda será implementada em breve."
+      description: "A adição de orçamentos à venda será implementada em breve."
     });
   };
+
+  // Estado checkout
+  if (estadoAtual === 'checkout') {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <CheckoutVenda
+          servicos={servicosSelecionados}
+          cliente={clienteSelecionado}
+          onVoltar={voltarDoCheckout}
+          onConcluirVenda={concluirVenda}
+          isLoading={isCreatingVenda}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -372,6 +432,14 @@ const Vendas: React.FC = () => {
             </CardContent>
           </Card>
 
+          {/* Orçamentos Pendentes */}
+          {orcamentosPendentes && orcamentosPendentes.length > 0 && (
+            <OrcamentosPendentes
+              orcamentos={orcamentosPendentes}
+              onAdicionarOrcamento={adicionarOrcamentoPendente}
+            />
+          )}
+
           {/* Busca e Seleção de Serviços */}
           <BuscaServicos onServicoSelecionado={adicionarServico} />
 
@@ -387,11 +455,10 @@ const Vendas: React.FC = () => {
             <CardContent className="pt-6">
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
-                  onClick={concluirVenda}
+                  onClick={irParaCheckout}
                   className="flex-1 bg-green-600 hover:bg-green-700"
                   disabled={servicosSelecionados.length === 0}
                 >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
                   Concluir Venda
                 </Button>
                 <Button
