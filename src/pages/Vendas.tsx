@@ -267,20 +267,32 @@ const Vendas: React.FC = () => {
   };
 
   const handleCancelarOrcamento = (orcamentoId: string) => {
+    console.log('Tentativa de cancelar orçamento:', orcamentoId);
+    
+    if (!orcamentoId) {
+      toast({
+        title: "Erro",
+        description: "ID do orçamento não encontrado.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     cancelarOrcamento(orcamentoId, {
       onSuccess: () => {
+        console.log('Orçamento cancelado com sucesso');
         toast({
           title: "Orçamento cancelado",
           description: "O orçamento foi cancelado com sucesso."
         });
       },
       onError: (error) => {
+        console.error('Erro ao cancelar orçamento:', error);
         toast({
           title: "Erro ao cancelar",
           description: "Ocorreu um erro ao cancelar o orçamento.",
           variant: "destructive"
         });
-        console.error('Erro ao cancelar orçamento:', error);
       }
     });
   };
@@ -384,7 +396,7 @@ const Vendas: React.FC = () => {
         </Card>
       )}
 
-      {/* Estado: Cliente selecionado */}
+      {/* Estado: Cliente selecionado - Com layout melhorado */}
       {estadoAtual === 'cliente_selecionado' && clienteSelecionado && (
         <Card className="border-green-200 bg-green-50">
           <CardHeader>
@@ -395,48 +407,52 @@ const Vendas: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {/* Dados do Cliente */}
+              {/* Dados do Cliente com layout responsivo melhorado */}
               <div className="bg-white p-4 rounded-lg border">
                 <div className="flex items-center mb-4">
                   <div className="h-12 w-12 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary mr-4">
                     <User className="h-6 w-6" />
                   </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900">{clienteSelecionado.nome}</h3>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-xl font-semibold text-gray-900 truncate">{clienteSelecionado.nome}</h3>
                     <p className="text-gray-500">ID: {clienteSelecionado.id_associado}</p>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center text-gray-600">
-                    <User className="h-4 w-4 mr-2" />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="flex items-center text-gray-600 min-w-0">
+                    <User className="h-4 w-4 mr-2 flex-shrink-0" />
                     <span className="font-medium mr-2">CPF:</span>
-                    <span>{clienteSelecionado.cpf}</span>
+                    <span className="truncate">{clienteSelecionado.cpf}</span>
                   </div>
                   
-                  <div className="flex items-center text-gray-600">
-                    <Phone className="h-4 w-4 mr-2" />
+                  <div className="flex items-center text-gray-600 min-w-0">
+                    <Phone className="h-4 w-4 mr-2 flex-shrink-0" />
                     <span className="font-medium mr-2">Telefone:</span>
-                    <span>{clienteSelecionado.telefone}</span>
+                    <span className="truncate">{clienteSelecionado.telefone}</span>
                   </div>
                   
-                  <div className="flex items-center text-gray-600">
-                    <Mail className="h-4 w-4 mr-2" />
-                    <span className="font-medium mr-2">E-mail:</span>
-                    <span>{clienteSelecionado.email}</span>
+                  <div className="flex items-start text-gray-600 min-w-0 lg:col-span-2">
+                    <Mail className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <span className="font-medium mr-2">E-mail:</span>
+                      <span className="break-words text-sm lg:text-base">{clienteSelecionado.email}</span>
+                    </div>
                   </div>
                   
-                  <div className="flex items-center text-gray-600">
-                    <Calendar className="h-4 w-4 mr-2" />
+                  <div className="flex items-center text-gray-600 min-w-0 lg:col-span-2">
+                    <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
                     <span className="font-medium mr-2">Cadastro:</span>
-                    <span>{format(new Date(clienteSelecionado.data_cadastro), "dd/MM/yyyy", { locale: ptBR })}</span>
+                    <span className="truncate">{format(new Date(clienteSelecionado.data_cadastro), "dd/MM/yyyy", { locale: ptBR })}</span>
                   </div>
                   
                   {clienteSelecionado.endereco && (
-                    <div className="flex items-start text-gray-600 md:col-span-2">
-                      <MapPin className="h-4 w-4 mr-2 mt-0.5" />
-                      <span className="font-medium mr-2">Endereço:</span>
-                      <span>{clienteSelecionado.endereco}</span>
+                    <div className="flex items-start text-gray-600 min-w-0 lg:col-span-2">
+                      <MapPin className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <span className="font-medium mr-2">Endereço:</span>
+                        <span className="break-words">{clienteSelecionado.endereco}</span>
+                      </div>
                     </div>
                   )}
                 </div>

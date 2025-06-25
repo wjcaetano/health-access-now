@@ -215,8 +215,35 @@ export function useCancelarOrcamento() {
   
   return useMutation({
     mutationFn: async (orcamentoId: string) => {
+      console.log('Iniciando cancelamento do orçamento:', orcamentoId);
+      
       if (!orcamentoId) {
-        throw new Error('ID do orçamento é obrigatório para cancelamento');
+        const error = new Error('ID do orçamento é obrigatório para cancelamento');
+        console.error(error.message);
+        throw error;
+      }
+      
+      // Verificar se o orçamento existe antes de tentar cancelar
+      const { data: orcamentoExistente, error: errorConsulta } = await supabase
+        .from("orcamentos")
+        .select("id, status")
+        .eq("id", orcamentoId)
+        .maybeSingle();
+      
+      if (errorConsulta) {
+        console.error('Erro ao consultar orçamento:', errorConsulta);
+        throw errorConsulta;
+      }
+      
+      if (!orcamentoExistente) {
+        const error = new Error('Orçamento não encontrado');
+        console.error(error.message);
+        throw error;
+      }
+      
+      if (orcamentoExistente.status === 'cancelado') {
+        console.warn('Orçamento já está cancelado:', orcamentoId);
+        return orcamentoExistente;
       }
       
       console.log('Cancelando orçamento:', orcamentoId);
@@ -233,13 +260,15 @@ export function useCancelarOrcamento() {
         throw error;
       }
       
-      console.log('Orçamento cancelado:', data);
+      console.log('Orçamento cancelado com sucesso:', data);
       return data;
     },
     onSuccess: (data) => {
       console.log('Invalidando cache após cancelamento');
       queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
       queryClient.invalidateQueries({ queryKey: ["orcamento", data.id] });
+      // Invalidar também a query de orçamentos por cliente
+      queryClient.invalidateQueries({ queryKey: ["orcamentos", "cliente"] });
     },
     onError: (error) => {
       console.error('Erro no cancelamento do orçamento:', error);
