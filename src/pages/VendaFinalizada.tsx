@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Download, Print, ArrowLeft, FileText, User } from "lucide-react";
+import { Check, Download, Printer, ArrowLeft, FileText, User } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import ReciboVenda from "@/components/vendas/ReciboVenda";
@@ -134,7 +133,7 @@ const VendaFinalizada: React.FC = () => {
             onClick={imprimirRecibo}
             className="flex-1 bg-blue-600 hover:bg-blue-700"
           >
-            <Print className="h-4 w-4 mr-2" />
+            <Printer className="h-4 w-4 mr-2" />
             Imprimir Recibo
           </Button>
           
