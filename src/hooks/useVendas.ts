@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables, TablesInsert } from "@/integrations/supabase/types";
@@ -7,6 +6,14 @@ type Venda = Tables<"vendas">;
 type NovaVenda = TablesInsert<"vendas">;
 type VendaServico = Tables<"vendas_servicos">;
 type NovoVendaServico = Omit<TablesInsert<"vendas_servicos">, "venda_id">;
+
+// Add proper type definition for the create venda response
+type CreateVendaResponse = {
+  venda: Venda;
+  servicos: VendaServico[];
+  guias: any[];
+  erro_guias?: string;
+};
 
 export function useVendas() {
   return useQuery({
@@ -72,7 +79,7 @@ export function useVendasPorCliente(clienteId: string) {
 export function useCreateVenda() {
   const queryClient = useQueryClient();
   
-  return useMutation({
+  return useMutation<CreateVendaResponse, Error, { venda: NovaVenda; servicos: NovoVendaServico[] }>({
     mutationFn: async ({ venda, servicos }: { venda: NovaVenda; servicos: NovoVendaServico[] }) => {
       console.log('=== INICIANDO CRIAÇÃO DA VENDA ===');
       console.log('Dados da venda:', venda);
@@ -155,10 +162,9 @@ export function useCreateVenda() {
 
       if (guiasError) {
         console.error('❌ ERRO ao criar guias:', guiasError);
-        // Não vamos falhar a venda por causa das guias, mas vamos logar o erro
         console.error('Detalhes do erro das guias:', guiasError);
         
-        // Retornar com guias vazias mas informar o problema
+        // Return with empty guides but inform the problem
         return { 
           venda: vendaData, 
           servicos: servicosData, 

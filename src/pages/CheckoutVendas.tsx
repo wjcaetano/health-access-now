@@ -106,10 +106,13 @@ const CheckoutVendas: React.FC = () => {
           console.log('Serviços criados:', data.servicos?.length || 0);
           console.log('Guias criadas:', data.guias?.length || 0);
           
-          // Verificar se as guias foram criadas
-          if (!data.guias || data.guias.length === 0) {
-            console.error('❌ PROBLEMA: Nenhuma guia foi criada!');
-            if (data.erro_guias) {
+          // Check if guides were created successfully
+          const hasGuideError = data.erro_guias;
+          const hasGuides = data.guias && data.guias.length > 0;
+          
+          if (hasGuideError || !hasGuides) {
+            console.error('❌ PROBLEMA: Erro na criação das guias!');
+            if (hasGuideError) {
               console.error('Erro específico das guias:', data.erro_guias);
             }
             
@@ -131,7 +134,7 @@ const CheckoutVendas: React.FC = () => {
             });
           }
           
-          // Atualizar orçamento se existir
+          // Update budget if it exists
           if (dadosVenda.orcamentoId) {
             console.log('Atualizando status do orçamento:', dadosVenda.orcamentoId);
             updateOrcamento({ 
@@ -141,17 +144,17 @@ const CheckoutVendas: React.FC = () => {
             });
           }
 
-          const mensagemSucesso = data.guias && data.guias.length > 0 
+          const mensagemSucesso = hasGuides 
             ? `Venda finalizada via ${metodoPagamentoTexto}. ${data.guias.length} guia(s) de atendimento gerada(s).`
             : `Venda finalizada via ${metodoPagamentoTexto}, mas houve problema na geração das guias.`;
 
           toast({
             title: "Pagamento processado!",
             description: mensagemSucesso,
-            variant: data.guias && data.guias.length > 0 ? "default" : "destructive"
+            variant: hasGuides ? "default" : "destructive"
           });
 
-          // Preparar dados completos para a página finalizada
+          // Prepare complete data for the completed page
           const servicosCompletos = data.servicos.map((servicoVenda: any, index: number) => {
             const servicoOriginal = dadosVenda.servicos[index];
             return {
