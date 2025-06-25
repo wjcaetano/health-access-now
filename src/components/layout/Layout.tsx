@@ -1,8 +1,9 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Pages
 import Index from "@/pages/Index";
@@ -35,11 +36,28 @@ import Faturamento from "@/pages/prestador/Faturamento";
 import GuiasPrestador from "@/pages/prestador/Guias";
 
 const Layout: React.FC = () => {
+  const [collapsed, setCollapsed] = useState(false);
+  const { profile } = useAuth();
+  
+  // Determinar o perfil do usuário baseado no contexto de autenticação
+  const userProfile = profile?.nivel_acesso === 'prestador' ? 'prestador' : 'agendaja';
+  
+  const toggleSidebar = () => {
+    setCollapsed(!collapsed);
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
-      <Sidebar />
+      <Sidebar 
+        collapsed={collapsed} 
+        setCollapsed={setCollapsed} 
+        userProfile={userProfile} 
+      />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
+        <Header 
+          title="Dashboard" 
+          toggleSidebar={toggleSidebar}
+        />
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
           <Routes>
             <Route path="/" element={<Index />} />
