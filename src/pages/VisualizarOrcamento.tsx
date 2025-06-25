@@ -15,24 +15,41 @@ const VisualizarOrcamento: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { data: orcamento, isLoading } = useOrcamento(id!);
+
+  console.log('ID do orçamento da URL:', id);
+
+  const { data: orcamento, isLoading, error, isError } = useOrcamento(id!);
   const { mutate: cancelarOrcamento, isPending: isCancelingOrcamento } = useCancelarOrcamento();
+
+  React.useEffect(() => {
+    if (isError && error) {
+      console.error('Erro ao carregar orçamento:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar orçamento. Verifique sua conexão.",
+        variant: "destructive"
+      });
+    }
+  }, [isError, error, toast]);
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-500">Carregando orçamento...</p>
         </div>
       </div>
     );
   }
 
-  if (!orcamento) {
+  if (isError || !orcamento) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <p className="text-red-500">Orçamento não encontrado</p>
+          <p className="text-red-500 mb-4">
+            {isError ? "Erro ao carregar orçamento" : "Orçamento não encontrado"}
+          </p>
           <Button onClick={() => navigate('/orcamentos')} className="mt-4">
             Voltar para Orçamentos
           </Button>
@@ -98,12 +115,12 @@ const VisualizarOrcamento: React.FC = () => {
         navigate('/orcamentos');
       },
       onError: (error) => {
+        console.error('Erro ao cancelar orçamento:', error);
         toast({
           title: "Erro ao cancelar",
           description: "Ocorreu um erro ao cancelar o orçamento.",
           variant: "destructive"
         });
-        console.error('Erro ao cancelar orçamento:', error);
       }
     });
   };
