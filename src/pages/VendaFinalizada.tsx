@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import VendaFinalizadaHeader from "@/components/vendas/VendaFinalizadaHeader";
 import VendaResumo from "@/components/vendas/VendaResumo";
-import VendaActions from "@/components/vendas/VendaActions";
+import VendaFinalizadaActions from "@/components/vendas/VendaFinalizadaActions";
 import ReciboVenda from "@/components/vendas/ReciboVenda";
 import GuiaServico from "@/components/vendas/GuiaServico";
 
@@ -94,7 +94,7 @@ const VendaFinalizada: React.FC = () => {
           gerarCodigoGuia={gerarCodigoGuia}
         />
 
-        <VendaActions
+        <VendaFinalizadaActions
           onImprimirRecibo={imprimirRecibo}
           onImprimirGuias={imprimirGuias}
           onVoltarParaVendas={voltarParaVendas}
