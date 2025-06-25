@@ -76,7 +76,7 @@ const NovoServico = () => {
           title: "Serviço cadastrado com sucesso!",
           description: `${values.nome} foi adicionado como serviço.`,
         });
-        navigate("/servicos");
+        navigate("/dashboard/servicos");
       },
       onError: (error) => {
         toast({
@@ -275,7 +275,7 @@ const NovoServico = () => {
                 <Button 
                   variant="outline" 
                   type="button"
-                  onClick={() => navigate("/servicos")}
+                  onClick={() => navigate("/dashboard/servicos")}
                 >
                   Cancelar
                 </Button>
