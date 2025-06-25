@@ -30,32 +30,32 @@ export const agendajaMenu: MenuItem[] = [
   {
     title: "Clientes",
     icon: <User className="h-5 w-5" />,
-    href: "/clientes",
+    href: "/dashboard/clientes",
   },
   {
     title: "Vendas",
     icon: <ShoppingCart className="h-5 w-5" />,
-    href: "/vendas",
+    href: "/dashboard/vendas",
   },
   {
     title: "Orçamentos",
     icon: <CreditCard className="h-5 w-5" />,
-    href: "/orcamentos",
+    href: "/dashboard/orcamentos",
   },
   {
     title: "Guias",
     icon: <FileText className="h-5 w-5" />,
-    href: "/guias",
+    href: "/dashboard/guias",
   },
   {
     title: "Conversas",
     icon: <MessageSquare className="h-5 w-5" />,
-    href: "/conversas",
+    href: "/dashboard/conversas",
   },
   {
     title: "Colaboradores",
     icon: <Clock className="h-5 w-5" />,
-    href: "/colaboradores",
+    href: "/dashboard/colaboradores",
   },
 ];
 
@@ -63,22 +63,22 @@ export const gerenteMenu: MenuItem[] = [
   {
     title: "Prestadores",
     icon: <Building2 className="h-5 w-5" />,
-    href: "/prestadores",
+    href: "/dashboard/prestadores",
   },
   {
     title: "Serviços",
     icon: <ListChecks className="h-5 w-5" />,
-    href: "/servicos",
+    href: "/dashboard/servicos",
   },
   {
     title: "Agenda de Pagamentos",
     icon: <Calendar className="h-5 w-5" />,
-    href: "/agenda-pagamentos",
+    href: "/dashboard/agenda-pagamentos",
   },
   {
     title: "Financeiro",
     icon: <CreditCard className="h-5 w-5" />,
-    href: "/financeiro",
+    href: "/dashboard/financeiro",
   },
 ];
 
@@ -86,17 +86,17 @@ export const prestadorMenu: MenuItem[] = [
   {
     title: "Portal",
     icon: <BarChart3 className="h-5 w-5" />,
-    href: "/prestador",
+    href: "/dashboard/prestador",
     end: true,
   },
   {
     title: "Guias",
     icon: <FileText className="h-5 w-5" />,
-    href: "/prestador/guias",
+    href: "/dashboard/prestador/guias",
   },
   {
     title: "Faturamento",
     icon: <CreditCard className="h-5 w-5" />,
-    href: "/prestador/faturamento",
+    href: "/dashboard/prestador/faturamento",
   },
 ];
