@@ -1,38 +1,13 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle,
-  CardFooter
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { 
-  CreditCard,
-  Banknote,
-  Smartphone,
-  ArrowLeft,
-  Check,
-  User,
-  Calendar,
-  Clock
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateVenda } from "@/hooks/useVendas";
 import { useUpdateOrcamento } from "@/hooks/useOrcamentos";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import PaymentMethodSelector from "@/components/vendas/PaymentMethodSelector";
+import SalesSummary from "@/components/vendas/SalesSummary";
 
 const CheckoutVendas: React.FC = () => {
   const navigate = useNavigate();
@@ -41,14 +16,12 @@ const CheckoutVendas: React.FC = () => {
   const { mutate: criarVenda, isPending: isCreatingVenda } = useCreateVenda();
   const { mutate: updateOrcamento } = useUpdateOrcamento();
   
-  // Dados da venda vindos da página de vendas
   const [dadosVenda, setDadosVenda] = useState<any>(null);
   const [metodoPagamento, setMetodoPagamento] = useState<string>("");
   const [tipoCartao, setTipoCartao] = useState<string>("");
   const [processandoPagamento, setProcessandoPagamento] = useState(false);
 
   useEffect(() => {
-    // Recuperar dados da venda do state da navegação
     const vendaData = location.state?.vendaData;
     
     console.log('Dados recebidos no checkout:', vendaData);
@@ -66,13 +39,6 @@ const CheckoutVendas: React.FC = () => {
     
     setDadosVenda(vendaData);
   }, [location, navigate, toast]);
-
-  const formatarMoeda = (valor: number) => {
-    return new Intl.NumberFormat('pt-BR', { 
-      style: 'currency', 
-      currency: 'BRL' 
-    }).format(valor);
-  };
 
   const calcularTotal = () => {
     if (!dadosVenda?.servicos) return 0;
@@ -109,7 +75,6 @@ const CheckoutVendas: React.FC = () => {
     try {
       console.log('Iniciando processo de pagamento...');
       
-      // Criar a venda
       const novaVenda = {
         cliente_id: dadosVenda.cliente.id,
         valor_total: calcularTotal(),
@@ -129,7 +94,6 @@ const CheckoutVendas: React.FC = () => {
         onSuccess: (data) => {
           console.log('Venda criada com sucesso:', data);
           
-          // Se veio de um orçamento, atualizar o status
           if (dadosVenda.orcamentoId) {
             console.log('Atualizando status do orçamento:', dadosVenda.orcamentoId);
             updateOrcamento({ 
@@ -146,7 +110,6 @@ const CheckoutVendas: React.FC = () => {
 
           console.log('Redirecionando para página de venda finalizada...');
           
-          // Preparar dados dos serviços com informações completas para impressão
           const servicosCompletos = data.servicos.map((servicoVenda: any, index: number) => {
             const servicoOriginal = dadosVenda.servicos[index];
             return {
@@ -161,7 +124,6 @@ const CheckoutVendas: React.FC = () => {
             };
           });
           
-          // Redirecionar para página de sucesso com dados da venda
           navigate('/venda-finalizada', { 
             state: { 
               venda: data.venda,
@@ -230,184 +192,16 @@ const CheckoutVendas: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Resumo da Venda */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Resumo da Venda</CardTitle>
-            <CardDescription>
-              Confirme os dados antes de processar o pagamento
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Dados do Cliente */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="flex items-center mb-2">
-                <User className="h-5 w-5 text-agendaja-primary mr-2" />
-                <h4 className="font-medium">Cliente</h4>
-              </div>
-              <div className="space-y-1">
-                <p className="font-semibold text-sm">{dadosVenda.cliente.nome}</p>
-                <p className="text-xs text-gray-600">{dadosVenda.cliente.telefone}</p>
-                <p className="text-xs text-gray-600">CPF: {dadosVenda.cliente.cpf}</p>
-              </div>
-            </div>
-
-            {/* Lista de Serviços */}
-            <div>
-              <h4 className="font-medium mb-3">Serviços Contratados</h4>
-              <div className="space-y-3">
-                {dadosVenda.servicos.map((servico: any, index: number) => (
-                  <Card key={index} className="border-l-4 border-l-agendaja-primary">
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <h5 className="font-medium text-sm">{servico.nome}</h5>
-                        <span className="font-semibold text-agendaja-primary text-sm">
-                          {formatarMoeda(servico.valorVenda)}
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-600 mb-1">
-                        Categoria: {servico.categoria}
-                      </p>
-                      <p className="text-xs text-gray-600">
-                        Prestador: {servico.prestadorNome}
-                      </p>
-                      {servico.descricao && (
-                        <p className="text-xs text-gray-500 mt-1">{servico.descricao}</p>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-
-            {/* Total */}
-            <div className="border-t pt-4">
-              <div className="flex justify-between items-center">
-                <span className="text-lg font-medium">Total:</span>
-                <span className="text-2xl font-bold text-agendaja-primary">
-                  {formatarMoeda(calcularTotal())}
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Método de Pagamento */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Método de Pagamento</CardTitle>
-            <CardDescription>
-              Selecione a forma de pagamento
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3">
-              {/* Dinheiro */}
-              <Card 
-                className={`cursor-pointer transition-colors ${
-                  metodoPagamento === "dinheiro" 
-                    ? "bg-agendaja-light border-agendaja-primary" 
-                    : "hover:bg-gray-50"
-                }`}
-                onClick={() => setMetodoPagamento("dinheiro")}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center">
-                    <Banknote className="h-6 w-6 text-green-600 mr-3" />
-                    <div className="flex-1">
-                      <h4 className="font-medium">Dinheiro</h4>
-                      <p className="text-sm text-gray-600">Pagamento em espécie</p>
-                    </div>
-                    {metodoPagamento === "dinheiro" && (
-                      <Check className="h-5 w-5 text-agendaja-primary" />
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* PIX */}
-              <Card 
-                className={`cursor-pointer transition-colors ${
-                  metodoPagamento === "pix" 
-                    ? "bg-agendaja-light border-agendaja-primary" 
-                    : "hover:bg-gray-50"
-                }`}
-                onClick={() => setMetodoPagamento("pix")}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center">
-                    <Smartphone className="h-6 w-6 text-blue-600 mr-3" />
-                    <div className="flex-1">
-                      <h4 className="font-medium">PIX</h4>
-                      <p className="text-sm text-gray-600">Transferência instantânea</p>
-                    </div>
-                    {metodoPagamento === "pix" && (
-                      <Check className="h-5 w-5 text-agendaja-primary" />
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Cartão */}
-              <Card 
-                className={`cursor-pointer transition-colors ${
-                  metodoPagamento === "cartao" 
-                    ? "bg-agendaja-light border-agendaja-primary" 
-                    : "hover:bg-gray-50"
-                }`}
-                onClick={() => setMetodoPagamento("cartao")}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center">
-                    <CreditCard className="h-6 w-6 text-purple-600 mr-3" />
-                    <div className="flex-1">
-                      <h4 className="font-medium">Cartão</h4>
-                      <p className="text-sm text-gray-600">Débito ou crédito</p>
-                    </div>
-                    {metodoPagamento === "cartao" && (
-                      <Check className="h-5 w-5 text-agendaja-primary" />
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Seleção do tipo de cartão */}
-              {metodoPagamento === "cartao" && (
-                <div className="ml-4 space-y-2">
-                  <label className="text-sm font-medium">Tipo de cartão:</label>
-                  <Select onValueChange={setTipoCartao}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione débito ou crédito" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="debito">Cartão de Débito</SelectItem>
-                      <SelectItem value="credito">Cartão de Crédito</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button 
-              onClick={finalizarPagamento} 
-              className="w-full bg-agendaja-primary hover:bg-agendaja-secondary"
-              disabled={processandoPagamento || !metodoPagamento || (metodoPagamento === "cartao" && !tipoCartao)}
-            >
-              {processandoPagamento ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Processando...
-                </>
-              ) : (
-                <>
-                  <Check className="h-4 w-4 mr-2" />
-                  Finalizar Pagamento - {formatarMoeda(calcularTotal())}
-                </>
-              )}
-            </Button>
-          </CardFooter>
-        </Card>
+        <SalesSummary dadosVenda={dadosVenda} />
+        <PaymentMethodSelector
+          metodoPagamento={metodoPagamento}
+          tipoCartao={tipoCartao}
+          onMetodoPagamentoChange={setMetodoPagamento}
+          onTipoCartaoChange={setTipoCartao}
+          onFinalizarPagamento={finalizarPagamento}
+          processandoPagamento={processandoPagamento}
+          valorTotal={calcularTotal()}
+        />
       </div>
     </div>
   );
