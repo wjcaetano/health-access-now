@@ -12,15 +12,7 @@ export function useServicos() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("servicos")
-        .select(`
-          *,
-          prestadores (
-            id,
-            nome,
-            tipo,
-            especialidades
-          )
-        `)
+        .select("*")
         .eq("ativo", true)
         .order("nome");
       

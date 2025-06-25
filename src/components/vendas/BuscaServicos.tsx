@@ -26,20 +26,27 @@ const BuscaServicos: React.FC<BuscaServicosProps> = ({ onServicoSelecionado }) =
   const [servicoSelecionado, setServicoSelecionado] = useState<any>(null);
   const [prestadorSelecionado, setPrestadorSelecionado] = useState<string>("");
   
-  const { data: servicos } = useServicos();
-  const { data: prestadores } = usePrestadores();
+  const { data: servicos, isLoading: carregandoServicos } = useServicos();
+  const { data: prestadores, isLoading: carregandoPrestadores } = usePrestadores();
+
+  console.log("Serviços carregados:", servicos);
+  console.log("Prestadores carregados:", prestadores);
 
   const servicosFiltrados = servicos?.filter((servico) =>
     servico.nome.toLowerCase().includes(termoBusca.toLowerCase()) ||
     servico.categoria.toLowerCase().includes(termoBusca.toLowerCase())
   ) || [];
 
-  const prestadoresDoServico = prestadores?.filter((prestador) =>
-    servicoSelecionado && 
-    prestador.id === servicoSelecionado.prestador_id
-  ) || [];
+  // Buscar prestadores que oferecem o serviço selecionado
+  const prestadoresDisponiveis = prestadores?.filter((prestador) => {
+    if (!servicoSelecionado) return false;
+    // Por enquanto, assumimos que todos os prestadores podem oferecer qualquer serviço
+    // Em uma implementação futura, isso poderia ser baseado em especialidades
+    return prestador.ativo;
+  }) || [];
 
   const handleSelecionarServico = (servico: any) => {
+    console.log("Serviço selecionado:", servico);
     setServicoSelecionado(servico);
     setPrestadorSelecionado("");
   };
@@ -58,12 +65,25 @@ const BuscaServicos: React.FC<BuscaServicosProps> = ({ onServicoSelecionado }) =
         descricao: servicoSelecionado.descricao
       };
 
+      console.log("Adicionando serviço:", servicoParaAdicionar);
       onServicoSelecionado(servicoParaAdicionar);
       setServicoSelecionado(null);
       setPrestadorSelecionado("");
       setTermoBusca("");
     }
   };
+
+  if (carregandoServicos || carregandoPrestadores) {
+    return (
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <div className="text-center py-8">
+            <p>Carregando serviços...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="mb-6">
@@ -83,6 +103,13 @@ const BuscaServicos: React.FC<BuscaServicosProps> = ({ onServicoSelecionado }) =
             />
           </div>
         </div>
+
+        {/* Debug: Mostrar total de serviços disponíveis */}
+        {servicos && (
+          <div className="text-sm text-gray-500">
+            Total de serviços disponíveis: {servicos.length}
+          </div>
+        )}
 
         {/* Lista de Serviços */}
         {termoBusca && servicosFiltrados.length > 0 && (
@@ -115,11 +142,11 @@ const BuscaServicos: React.FC<BuscaServicosProps> = ({ onServicoSelecionado }) =
         )}
 
         {/* Seleção de Prestador */}
-        {servicoSelecionado && prestadoresDoServico.length > 0 && (
+        {servicoSelecionado && prestadoresDisponiveis.length > 0 && (
           <div className="space-y-3">
             <h4 className="font-medium">Selecione o Prestador:</h4>
             <div className="grid gap-2">
-              {prestadoresDoServico.map((prestador) => (
+              {prestadoresDisponiveis.map((prestador) => (
                 <label
                   key={prestador.id}
                   className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
@@ -153,6 +180,13 @@ const BuscaServicos: React.FC<BuscaServicosProps> = ({ onServicoSelecionado }) =
               <Plus className="h-4 w-4 mr-2" />
               Adicionar Serviço
             </Button>
+          </div>
+        )}
+
+        {/* Mensagem quando nenhum prestador está disponível */}
+        {servicoSelecionado && prestadoresDisponiveis.length === 0 && (
+          <div className="text-center py-8 text-amber-600">
+            <p>Nenhum prestador ativo disponível para este serviço</p>
           </div>
         )}
 
