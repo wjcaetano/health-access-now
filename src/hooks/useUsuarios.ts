@@ -111,26 +111,13 @@ export function useCreateUsuario() {
           throw new Error(`O email ${email} já está cadastrado como colaborador.`);
         }
         
-        // 2. Verificar se já existe na tabela auth.users (usando função RPC)
-        console.log("2. Verificando auth.users...");
-        const { data: authUsers, error: authCheckError } = await supabase.rpc('check_user_exists', {
-          user_email: email
-        });
-        
-        if (authCheckError) {
-          console.log("Função RPC não existe, continuando...", authCheckError);
-        } else if (authUsers) {
-          console.error("Email já existe na tabela auth.users");
-          throw new Error(`O email ${email} já possui conta de acesso no sistema.`);
-        }
-        
-        // 3. Gerar senha provisória
-        console.log("3. Gerando senha provisória...");
+        // 2. Gerar senha provisória
+        console.log("2. Gerando senha provisória...");
         const senhaProvisoria = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8).toUpperCase();
         console.log("Senha gerada (tamanho):", senhaProvisoria.length);
         
-        // 4. Criar usuário no Supabase Auth
-        console.log("4. Criando usuário no auth...");
+        // 3. Criar usuário no Supabase Auth
+        console.log("3. Criando usuário no auth...");
         const { data: authData, error: authError } = await supabase.auth.admin.createUser({
           email: email.toLowerCase().trim(),
           password: senhaProvisoria,
@@ -172,10 +159,10 @@ export function useCreateUsuario() {
           throw new Error("Falha ao criar usuário - ID não retornado");
         }
         
-        console.log("5. Usuário auth criado com ID:", authData.user.id);
+        console.log("4. Usuário auth criado com ID:", authData.user.id);
         
         // 5. Criar colaborador na tabela colaboradores
-        console.log("6. Criando colaborador...");
+        console.log("5. Criando colaborador...");
         const { data: colaboradorData, error: colaboradorError } = await supabase
           .from("colaboradores")
           .insert({
@@ -196,7 +183,7 @@ export function useCreateUsuario() {
           console.error("Erro ao criar colaborador:", colaboradorError);
           
           // Rollback: excluir usuário criado
-          console.log("7. Fazendo rollback do usuário auth...");
+          console.log("6. Fazendo rollback do usuário auth...");
           try {
             await supabase.auth.admin.deleteUser(authData.user.id);
             console.log("Rollback concluído");
