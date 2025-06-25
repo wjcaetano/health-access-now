@@ -8,6 +8,7 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Search,
   User,
@@ -17,12 +18,14 @@ import {
   Calendar,
   UserPlus,
   Save,
-  X
+  X,
+  ShoppingCart,
+  Eye
 } from "lucide-react";
 import { useClientes } from "@/hooks/useClientes";
 import { useCreateOrcamento } from "@/hooks/useOrcamentos";
 import { useOrcamentosPorCliente, useCancelarOrcamento } from "@/hooks/useOrcamentos";
-import { useCreateVenda } from "@/hooks/useVendas";
+import { useCreateVenda, useVendas } from "@/hooks/useVendas";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -31,6 +34,7 @@ import BuscaServicos from "@/components/vendas/BuscaServicos";
 import ListaServicos from "@/components/vendas/ListaServicos";
 import CheckoutVenda from "@/components/vendas/CheckoutVenda";
 import OrcamentosPendentes from "@/components/vendas/OrcamentosPendentes";
+import ListaVendas from "@/components/vendas/ListaVendas";
 import { Tables } from "@/integrations/supabase/types";
 
 type EstadoVenda = 'inicial' | 'nao_encontrado' | 'cliente_selecionado' | 'cadastro_servicos' | 'checkout';
@@ -64,6 +68,7 @@ const Vendas: React.FC = () => {
   
   const { data: clientes } = useClientes();
   const { data: orcamentosPendentes } = useOrcamentosPorCliente(clienteSelecionado?.id);
+  const { data: vendas, isLoading: isLoadingVendas } = useVendas();
   const { mutate: criarOrcamento } = useCreateOrcamento();
   const { mutate: criarVenda, isPending: isCreatingVenda } = useCreateVenda();
   const { mutate: cancelarOrcamento, isPending: isCancelingOrcamento } = useCancelarOrcamento();
@@ -335,233 +340,262 @@ const Vendas: React.FC = () => {
       <div>
         <h2 className="text-3xl font-bold text-gray-900">Vendas</h2>
         <p className="text-gray-500 mt-1">
-          {estadoAtual === 'cadastro_servicos' 
-            ? `Cadastrando serviços para ${clienteSelecionado?.nome}`
-            : "Busque um cliente para iniciar uma venda"
-          }
+          Gerencie vendas, orçamentos e visualize o histórico de transações
         </p>
       </div>
 
-      {/* Formulário de Busca - Sempre visível */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Buscar Cliente</CardTitle>
-          <CardDescription>
-            Digite o CPF ou nome do cliente para buscar
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-              <Input
-                placeholder="Digite o CPF ou nome do cliente..."
-                className="pl-8"
-                value={termoBusca}
-                onChange={(e) => setTermoBusca(e.target.value)}
-                onKeyPress={handleKeyPress}
-                disabled={estadoAtual === 'cadastro_servicos'}
-              />
-            </div>
-            <Button 
-              onClick={buscarCliente} 
-              className="bg-agendaja-primary hover:bg-agendaja-secondary"
-              disabled={estadoAtual === 'cadastro_servicos'}
-            >
-              <Search className="h-4 w-4 mr-2" />
-              Buscar
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="nova-venda" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="nova-venda" className="flex items-center gap-2">
+            <ShoppingCart className="h-4 w-4" />
+            Nova Venda
+          </TabsTrigger>
+          <TabsTrigger value="historico" className="flex items-center gap-2">
+            <Eye className="h-4 w-4" />
+            Histórico de Vendas
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Estado: Cliente não encontrado */}
-      {estadoAtual === 'nao_encontrado' && (
-        <Card className="border-amber-200 bg-amber-50">
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <User className="h-12 w-12 mx-auto text-amber-500 mb-4" />
-              <h3 className="text-lg font-medium text-amber-800 mb-2">
-                Cliente não encontrado
-              </h3>
-              <p className="text-amber-600 mb-4">
-                Não foi possível encontrar um cliente com o termo "{termoBusca}"
-              </p>
-              <Button onClick={irParaCadastro} className="bg-agendaja-primary hover:bg-agendaja-secondary">
-                <UserPlus className="h-4 w-4 mr-2" />
-                Cadastrar Novo Cliente
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Estado: Cliente selecionado - Com layout melhorado */}
-      {estadoAtual === 'cliente_selecionado' && clienteSelecionado && (
-        <Card className="border-green-200 bg-green-50">
-          <CardHeader>
-            <CardTitle className="text-green-800">Cliente Encontrado</CardTitle>
-            <CardDescription className="text-green-600">
-              Verifique os dados do cliente abaixo
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {/* Dados do Cliente com layout responsivo melhorado */}
-              <div className="bg-white p-4 rounded-lg border">
-                <div className="flex items-center mb-4">
-                  <div className="h-12 w-12 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary mr-4">
-                    <User className="h-6 w-6" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-xl font-semibold text-gray-900 truncate">{clienteSelecionado.nome}</h3>
-                    <p className="text-gray-500">ID: {clienteSelecionado.id_associado}</p>
-                  </div>
+        <TabsContent value="nova-venda" className="space-y-6">
+          {/* Todo o conteúdo existente da página de vendas vai aqui */}
+          
+          {/* Formulário de Busca - Sempre visível */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Buscar Cliente</CardTitle>
+              <CardDescription>
+                Digite o CPF ou nome do cliente para buscar
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                  <Input
+                    placeholder="Digite o CPF ou nome do cliente..."
+                    className="pl-8"
+                    value={termoBusca}
+                    onChange={(e) => setTermoBusca(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    disabled={estadoAtual === 'cadastro_servicos'}
+                  />
                 </div>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <div className="flex items-center text-gray-600 min-w-0">
-                    <User className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <span className="font-medium mr-2">CPF:</span>
-                    <span className="truncate">{clienteSelecionado.cpf}</span>
-                  </div>
-                  
-                  <div className="flex items-center text-gray-600 min-w-0">
-                    <Phone className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <span className="font-medium mr-2">Telefone:</span>
-                    <span className="truncate">{clienteSelecionado.telefone}</span>
-                  </div>
-                  
-                  <div className="flex items-start text-gray-600 min-w-0 lg:col-span-2">
-                    <Mail className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <span className="font-medium mr-2">E-mail:</span>
-                      <span className="break-words text-sm lg:text-base">{clienteSelecionado.email}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center text-gray-600 min-w-0 lg:col-span-2">
-                    <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <span className="font-medium mr-2">Cadastro:</span>
-                    <span className="truncate">{format(new Date(clienteSelecionado.data_cadastro), "dd/MM/yyyy", { locale: ptBR })}</span>
-                  </div>
-                  
-                  {clienteSelecionado.endereco && (
-                    <div className="flex items-start text-gray-600 min-w-0 lg:col-span-2">
-                      <MapPin className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
-                      <div className="min-w-0 flex-1">
-                        <span className="font-medium mr-2">Endereço:</span>
-                        <span className="break-words">{clienteSelecionado.endereco}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Botões de Ação */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-4">
                 <Button 
-                  onClick={confirmarCliente} 
-                  className="bg-green-600 hover:bg-green-700 flex-1"
+                  onClick={buscarCliente} 
+                  className="bg-agendaja-primary hover:bg-agendaja-secondary"
+                  disabled={estadoAtual === 'cadastro_servicos'}
                 >
-                  Confirmar Cliente
-                </Button>
-                <Button 
-                  onClick={alterarCliente} 
-                  variant="outline" 
-                  className="flex-1"
-                >
-                  Alterar Dados
-                </Button>
-                <Button 
-                  onClick={cancelarOperacao} 
-                  variant="outline" 
-                  className="flex-1 text-red-600 border-red-200 hover:bg-red-50"
-                >
-                  Cancelar
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Estado: Cadastro de Serviços */}
-      {estadoAtual === 'cadastro_servicos' && (
-        <div className="space-y-6">
-          {/* Informações do Cliente Selecionado */}
-          <Card className="border-blue-200 bg-blue-50">
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold text-blue-800">{clienteSelecionado?.nome}</h3>
-                  <p className="text-blue-600">CPF: {clienteSelecionado?.cpf}</p>
-                </div>
-                <Button
-                  onClick={cancelarOperacao}
-                  variant="outline"
-                  size="sm"
-                  className="text-red-600 border-red-200 hover:bg-red-50"
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Cancelar
+                  <Search className="h-4 w-4 mr-2" />
+                  Buscar
                 </Button>
               </div>
             </CardContent>
           </Card>
 
-          {/* Orçamentos Pendentes */}
-          {orcamentosPendentes && orcamentosPendentes.length > 0 && (
-            <OrcamentosPendentes
-              orcamentos={orcamentosPendentes}
-              onConcluirVenda={concluirVendaDoOrcamento}
-              onCancelar={handleCancelarOrcamento}
-              isLoading={isCreatingVenda || isCancelingOrcamento}
-            />
+          {/* Estado: Cliente não encontrado */}
+          {estadoAtual === 'nao_encontrado' && (
+            <Card className="border-amber-200 bg-amber-50">
+              <CardContent className="pt-6">
+                <div className="text-center">
+                  <User className="h-12 w-12 mx-auto text-amber-500 mb-4" />
+                  <h3 className="text-lg font-medium text-amber-800 mb-2">
+                    Cliente não encontrado
+                  </h3>
+                  <p className="text-amber-600 mb-4">
+                    Não foi possível encontrar um cliente com o termo "{termoBusca}"
+                  </p>
+                  <Button onClick={irParaCadastro} className="bg-agendaja-primary hover:bg-agendaja-secondary">
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Cadastrar Novo Cliente
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           )}
 
-          {/* Busca e Seleção de Serviços */}
-          <BuscaServicos onServicoSelecionado={adicionarServico} />
+          {/* Estado: Cliente selecionado - Com layout melhorado */}
+          {estadoAtual === 'cliente_selecionado' && clienteSelecionado && (
+            <Card className="border-green-200 bg-green-50">
+              <CardHeader>
+                <CardTitle className="text-green-800">Cliente Encontrado</CardTitle>
+                <CardDescription className="text-green-600">
+                  Verifique os dados do cliente abaixo
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Dados do Cliente com layout responsivo melhorado */}
+                  <div className="bg-white p-4 rounded-lg border">
+                    <div className="flex items-center mb-4">
+                      <div className="h-12 w-12 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary mr-4">
+                        <User className="h-6 w-6" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-xl font-semibold text-gray-900 truncate">{clienteSelecionado.nome}</h3>
+                        <p className="text-gray-500">ID: {clienteSelecionado.id_associado}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      <div className="flex items-center text-gray-600 min-w-0">
+                        <User className="h-4 w-4 mr-2 flex-shrink-0" />
+                        <span className="font-medium mr-2">CPF:</span>
+                        <span className="truncate">{clienteSelecionado.cpf}</span>
+                      </div>
+                      
+                      <div className="flex items-center text-gray-600 min-w-0">
+                        <Phone className="h-4 w-4 mr-2 flex-shrink-0" />
+                        <span className="font-medium mr-2">Telefone:</span>
+                        <span className="truncate">{clienteSelecionado.telefone}</span>
+                      </div>
+                      
+                      <div className="flex items-start text-gray-600 min-w-0 lg:col-span-2">
+                        <Mail className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <span className="font-medium mr-2">E-mail:</span>
+                          <span className="break-words text-sm lg:text-base">{clienteSelecionado.email}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center text-gray-600 min-w-0 lg:col-span-2">
+                        <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
+                        <span className="font-medium mr-2">Cadastro:</span>
+                        <span className="truncate">{format(new Date(clienteSelecionado.data_cadastro), "dd/MM/yyyy", { locale: ptBR })}</span>
+                      </div>
+                      
+                      {clienteSelecionado.endereco && (
+                        <div className="flex items-start text-gray-600 min-w-0 lg:col-span-2">
+                          <MapPin className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <span className="font-medium mr-2">Endereço:</span>
+                            <span className="break-words">{clienteSelecionado.endereco}</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
 
-          {/* Lista de Serviços Selecionados */}
-          <ListaServicos
-            servicos={servicosSelecionados}
-            onRemoverServico={removerServico}
-            onLimparLista={limparListaServicos}
-          />
+                  {/* Botões de Ação */}
+                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                    <Button 
+                      onClick={confirmarCliente} 
+                      className="bg-green-600 hover:bg-green-700 flex-1"
+                    >
+                      Confirmar Cliente
+                    </Button>
+                    <Button 
+                      onClick={alterarCliente} 
+                      variant="outline" 
+                      className="flex-1"
+                    >
+                      Alterar Dados
+                    </Button>
+                    <Button 
+                      onClick={cancelarOperacao} 
+                      variant="outline" 
+                      className="flex-1 text-red-600 border-red-200 hover:bg-red-50"
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Botões de Ação Final */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  onClick={irParaCheckout}
-                  className="flex-1 bg-green-600 hover:bg-green-700"
-                  disabled={servicosSelecionados.length === 0}
-                >
-                  Concluir Venda
-                </Button>
-                <Button
-                  onClick={salvarOrcamento}
-                  variant="outline"
-                  className="flex-1"
-                  disabled={servicosSelecionados.length === 0}
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  Salvar Orçamento (7 dias)
-                </Button>
-                <Button
-                  onClick={cancelarOperacao}
-                  variant="outline"
-                  className="flex-1 text-red-600 border-red-200 hover:bg-red-50"
-                >
-                  Cancelar
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+          {/* Estado: Cadastro de Serviços */}
+          {estadoAtual === 'cadastro_servicos' && (
+            <div className="space-y-6">
+              {/* Informações do Cliente Selecionado */}
+              <Card className="border-blue-200 bg-blue-50">
+                <CardContent className="pt-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-semibold text-blue-800">{clienteSelecionado?.nome}</h3>
+                      <p className="text-blue-600">CPF: {clienteSelecionado?.cpf}</p>
+                    </div>
+                    <Button
+                      onClick={cancelarOperacao}
+                      variant="outline"
+                      size="sm"
+                      className="text-red-600 border-red-200 hover:bg-red-50"
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Cancelar
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Orçamentos Pendentes */}
+              {orcamentosPendentes && orcamentosPendentes.length > 0 && (
+                <OrcamentosPendentes
+                  orcamentos={orcamentosPendentes}
+                  onConcluirVenda={concluirVendaDoOrcamento}
+                  onCancelar={handleCancelarOrcamento}
+                  isLoading={isCreatingVenda || isCancelingOrcamento}
+                />
+              )}
+
+              {/* Busca e Seleção de Serviços */}
+              <BuscaServicos onServicoSelecionado={adicionarServico} />
+
+              {/* Lista de Serviços Selecionados */}
+              <ListaServicos
+                servicos={servicosSelecionados}
+                onRemoverServico={removerServico}
+                onLimparLista={limparListaServicos}
+              />
+
+              {/* Botões de Ação Final */}
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Button
+                      onClick={irParaCheckout}
+                      className="flex-1 bg-green-600 hover:bg-green-700"
+                      disabled={servicosSelecionados.length === 0}
+                    >
+                      Concluir Venda
+                    </Button>
+                    <Button
+                      onClick={salvarOrcamento}
+                      variant="outline"
+                      className="flex-1"
+                      disabled={servicosSelecionados.length === 0}
+                    >
+                      <Save className="h-4 w-4 mr-2" />
+                      Salvar Orçamento (7 dias)
+                    </Button>
+                    <Button
+                      onClick={cancelarOperacao}
+                      variant="outline"
+                      className="flex-1 text-red-600 border-red-200 hover:bg-red-50"
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="historico" className="space-y-6">
+          {isLoadingVendas ? (
+            <Card>
+              <CardContent className="pt-6">
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-agendaja-primary mx-auto"></div>
+                  <p className="text-gray-500 mt-2">Carregando vendas...</p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <ListaVendas vendas={vendas || []} />
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

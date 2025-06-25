@@ -136,3 +136,65 @@ export function useCreateVenda() {
     },
   });
 }
+
+export function useCancelarVenda() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (vendaId: string) => {
+      const { data, error } = await supabase
+        .from("vendas")
+        .update({ status: 'cancelada' })
+        .eq("id", vendaId)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      // Cancelar todas as guias relacionadas à venda
+      const { error: guiasError } = await supabase
+        .from("guias")
+        .update({ status: 'cancelada' })
+        .in("servico_id", data.vendas_servicos?.map(vs => vs.servico_id) || []);
+        
+      if (guiasError) throw guiasError;
+      
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vendas"] });
+      queryClient.invalidateQueries({ queryKey: ["guias"] });
+    },
+  });
+}
+
+export function useEstornarVenda() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (vendaId: string) => {
+      const { data, error } = await supabase
+        .from("vendas")
+        .update({ status: 'estornada' })
+        .eq("id", vendaId)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      // Estornar todas as guias relacionadas à venda
+      const { error: guiasError } = await supabase
+        .from("guias")
+        .update({ status: 'estornada' })
+        .in("servico_id", data.vendas_servicos?.map(vs => vs.servico_id) || []);
+        
+      if (guiasError) throw guiasError;
+      
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vendas"] });
+      queryClient.invalidateQueries({ queryKey: ["guias"] });
+    },
+  });
+}
