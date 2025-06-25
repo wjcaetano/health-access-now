@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -31,6 +32,29 @@ type AuthContextType = {
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Função para limpar completamente o estado de autenticação
+const cleanupAuthState = () => {
+  // Limpar localStorage
+  localStorage.removeItem("agendaja_authenticated");
+  localStorage.removeItem("agendaja_user_type");
+  
+  // Limpar todas as chaves do Supabase auth
+  Object.keys(localStorage).forEach((key) => {
+    if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+      localStorage.removeItem(key);
+    }
+  });
+  
+  // Limpar sessionStorage se estiver em uso
+  if (typeof sessionStorage !== 'undefined') {
+    Object.keys(sessionStorage).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        sessionStorage.removeItem(key);
+      }
+    });
+  }
+};
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -74,6 +98,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Setup auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state change:', event, session);
+        
         setSession(session);
         setUser(session?.user ?? null);
         
@@ -106,9 +132,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      // Clean up any existing state
-      localStorage.removeItem("agendaja_authenticated");
-      localStorage.removeItem("agendaja_user_type");
+      // Limpar estado antes de fazer login
+      cleanupAuthState();
+      
+      // Tentar fazer logout global primeiro
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continuar mesmo se falhar
+        console.log('Logout prévio falhou, continuando...');
+      }
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -193,17 +226,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      // Clean up localStorage
-      localStorage.removeItem("agendaja_authenticated");
-      localStorage.removeItem("agendaja_user_type");
+      console.log('Iniciando logout...');
       
+      // Limpar estado local imediatamente
+      setUser(null);
+      setSession(null);
+      setProfile(null);
+      
+      // Limpar localStorage e sessionStorage
+      cleanupAuthState();
+      
+      // Fazer logout no Supabase
       await supabase.auth.signOut({ scope: 'global' });
       
-      // Force page refresh for clean state
+      console.log('Logout concluído, redirecionando...');
+      
+      // Forçar refresh da página para garantir estado limpo
       window.location.href = '/';
     } catch (error) {
       console.error('Erro no logout:', error);
-      // Force refresh even if logout fails
+      
+      // Mesmo se houver erro, limpar estado e redirecionar
+      setUser(null);
+      setSession(null);
+      setProfile(null);
+      cleanupAuthState();
+      
+      // Forçar refresh mesmo se logout falhar
       window.location.href = '/';
     }
   };
