@@ -68,6 +68,7 @@ const Layout: React.FC = () => {
               <Route path="/clientes/novo" element={<NovoCliente />} />
               <Route path="/prestadores" element={<Prestadores />} />
               <Route path="/prestadores/novo" element={<NovoPrestador />} />
+              <Route path="/prestadores/editar/:id" element={<NovoPrestador />} />
               <Route path="/servicos" element={<Servicos />} />
               <Route path="/servicos/novo" element={<NovoServico />} />
               <Route path="/orcamentos" element={<Orcamentos />} />
@@ -86,7 +87,7 @@ const Layout: React.FC = () => {
               <Route path="/meu-perfil" element={<MeuPerfil />} />
               <Route path="/analise-sistema" element={<AnaliseDoSistema />} />
               
-              {/* Prestador routes */}
+              {/* Prestador routes - corrigidas para usar /dashboard/prestador */}
               <Route path="/prestador" element={<Portal />} />
               <Route path="/prestador/faturamento" element={<Faturamento />} />
               <Route path="/prestador/guias" element={<GuiasPrestador />} />

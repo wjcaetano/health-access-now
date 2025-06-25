@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -48,6 +47,15 @@ const Prestadores = () => {
       default:
         return tipo;
     }
+  };
+
+  const handleEditarPrestador = (prestadorId: string) => {
+    navigate(`/dashboard/prestadores/editar/${prestadorId}`);
+  };
+
+  const handleExcluirPrestador = (prestadorId: string) => {
+    // TODO: Implementar lógica de exclusão
+    console.log('Excluir prestador:', prestadorId);
   };
 
   return (
@@ -131,10 +139,19 @@ const Prestadores = () => {
                     {prestador.ativo ? "Ativo" : "Inativo"}
                   </Badge>
                   <div className="flex items-center space-x-1">
-                    <Button variant="ghost" size="sm">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => handleEditarPrestador(prestador.id)}
+                    >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="text-red-600">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-red-600"
+                      onClick={() => handleExcluirPrestador(prestador.id)}
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>

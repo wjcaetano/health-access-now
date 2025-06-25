@@ -41,9 +41,6 @@ import OutrosExames from "@/pages/servicos/OutrosExames";
 // Portal pages
 import PaginaDeVendas from "@/pages/PaginaDeVendas";
 import PortalParceiro from "@/pages/parceiros/PortalParceiro";
-import Portal from "@/pages/prestador/Portal";
-import Faturamento from "@/pages/prestador/Faturamento";
-import GuiasPrestador from "@/pages/prestador/Guias";
 import SejaFranqueado from "@/pages/franquia/SejaFranqueado";
 
 import "./App.css";
@@ -67,11 +64,6 @@ function App() {
             <Route path="/servicos/exames-laboratoriais" element={<ExamesLaboratoriais />} />
             <Route path="/servicos/exames-de-imagem" element={<ExamesDeImagem />} />
             <Route path="/servicos/outros-exames" element={<OutrosExames />} />
-            
-            {/* Prestador portal */}
-            <Route path="/prestador/portal" element={<Portal />} />
-            <Route path="/prestador/faturamento" element={<Faturamento />} />
-            <Route path="/prestador/guias" element={<GuiasPrestador />} />
 
             {/* Checkout and finalization routes */}
             <Route path="/checkout-vendas" element={<CheckoutVendas />} />
