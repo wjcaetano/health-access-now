@@ -18,9 +18,12 @@ const VendaFinalizada: React.FC = () => {
   const { venda, servicos, guias, cliente, metodoPagamento } = location.state || {};
 
   useEffect(() => {
+    console.log('Dados recebidos na página finalizada:', { venda, servicos, guias, cliente, metodoPagamento });
+    
     if (!venda || !servicos || !cliente) {
       console.error('Dados da venda não encontrados:', { venda, servicos, cliente });
       navigate('/dashboard/vendas');
+      return;
     }
   }, [venda, servicos, cliente, navigate]);
 
@@ -43,10 +46,14 @@ const VendaFinalizada: React.FC = () => {
   };
 
   const gerarCodigoGuia = (guiaId: string, index: number) => {
-    return guias && guias[index] ? guias[index].codigo_autenticacao : `GU${guiaId.slice(0, 8).toUpperCase()}${(index + 1).toString().padStart(2, '0')}`;
+    if (guias && guias[index]) {
+      return guias[index].codigo_autenticacao;
+    }
+    return `AG${Date.now()}${(index + 1).toString().padStart(2, '0')}`;
   };
 
   const imprimirRecibo = () => {
+    console.log('Preparando impressão do recibo...');
     setShowRecibo(true);
     setTimeout(() => {
       window.print();
@@ -55,6 +62,7 @@ const VendaFinalizada: React.FC = () => {
   };
 
   const imprimirGuias = () => {
+    console.log('Preparando impressão das guias...');
     setShowGuias(true);
     setTimeout(() => {
       window.print();

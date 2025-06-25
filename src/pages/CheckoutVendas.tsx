@@ -107,6 +107,8 @@ const CheckoutVendas: React.FC = () => {
       : "Dinheiro";
 
     try {
+      console.log('Iniciando processo de pagamento...');
+      
       // Criar a venda
       const novaVenda = {
         cliente_id: dadosVenda.cliente.id,
@@ -121,55 +123,59 @@ const CheckoutVendas: React.FC = () => {
         valor: servico.valorVenda
       }));
 
-      console.log('Criando venda:', { novaVenda, servicosVenda });
+      console.log('Dados da venda a serem criados:', { novaVenda, servicosVenda });
 
-      await new Promise((resolve, reject) => {
-        criarVenda({ venda: novaVenda, servicos: servicosVenda }, {
-          onSuccess: (data) => {
-            console.log('Venda criada com sucesso:', data);
-            
-            // Se veio de um orçamento, atualizar o status
-            if (dadosVenda.orcamentoId) {
-              console.log('Atualizando status do orçamento:', dadosVenda.orcamentoId);
-              updateOrcamento({ 
-                id: dadosVenda.orcamentoId, 
-                status: 'aprovado',
-                venda_id: data.venda.id 
-              });
-            }
-
-            toast({
-              title: "Pagamento processado com sucesso!",
-              description: `Venda finalizada via ${metodoPagamentoTexto}.`
+      criarVenda({ venda: novaVenda, servicos: servicosVenda }, {
+        onSuccess: (data) => {
+          console.log('Venda criada com sucesso:', data);
+          
+          // Se veio de um orçamento, atualizar o status
+          if (dadosVenda.orcamentoId) {
+            console.log('Atualizando status do orçamento:', dadosVenda.orcamentoId);
+            updateOrcamento({ 
+              id: dadosVenda.orcamentoId, 
+              status: 'aprovado',
+              venda_id: data.venda.id 
             });
-
-            // Redirecionar para página de sucesso com dados da venda
-            navigate('/dashboard/venda-finalizada', { 
-              state: { 
-                venda: data.venda,
-                servicos: data.servicos,
-                guias: data.guias,
-                cliente: dadosVenda.cliente,
-                metodoPagamento: metodoPagamentoTexto
-              }
-            });
-            resolve(data);
-          },
-          onError: (error) => {
-            console.error('Erro ao criar venda:', error);
-            toast({
-              title: "Erro ao processar pagamento",
-              description: "Ocorreu um erro ao finalizar a venda.",
-              variant: "destructive"
-            });
-            reject(error);
           }
-        });
+
+          toast({
+            title: "Pagamento processado com sucesso!",
+            description: `Venda finalizada via ${metodoPagamentoTexto}.`
+          });
+
+          console.log('Redirecionando para página de venda finalizada...');
+          
+          // Redirecionar para página de sucesso com dados da venda
+          navigate('/venda-finalizada', { 
+            state: { 
+              venda: data.venda,
+              servicos: data.servicos,
+              guias: data.guias,
+              cliente: dadosVenda.cliente,
+              metodoPagamento: metodoPagamentoTexto
+            },
+            replace: true
+          });
+        },
+        onError: (error) => {
+          console.error('Erro ao criar venda:', error);
+          toast({
+            title: "Erro ao processar pagamento",
+            description: "Ocorreu um erro ao finalizar a venda. Tente novamente.",
+            variant: "destructive"
+          });
+          setProcessandoPagamento(false);
+        }
       });
 
     } catch (error) {
       console.error('Erro ao finalizar pagamento:', error);
-    } finally {
+      toast({
+        title: "Erro ao processar pagamento",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive"
+      });
       setProcessandoPagamento(false);
     }
   };
