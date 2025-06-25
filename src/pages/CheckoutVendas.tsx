@@ -29,6 +29,8 @@ import {
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useCreateVenda } from "@/hooks/useVendas";
+import { useUpdateOrcamento } from "@/hooks/useOrcamentos";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -36,6 +38,8 @@ const CheckoutVendas: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+  const { mutate: criarVenda, isPending: isCreatingVenda } = useCreateVenda();
+  const { mutate: updateOrcamento } = useUpdateOrcamento();
   
   // Dados da venda vindos da página de vendas
   const [dadosVenda, setDadosVenda] = useState<any>(null);
@@ -44,10 +48,10 @@ const CheckoutVendas: React.FC = () => {
   const [processandoPagamento, setProcessandoPagamento] = useState(false);
 
   useEffect(() => {
-    // Recuperar dados da venda do state da navegação ou localStorage
-    const vendaData = location.state?.vendaData || JSON.parse(localStorage.getItem('checkout_venda') || '{}');
+    // Recuperar dados da venda do state da navegação
+    const vendaData = location.state?.vendaData;
     
-    if (!vendaData.cliente || !vendaData.servicos || vendaData.servicos.length === 0) {
+    if (!vendaData?.cliente || !vendaData?.servicos || vendaData.servicos.length === 0) {
       toast({
         title: "Dados não encontrados",
         description: "Não foi possível carregar os dados da venda.",
@@ -69,7 +73,7 @@ const CheckoutVendas: React.FC = () => {
 
   const calcularTotal = () => {
     if (!dadosVenda?.servicos) return 0;
-    return dadosVenda.servicos.reduce((total: number, servico: any) => total + servico.valor, 0);
+    return dadosVenda.servicos.reduce((total: number, servico: any) => total + servico.valorVenda, 0);
   };
 
   const finalizarPagamento = async () => {
@@ -93,35 +97,72 @@ const CheckoutVendas: React.FC = () => {
 
     setProcessandoPagamento(true);
 
-    // Simular processamento do pagamento
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    // Aqui seria a integração real com o sistema de pagamento
     const metodoPagamentoTexto = metodoPagamento === "cartao" 
       ? `Cartão de ${tipoCartao}` 
       : metodoPagamento === "pix" 
       ? "PIX" 
       : "Dinheiro";
 
-    toast({
-      title: "Pagamento processado com sucesso!",
-      description: `Venda finalizada via ${metodoPagamentoTexto}.`
-    });
+    try {
+      // Criar a venda
+      const novaVenda = {
+        cliente_id: dadosVenda.cliente.id,
+        valor_total: calcularTotal(),
+        metodo_pagamento: metodoPagamentoTexto,
+        status: 'concluida'
+      };
 
-    // Limpar dados do localStorage
-    localStorage.removeItem('checkout_venda');
+      const servicosVenda = dadosVenda.servicos.map((servico: any) => ({
+        servico_id: servico.id,
+        prestador_id: servico.prestadorId,
+        valor: servico.valorVenda
+      }));
 
-    // Redirecionar para o dashboard ou página de confirmação
-    navigate('/', { 
-      state: { 
-        vendaFinalizada: true,
-        cliente: dadosVenda.cliente.nome,
-        valor: calcularTotal(),
-        metodoPagamento: metodoPagamentoTexto
-      }
-    });
+      await new Promise((resolve, reject) => {
+        criarVenda({ venda: novaVenda, servicos: servicosVenda }, {
+          onSuccess: (data) => {
+            // Se veio de um orçamento, atualizar o status
+            if (dadosVenda.orcamentoId) {
+              updateOrcamento({ 
+                id: dadosVenda.orcamentoId, 
+                status: 'aprovado',
+                venda_id: data.venda.id 
+              });
+            }
 
-    setProcessandoPagamento(false);
+            toast({
+              title: "Pagamento processado com sucesso!",
+              description: `Venda finalizada via ${metodoPagamentoTexto}.`
+            });
+
+            // Redirecionar para página de sucesso com dados da venda
+            navigate('/venda-finalizada', { 
+              state: { 
+                venda: data.venda,
+                servicos: data.servicos,
+                cliente: dadosVenda.cliente,
+                metodoPagamento: metodoPagamentoTexto
+              }
+            });
+            resolve(data);
+          },
+          onError: (error) => {
+            toast({
+              title: "Erro ao processar pagamento",
+              description: "Ocorreu um erro ao finalizar a venda.",
+              variant: "destructive"
+            });
+            console.error('Erro ao criar venda:', error);
+            reject(error);
+          }
+        });
+      });
+
+    } catch (error) {
+      console.error('Erro ao finalizar pagamento:', error);
+    } finally {
+      setProcessandoPagamento(false);
+    }
   };
 
   const voltarParaVendas = () => {
@@ -188,22 +229,18 @@ const CheckoutVendas: React.FC = () => {
                       <div className="flex justify-between items-start mb-2">
                         <h5 className="font-medium">{servico.nome}</h5>
                         <span className="font-semibold text-agendaja-primary">
-                          {formatarMoeda(servico.valor)}
+                          {formatarMoeda(servico.valorVenda)}
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 mb-2">
-                        Prestador: {servico.prestador}
+                        Categoria: {servico.categoria}
                       </p>
-                      <div className="flex gap-4 text-sm text-gray-500">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          <span>{format(new Date(servico.data), "dd/MM/yyyy", { locale: ptBR })}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          <span>{servico.horario}</span>
-                        </div>
-                      </div>
+                      <p className="text-sm text-gray-600">
+                        Prestador: {servico.prestadorNome}
+                      </p>
+                      {servico.descricao && (
+                        <p className="text-xs text-gray-500 mt-1">{servico.descricao}</p>
+                      )}
                     </CardContent>
                   </Card>
                 ))}

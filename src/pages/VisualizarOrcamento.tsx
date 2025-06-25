@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,6 @@ import { useOrcamento } from "@/hooks/useOrcamentos";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import AcoesOrcamento from "@/components/orcamentos/AcoesOrcamento";
-import { useCreateVenda } from "@/hooks/useVendas";
 import { useCancelarOrcamento } from "@/hooks/useOrcamentos";
 import { useToast } from "@/hooks/use-toast";
 
@@ -18,7 +16,6 @@ const VisualizarOrcamento: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { data: orcamento, isLoading } = useOrcamento(id!);
-  const { mutate: criarVenda, isPending: isCreatingVenda } = useCreateVenda();
   const { mutate: cancelarOrcamento, isPending: isCancelingOrcamento } = useCancelarOrcamento();
 
   if (isLoading) {
@@ -263,7 +260,7 @@ const VisualizarOrcamento: React.FC = () => {
                 orcamento={orcamento}
                 onCancelar={handleCancelar}
                 onConcluirVenda={handleConcluirVenda}
-                isLoading={isCreatingVenda || isCancelingOrcamento}
+                isLoading={isCancelingOrcamento}
               />
             </CardContent>
           </Card>

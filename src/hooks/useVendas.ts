@@ -91,7 +91,17 @@ export function useCreateVenda() {
       const { data: servicosData, error: servicosError } = await supabase
         .from("vendas_servicos")
         .insert(servicosComVenda)
-        .select();
+        .select(`
+          *,
+          servicos (
+            nome,
+            categoria
+          ),
+          prestadores (
+            nome,
+            especialidades
+          )
+        `);
       
       if (servicosError) throw servicosError;
 
