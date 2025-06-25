@@ -108,7 +108,7 @@ export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) 
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/meu-perfil" className="flex items-center cursor-pointer">
+                <Link to="/dashboard/meu-perfil" className="flex items-center cursor-pointer">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Meu Perfil</span>
                 </Link>
@@ -116,14 +116,14 @@ export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) 
               {(isAdmin || isManager) && (
                 <>
                   <DropdownMenuItem asChild>
-                    <Link to="/gestao-usuarios" className="flex items-center cursor-pointer">
+                    <Link to="/dashboard/gestao-usuarios" className="flex items-center cursor-pointer">
                       <Users className="mr-2 h-4 w-4" />
                       <span>Gestão de Usuários</span>
                     </Link>
                   </DropdownMenuItem>
                   {isAdmin && (
                     <DropdownMenuItem asChild>
-                      <Link to="/analise-sistema" className="flex items-center cursor-pointer">
+                      <Link to="/dashboard/analise-sistema" className="flex items-center cursor-pointer">
                         <BarChart3 className="mr-2 h-4 w-4" />
                         <span>Análise do Sistema</span>
                       </Link>

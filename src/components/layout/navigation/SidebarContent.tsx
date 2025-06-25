@@ -76,7 +76,7 @@ export function SidebarContent({
       <div className="mt-6 p-4">
         <Separator className="mb-4" />
         <Link
-          to="/dashboard/configuracoes"
+          to="/dashboard/meu-perfil"
           className="flex items-center gap-3 rounded-md px-3 py-2 text-gray-600 hover:bg-gray-100"
         >
           <Settings className="h-5 w-5" />

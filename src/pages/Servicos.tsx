@@ -60,7 +60,7 @@ const Servicos: React.FC = () => {
             Gerencie todos os serviços e prestadores da plataforma
           </p>
         </div>
-        <RouterLink to="/novo-servico">
+        <RouterLink to="/dashboard/servicos/novo">
           <Button className="bg-agendaja-primary hover:bg-agendaja-secondary">
             <Plus className="h-5 w-5 mr-2" />
             Novo Serviço
