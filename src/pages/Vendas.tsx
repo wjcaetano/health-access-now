@@ -211,6 +211,10 @@ const Vendas: React.FC = () => {
     const valorTotal = servicosSelecionados.reduce((total, servico) => total + servico.valorVenda, 0);
     const primeiroServico = servicosSelecionados[0];
     
+    // Definir data de validade para 7 dias a partir de hoje
+    const dataValidade = new Date();
+    dataValidade.setDate(dataValidade.getDate() + 7);
+    
     criarOrcamento({
       cliente_id: clienteSelecionado.id,
       servico_id: primeiroServico.id,
@@ -220,6 +224,7 @@ const Vendas: React.FC = () => {
       valor_final: valorTotal,
       percentual_desconto: 0,
       status: 'pendente',
+      data_validade: dataValidade.toISOString().split('T')[0],
       observacoes: `Orçamento com ${servicosSelecionados.length} serviço(s): ${servicosSelecionados.map(s => s.nome).join(', ')}`
     }, {
       onSuccess: () => {
