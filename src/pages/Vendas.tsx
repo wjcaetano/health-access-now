@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { useClientes } from "@/hooks/useClientes";
 import { useCreateOrcamento } from "@/hooks/useOrcamentos";
-import { useOrcamentosPorCliente } from "@/hooks/useOrcamentos";
+import { useOrcamentosPorCliente, useCancelarOrcamento } from "@/hooks/useOrcamentos";
 import { useCreateVenda } from "@/hooks/useVendas";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -31,6 +31,7 @@ import BuscaServicos from "@/components/vendas/BuscaServicos";
 import ListaServicos from "@/components/vendas/ListaServicos";
 import CheckoutVenda from "@/components/vendas/CheckoutVenda";
 import OrcamentosPendentes from "@/components/vendas/OrcamentosPendentes";
+import { Tables } from "@/integrations/supabase/types";
 
 type EstadoVenda = 'inicial' | 'nao_encontrado' | 'cliente_selecionado' | 'cadastro_servicos' | 'checkout';
 
@@ -44,6 +45,16 @@ interface ServicoSelecionado {
   descricao?: string;
 }
 
+type OrcamentoPendente = Tables<"orcamentos"> & {
+  servicos?: {
+    nome: string;
+    categoria: string;
+  };
+  prestadores?: {
+    nome: string;
+  };
+};
+
 const Vendas: React.FC = () => {
   const [termoBusca, setTermoBusca] = useState("");
   const [estadoAtual, setEstadoAtual] = useState<EstadoVenda>('inicial');
@@ -54,6 +65,7 @@ const Vendas: React.FC = () => {
   const { data: orcamentosPendentes } = useOrcamentosPorCliente(clienteSelecionado?.id);
   const { mutate: criarOrcamento } = useCreateOrcamento();
   const { mutate: criarVenda, isPending: isCreatingVenda } = useCreateVenda();
+  const { mutate: cancelarOrcamento, isPending: isCancelingOrcamento } = useCancelarOrcamento();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -197,9 +209,6 @@ const Vendas: React.FC = () => {
     }
 
     const valorTotal = servicosSelecionados.reduce((total, servico) => total + servico.valorVenda, 0);
-    const dataValidade = new Date();
-    dataValidade.setDate(dataValidade.getDate() + 30); // 30 dias de validade
-
     const primeiroServico = servicosSelecionados[0];
     
     criarOrcamento({
@@ -210,14 +219,13 @@ const Vendas: React.FC = () => {
       valor_venda: primeiroServico.valorVenda,
       valor_final: valorTotal,
       percentual_desconto: 0,
-      data_validade: dataValidade.toISOString().split('T')[0],
       status: 'pendente',
       observacoes: `Orçamento com ${servicosSelecionados.length} serviço(s): ${servicosSelecionados.map(s => s.nome).join(', ')}`
     }, {
       onSuccess: () => {
         toast({
           title: "Orçamento salvo",
-          description: "O orçamento foi salvo com sucesso!"
+          description: "O orçamento foi salvo com sucesso e é válido por 7 dias!"
         });
         cancelarOperacao();
       },
@@ -232,11 +240,64 @@ const Vendas: React.FC = () => {
     });
   };
 
-  const adicionarOrcamentoPendente = (orcamentoId: string) => {
-    // Implementar lógica para adicionar orçamento à venda
-    toast({
-      title: "Funcionalidade em desenvolvimento",
-      description: "A adição de orçamentos à venda será implementada em breve."
+  const concluirVendaDoOrcamento = (orcamento: OrcamentoPendente) => {
+    if (!orcamento.servicos) {
+      toast({
+        title: "Erro",
+        description: "Dados do serviço não encontrados.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const novaVenda = {
+      cliente_id: clienteSelecionado.id,
+      valor_total: orcamento.valor_final,
+      metodo_pagamento: 'pix', // Padrão, pode ser alterado no checkout
+      status: 'concluida'
+    };
+
+    const servicosVenda = [{
+      servico_id: orcamento.servico_id!,
+      prestador_id: orcamento.prestador_id!,
+      valor: orcamento.valor_final
+    }];
+
+    criarVenda({ venda: novaVenda, servicos: servicosVenda }, {
+      onSuccess: () => {
+        toast({
+          title: "Venda concluída",
+          description: "A venda foi realizada com sucesso a partir do orçamento!"
+        });
+        cancelarOperacao();
+      },
+      onError: (error) => {
+        toast({
+          title: "Erro ao concluir venda",
+          description: "Ocorreu um erro ao processar a venda.",
+          variant: "destructive"
+        });
+        console.error('Erro ao criar venda:', error);
+      }
+    });
+  };
+
+  const handleCancelarOrcamento = (orcamentoId: string) => {
+    cancelarOrcamento(orcamentoId, {
+      onSuccess: () => {
+        toast({
+          title: "Orçamento cancelado",
+          description: "O orçamento foi cancelado com sucesso."
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Erro ao cancelar",
+          description: "Ocorreu um erro ao cancelar o orçamento.",
+          variant: "destructive"
+        });
+        console.error('Erro ao cancelar orçamento:', error);
+      }
     });
   };
 
@@ -435,7 +496,9 @@ const Vendas: React.FC = () => {
           {orcamentosPendentes && orcamentosPendentes.length > 0 && (
             <OrcamentosPendentes
               orcamentos={orcamentosPendentes}
-              onAdicionarOrcamento={adicionarOrcamentoPendente}
+              onConcluirVenda={concluirVendaDoOrcamento}
+              onCancelar={handleCancelarOrcamento}
+              isLoading={isCreatingVenda || isCancelingOrcamento}
             />
           )}
 
@@ -467,7 +530,7 @@ const Vendas: React.FC = () => {
                   disabled={servicosSelecionados.length === 0}
                 >
                   <Save className="h-4 w-4 mr-2" />
-                  Salvar Orçamento
+                  Salvar Orçamento (7 dias)
                 </Button>
                 <Button
                   onClick={cancelarOperacao}

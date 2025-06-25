@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
@@ -11,30 +11,19 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { 
   Calendar,
   User,
   Clock,
   MapPin,
   FileText,
-  CheckCircle,
-  XCircle,
   ArrowLeft
 } from "lucide-react";
-import { Orcamento } from "@/types";
 import { format } from "date-fns";
-import { orcamentos } from "@/data/mock";
+import { ptBR } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
+import { useOrcamento, useCancelarOrcamento } from "@/hooks/useOrcamentos";
+import { useCreateVenda } from "@/hooks/useVendas";
+import AcoesOrcamento from "@/components/orcamentos/AcoesOrcamento";
 
 const statusMap = {
   pendente: {
@@ -45,8 +34,8 @@ const statusMap = {
     label: "Aprovado",
     color: "bg-green-100 hover:bg-green-100 text-green-800"
   },
-  recusado: {
-    label: "Recusado",
+  cancelado: {
+    label: "Cancelado",
     color: "bg-red-100 hover:bg-red-100 text-red-800"
   },
   expirado: {
@@ -59,7 +48,7 @@ const formatarValor = (valor: number) => {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
-  }).format(valor / 100);
+  }).format(valor);
 };
 
 const VisualizarOrcamento: React.FC = () => {
@@ -67,10 +56,19 @@ const VisualizarOrcamento: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  // Encontrar o orçamento pelo ID
-  const orcamento = orcamentos.find(o => o.id === id);
+  const { data: orcamento, isLoading, error } = useOrcamento(id || '');
+  const { mutate: cancelarOrcamento, isPending: isCancelingOrcamento } = useCancelarOrcamento();
+  const { mutate: criarVenda, isPending: isCreatingVenda } = useCreateVenda();
   
-  if (!orcamento) {
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-gray-500">Carregando orçamento...</p>
+      </div>
+    );
+  }
+
+  if (error || !orcamento) {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-gray-500">Orçamento não encontrado</p>
@@ -78,20 +76,61 @@ const VisualizarOrcamento: React.FC = () => {
     );
   }
 
-  const handleStatusChange = (novoStatus: Orcamento['status']) => {
-    // Aqui você implementaria a lógica para atualizar o status no backend
-    toast({
-      title: "Status atualizado",
-      description: `Orçamento ${statusMap[novoStatus].label.toLowerCase()} com sucesso.`,
+  const isExpired = new Date() > new Date(orcamento.data_validade);
+  const currentStatus = isExpired && orcamento.status === 'pendente' ? 'expirado' : orcamento.status;
+
+  const handleCancelar = (orcamentoId: string) => {
+    cancelarOrcamento(orcamentoId, {
+      onSuccess: () => {
+        toast({
+          title: "Orçamento cancelado",
+          description: "O orçamento foi cancelado com sucesso."
+        });
+        navigate('/orcamentos');
+      },
+      onError: (error) => {
+        toast({
+          title: "Erro ao cancelar",
+          description: "Ocorreu um erro ao cancelar o orçamento.",
+          variant: "destructive"
+        });
+        console.error('Erro ao cancelar orçamento:', error);
+      }
     });
-    
-    // Simular atualização local (em produção seria via API)
-    console.log(`Atualizando orçamento ${id} para status: ${novoStatus}`);
   };
 
-  const isExpired = new Date() > orcamento.dataValidade;
-  const canApprove = orcamento.status === 'pendente' && !isExpired;
-  const canReject = orcamento.status === 'pendente' && !isExpired;
+  const handleConcluirVenda = (orcamento: any) => {
+    const novaVenda = {
+      cliente_id: orcamento.cliente_id,
+      valor_total: orcamento.valor_final,
+      metodo_pagamento: 'pix',
+      status: 'concluida'
+    };
+
+    const servicosVenda = [{
+      servico_id: orcamento.servico_id,
+      prestador_id: orcamento.prestador_id,
+      valor: orcamento.valor_final
+    }];
+
+    criarVenda({ venda: novaVenda, servicos: servicosVenda }, {
+      onSuccess: () => {
+        toast({
+          title: "Venda concluída",
+          description: "A venda foi realizada com sucesso!"
+        });
+        navigate('/vendas');
+      },
+      onError: (error) => {
+        toast({
+          title: "Erro ao concluir venda",
+          description: "Ocorreu um erro ao processar a venda.",
+          variant: "destructive"
+        });
+        console.error('Erro ao criar venda:', error);
+      }
+    });
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -125,19 +164,19 @@ const VisualizarOrcamento: React.FC = () => {
           <CardContent className="space-y-4">
             <div>
               <label className="text-sm font-medium text-gray-500">Nome</label>
-              <p className="font-semibold">{orcamento.cliente?.nome}</p>
+              <p className="font-semibold">{orcamento.clientes?.nome}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-500">CPF</label>
-              <p>{orcamento.cliente?.cpf}</p>
+              <p>{orcamento.clientes?.cpf}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-500">Telefone</label>
-              <p>{orcamento.cliente?.telefone}</p>
+              <p>{orcamento.clientes?.telefone}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-500">Email</label>
-              <p>{orcamento.cliente?.email}</p>
+              <p>{orcamento.clientes?.email}</p>
             </div>
           </CardContent>
         </Card>
@@ -153,29 +192,33 @@ const VisualizarOrcamento: React.FC = () => {
           <CardContent className="space-y-4">
             <div>
               <label className="text-sm font-medium text-gray-500">Serviço</label>
-              <p className="font-semibold">{orcamento.servico}</p>
+              <p className="font-semibold">{orcamento.servicos?.nome}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-500">Categoria</label>
+              <p>{orcamento.servicos?.categoria}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-500">Prestador</label>
               <p className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-gray-400" />
-                {orcamento.clinica}
+                {orcamento.prestadores?.nome}
               </p>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-500">Valor Original</label>
               <p className="text-lg font-bold text-gray-400 line-through">
-                {formatarValor(orcamento.valorVenda)}
+                {formatarValor(orcamento.valor_venda)}
               </p>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-500">Desconto</label>
-              <p className="text-green-600 font-semibold">{orcamento.percentualDesconto}%</p>
+              <p className="text-green-600 font-semibold">{orcamento.percentual_desconto}%</p>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-500">Valor Final</label>
               <p className="text-2xl font-bold text-agendaja-primary">
-                {formatarValor(orcamento.valorFinal)}
+                {formatarValor(orcamento.valor_final)}
               </p>
             </div>
           </CardContent>
@@ -193,8 +236,8 @@ const VisualizarOrcamento: React.FC = () => {
             <div>
               <label className="text-sm font-medium text-gray-500">Status Atual</label>
               <div className="mt-1">
-                <Badge variant="outline" className={statusMap[orcamento.status].color}>
-                  {statusMap[orcamento.status].label}
+                <Badge variant="outline" className={statusMap[currentStatus as keyof typeof statusMap].color}>
+                  {statusMap[currentStatus as keyof typeof statusMap].label}
                 </Badge>
               </div>
             </div>
@@ -203,7 +246,7 @@ const VisualizarOrcamento: React.FC = () => {
               <label className="text-sm font-medium text-gray-500">Data do Orçamento</label>
               <p className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-gray-400" />
-                {format(orcamento.createdAt, "dd/MM/yyyy 'às' HH:mm")}
+                {format(new Date(orcamento.created_at || ''), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
               </p>
             </div>
             
@@ -211,71 +254,18 @@ const VisualizarOrcamento: React.FC = () => {
               <label className="text-sm font-medium text-gray-500">Data de Validade</label>
               <p className={`flex items-center gap-2 ${isExpired ? 'text-red-600' : ''}`}>
                 <Calendar className="h-4 w-4 text-gray-400" />
-                {format(orcamento.dataValidade, "dd/MM/yyyy")}
+                {format(new Date(orcamento.data_validade), "dd/MM/yyyy", { locale: ptBR })}
                 {isExpired && <span className="text-xs">(Expirado)</span>}
               </p>
             </div>
 
-            <div className="pt-4 space-y-2">
-              {canApprove && (
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button className="w-full" variant="default">
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Aprovar Orçamento
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Confirmar Aprovação</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Tem certeza que deseja aprovar este orçamento? Esta ação irá confirmar a venda.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleStatusChange('aprovado')}>
-                        Sim, Aprovar
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              )}
-
-              {canReject && (
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button className="w-full" variant="destructive">
-                      <XCircle className="h-4 w-4 mr-2" />
-                      Recusar Orçamento
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Confirmar Recusa</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Tem certeza que deseja recusar este orçamento? Esta ação não pode ser desfeita.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleStatusChange('recusado')}>
-                        Sim, Recusar
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              )}
-
-              {orcamento.status === 'aprovado' && (
-                <Button 
-                  className="w-full" 
-                  variant="outline"
-                  onClick={() => navigate('/checkout-vendas')}
-                >
-                  Ir para Checkout
-                </Button>
-              )}
+            <div className="pt-4">
+              <AcoesOrcamento
+                orcamento={orcamento}
+                onCancelar={handleCancelar}
+                onConcluirVenda={handleConcluirVenda}
+                isLoading={isCancelingOrcamento || isCreatingVenda}
+              />
             </div>
           </CardContent>
         </Card>

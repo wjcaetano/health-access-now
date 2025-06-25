@@ -65,14 +65,59 @@ export function useOrcamentosPorCliente(clienteId: string) {
   });
 }
 
+export function useOrcamento(orcamentoId: string) {
+  return useQuery({
+    queryKey: ["orcamento", orcamentoId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("orcamentos")
+        .select(`
+          *,
+          clientes (
+            id,
+            nome,
+            cpf,
+            telefone,
+            email
+          ),
+          servicos (
+            id,
+            nome,
+            categoria
+          ),
+          prestadores (
+            id,
+            nome
+          )
+        `)
+        .eq("id", orcamentoId)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!orcamentoId,
+  });
+}
+
 export function useCreateOrcamento() {
   const queryClient = useQueryClient();
   
   return useMutation({
     mutationFn: async (orcamento: NovoOrcamento) => {
+      // Definir data de validade para 7 dias a partir de hoje
+      const dataValidade = new Date();
+      dataValidade.setDate(dataValidade.getDate() + 7);
+      
+      const orcamentoComValidade = {
+        ...orcamento,
+        data_validade: dataValidade.toISOString().split('T')[0],
+        status: 'pendente'
+      };
+
       const { data, error } = await supabase
         .from("orcamentos")
-        .insert([orcamento])
+        .insert([orcamentoComValidade])
         .select()
         .single();
       
@@ -94,6 +139,27 @@ export function useUpdateOrcamento() {
         .from("orcamentos")
         .update(updates)
         .eq("id", id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
+    },
+  });
+}
+
+export function useCancelarOrcamento() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (orcamentoId: string) => {
+      const { data, error } = await supabase
+        .from("orcamentos")
+        .update({ status: 'cancelado' })
+        .eq("id", orcamentoId)
         .select()
         .single();
       
