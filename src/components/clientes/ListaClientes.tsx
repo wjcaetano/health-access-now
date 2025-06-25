@@ -23,11 +23,11 @@ export default function ListaClientes() {
   ) || [];
 
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>Clientes Cadastrados ({clientesFiltrados.length})</span>
-          <div className="relative w-72">
+        <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <span className="text-lg sm:text-xl">Clientes Cadastrados ({clientesFiltrados.length})</span>
+          <div className="relative w-full sm:w-72">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
             <Input
               placeholder="Buscar por nome, CPF, telefone ou email..."
@@ -38,49 +38,49 @@ export default function ListaClientes() {
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="grid gap-4">
+      <CardContent className="p-0">
+        <div className="max-h-[600px] overflow-y-auto">
           {clientesFiltrados.map((cliente) => (
             <div
               key={cliente.id}
-              className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
+              className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-4 border-b last:border-b-0 hover:bg-gray-50 gap-4"
             >
-              <div className="flex items-center space-x-4">
-                <div className="h-12 w-12 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary">
+              <div className="flex items-start lg:items-center space-x-4 min-w-0 flex-1">
+                <div className="h-12 w-12 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary flex-shrink-0">
                   <User className="h-6 w-6" />
                 </div>
-                <div>
-                  <h3 className="font-medium text-lg">{cliente.nome}</h3>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <span className="flex items-center">
-                      <User className="h-3 w-3 mr-1" />
-                      {cliente.cpf}
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-medium text-lg text-gray-900 truncate">{cliente.nome}</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 text-sm text-gray-500 mt-1">
+                    <span className="flex items-center truncate">
+                      <User className="h-3 w-3 mr-1 flex-shrink-0" />
+                      <span className="truncate">{cliente.cpf}</span>
                     </span>
-                    <span className="flex items-center">
-                      <Phone className="h-3 w-3 mr-1" />
-                      {cliente.telefone}
+                    <span className="flex items-center truncate">
+                      <Phone className="h-3 w-3 mr-1 flex-shrink-0" />
+                      <span className="truncate">{cliente.telefone}</span>
                     </span>
-                    <span className="flex items-center">
-                      <Mail className="h-3 w-3 mr-1" />
-                      {cliente.email}
+                    <span className="flex items-center truncate">
+                      <Mail className="h-3 w-3 mr-1 flex-shrink-0" />
+                      <span className="truncate">{cliente.email}</span>
                     </span>
+                    {cliente.endereco && (
+                      <span className="flex items-center truncate">
+                        <MapPin className="h-3 w-3 mr-1 flex-shrink-0" />
+                        <span className="truncate">{cliente.endereco}</span>
+                      </span>
+                    )}
                   </div>
-                  {cliente.endereco && (
-                    <div className="flex items-center text-sm text-gray-500 mt-1">
-                      <MapPin className="h-3 w-3 mr-1" />
-                      {cliente.endereco}
-                    </div>
-                  )}
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <Badge variant="outline" className="bg-green-50 text-green-700">
+              <div className="flex items-center justify-end lg:justify-start space-x-2 flex-shrink-0">
+                <Badge variant="outline" className="bg-green-50 text-green-700 whitespace-nowrap">
                   ID: {cliente.id_associado}
                 </Badge>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="flex-shrink-0">
                   <Edit className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="sm" className="text-red-600">
+                <Button variant="ghost" size="sm" className="text-red-600 flex-shrink-0">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
