@@ -134,10 +134,10 @@ export function useUpdateOrcamento() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ id, ...updates }: { id: string } & Partial<Orcamento>) => {
+    mutationFn: async ({ id, ...updateData }: { id: string; [key: string]: any }) => {
       const { data, error } = await supabase
         .from("orcamentos")
-        .update(updates)
+        .update(updateData)
         .eq("id", id)
         .select()
         .single();

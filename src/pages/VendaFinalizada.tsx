@@ -18,12 +18,20 @@ const VendaFinalizada: React.FC = () => {
 
   useEffect(() => {
     if (!venda || !servicos || !cliente) {
+      console.error('Dados da venda não encontrados:', { venda, servicos, cliente });
       navigate('/vendas');
     }
   }, [venda, servicos, cliente, navigate]);
 
   if (!venda || !servicos || !cliente) {
-    return null;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-2">Dados não encontrados</h2>
+          <p className="text-gray-600 mb-4">Redirecionando...</p>
+        </div>
+      </div>
+    );
   }
 
   const formatarMoeda = (valor: number) => {
@@ -88,6 +96,9 @@ const VendaFinalizada: React.FC = () => {
                   <p className="font-semibold">{cliente.nome}</p>
                   <p className="text-sm text-gray-600">CPF: {cliente.cpf}</p>
                   <p className="text-sm text-gray-600">{cliente.telefone}</p>
+                  {cliente.email && (
+                    <p className="text-sm text-gray-600">{cliente.email}</p>
+                  )}
                 </div>
               </div>
               
@@ -103,6 +114,9 @@ const VendaFinalizada: React.FC = () => {
                   <p className="text-sm">
                     <span className="font-medium">Total:</span> {formatarMoeda(venda.valor_total)}
                   </p>
+                  <p className="text-sm">
+                    <span className="font-medium">Status:</span> <span className="text-green-600 font-semibold">Concluída</span>
+                  </p>
                 </div>
               </div>
             </div>
@@ -115,6 +129,9 @@ const VendaFinalizada: React.FC = () => {
                   <div key={servico.id} className="flex justify-between items-center p-3 bg-gray-50 rounded">
                     <div>
                       <p className="font-medium">{servico.servicos?.nome}</p>
+                      <p className="text-sm text-gray-600">
+                        Prestador: {servico.prestadores?.nome || "A definir"}
+                      </p>
                       <p className="text-sm text-gray-600">Código da Guia: {gerarCodigoGuia(venda.id, index)}</p>
                     </div>
                     <span className="font-semibold text-green-600">
@@ -132,17 +149,19 @@ const VendaFinalizada: React.FC = () => {
           <Button
             onClick={imprimirRecibo}
             className="flex-1 bg-blue-600 hover:bg-blue-700"
+            disabled={showRecibo}
           >
             <Printer className="h-4 w-4 mr-2" />
-            Imprimir Recibo
+            {showRecibo ? "Preparando..." : "Imprimir Recibo"}
           </Button>
           
           <Button
             onClick={imprimirGuias}
             className="flex-1 bg-green-600 hover:bg-green-700"
+            disabled={showGuias}
           >
             <FileText className="h-4 w-4 mr-2" />
-            Imprimir Guias ({servicos.length})
+            {showGuias ? "Preparando..." : `Imprimir Guias (${servicos.length})`}
           </Button>
           
           <Button

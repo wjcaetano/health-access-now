@@ -51,7 +51,10 @@ const CheckoutVendas: React.FC = () => {
     // Recuperar dados da venda do state da navegação
     const vendaData = location.state?.vendaData;
     
+    console.log('Dados recebidos no checkout:', vendaData);
+    
     if (!vendaData?.cliente || !vendaData?.servicos || vendaData.servicos.length === 0) {
+      console.error('Dados da venda inválidos:', vendaData);
       toast({
         title: "Dados não encontrados",
         description: "Não foi possível carregar os dados da venda.",
@@ -118,11 +121,16 @@ const CheckoutVendas: React.FC = () => {
         valor: servico.valorVenda
       }));
 
+      console.log('Criando venda:', { novaVenda, servicosVenda });
+
       await new Promise((resolve, reject) => {
         criarVenda({ venda: novaVenda, servicos: servicosVenda }, {
           onSuccess: (data) => {
+            console.log('Venda criada com sucesso:', data);
+            
             // Se veio de um orçamento, atualizar o status
             if (dadosVenda.orcamentoId) {
+              console.log('Atualizando status do orçamento:', dadosVenda.orcamentoId);
               updateOrcamento({ 
                 id: dadosVenda.orcamentoId, 
                 status: 'aprovado',
@@ -147,12 +155,12 @@ const CheckoutVendas: React.FC = () => {
             resolve(data);
           },
           onError: (error) => {
+            console.error('Erro ao criar venda:', error);
             toast({
               title: "Erro ao processar pagamento",
               description: "Ocorreu um erro ao finalizar a venda.",
               variant: "destructive"
             });
-            console.error('Erro ao criar venda:', error);
             reject(error);
           }
         });
@@ -186,6 +194,7 @@ const CheckoutVendas: React.FC = () => {
           variant="ghost" 
           onClick={voltarParaVendas}
           className="flex items-center gap-2"
+          disabled={processandoPagamento}
         >
           <ArrowLeft className="h-4 w-4" />
           Voltar para Vendas
