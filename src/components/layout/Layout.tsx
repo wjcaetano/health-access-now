@@ -36,34 +36,34 @@ const pageInfo: { [key: string]: { title: string; subtitle?: string } } = {
   "/dashboard": { title: "Dashboard", subtitle: "Visão geral do sistema" },
   
   // Páginas originais
-  "/clientes": { title: "Clientes", subtitle: "Gerenciamento de clientes" },
-  "/vendas": { title: "Vendas", subtitle: "Gerenciamento de vendas" },
-  "/checkout-vendas": { title: "Checkout de Vendas", subtitle: "Finalização do pagamento" },
-  "/orcamentos": { title: "Orçamentos", subtitle: "Gerenciamento de orçamentos" },
-  "/conversas": { title: "Conversas", subtitle: "Gerenciamento de mensagens" },
-  "/novo-cliente": { title: "Novo Cliente", subtitle: "Cadastre um novo cliente" },
-  "/novo-agendamento": { title: "Novo Agendamento", subtitle: "Cadastre um novo agendamento" },
+  "/dashboard/clientes": { title: "Clientes", subtitle: "Gerenciamento de clientes" },
+  "/dashboard/vendas": { title: "Vendas", subtitle: "Gerenciamento de vendas" },
+  "/dashboard/checkout-vendas": { title: "Checkout de Vendas", subtitle: "Finalização do pagamento" },
+  "/dashboard/orcamentos": { title: "Orçamentos", subtitle: "Gerenciamento de orçamentos" },
+  "/dashboard/conversas": { title: "Conversas", subtitle: "Gerenciamento de mensagens" },
+  "/dashboard/novo-cliente": { title: "Novo Cliente", subtitle: "Cadastre um novo cliente" },
+  "/dashboard/novo-agendamento": { title: "Novo Agendamento", subtitle: "Cadastre um novo agendamento" },
   
   // Novas páginas
-  "/prestadores": { title: "Prestadores", subtitle: "Gerenciamento de prestadores de serviço" },
-  "/novo-prestador": { title: "Novo Prestador", subtitle: "Cadastre um novo prestador de serviço" },
-  "/servicos": { title: "Serviços", subtitle: "Gerenciamento de serviços oferecidos" },
-  "/novo-servico": { title: "Novo Serviço", subtitle: "Cadastre um novo serviço" },
-  "/financeiro": { title: "Financeiro", subtitle: "Gestão financeira do sistema" },
-  "/agenda-pagamentos": { title: "Agenda de Pagamentos", subtitle: "Calendário de pagamentos aos prestadores" },
-  "/guias": { title: "Guias", subtitle: "Gerenciamento de guias de serviço" },
-  "/configuracoes": { title: "Configurações", subtitle: "Ajustes do sistema" },
-  "/colaboradores": { title: "Colaboradores", subtitle: "Gestão de colaboradores e ponto eletrônico" },
+  "/dashboard/prestadores": { title: "Prestadores", subtitle: "Gerenciamento de prestadores de serviço" },
+  "/dashboard/novo-prestador": { title: "Novo Prestador", subtitle: "Cadastre um novo prestador de serviço" },
+  "/dashboard/servicos": { title: "Serviços", subtitle: "Gerenciamento de serviços oferecidos" },
+  "/dashboard/novo-servico": { title: "Novo Serviço", subtitle: "Cadastre um novo serviço" },
+  "/dashboard/financeiro": { title: "Financeiro", subtitle: "Gestão financeira do sistema" },
+  "/dashboard/agenda-pagamentos": { title: "Agenda de Pagamentos", subtitle: "Calendário de pagamentos aos prestadores" },
+  "/dashboard/guias": { title: "Guias", subtitle: "Gerenciamento de guias de serviço" },
+  "/dashboard/configuracoes": { title: "Configurações", subtitle: "Ajustes do sistema" },
+  "/dashboard/colaboradores": { title: "Colaboradores", subtitle: "Gestão de colaboradores e ponto eletrônico" },
   
   // Páginas do prestador
-  "/prestador": { title: "Portal do Prestador", subtitle: "Bem-vindo ao seu portal" },
-  "/prestador/guias": { title: "Minhas Guias", subtitle: "Gerenciamento de guias recebidas" },
-  "/prestador/faturamento": { title: "Faturamento", subtitle: "Solicitação de pagamentos" },
+  "/dashboard/prestador": { title: "Portal do Prestador", subtitle: "Bem-vindo ao seu portal" },
+  "/dashboard/prestador/guias": { title: "Minhas Guias", subtitle: "Gerenciamento de guias recebidas" },
+  "/dashboard/prestador/faturamento": { title: "Faturamento", subtitle: "Solicitação de pagamentos" },
 };
 
 // Função para determinar o perfil atual com base na URL
 const getProfileFromPath = (path: string) => {
-  if (path.startsWith("/prestador")) {
+  if (path.startsWith("/dashboard/prestador")) {
     return "prestador";
   }
   return "agendaja";
@@ -77,7 +77,7 @@ export default function Layout() {
   const userProfile = isPrestador ? "prestador" : "agendaja";
   
   // Detectar se é uma página de visualização de orçamento
-  const isOrcamentoView = location.pathname.startsWith("/orcamentos/");
+  const isOrcamentoView = location.pathname.startsWith("/dashboard/orcamentos/");
   const defaultTitle = isOrcamentoView ? "Visualizar Orçamento" : "AGENDAJA";
   const defaultSubtitle = isOrcamentoView ? "Detalhes do orçamento selecionado" : 
     (userProfile === "prestador" ? "Portal do Prestador" : "Sistema de Agendamento");

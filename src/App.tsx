@@ -8,7 +8,6 @@ import { PasswordChangeGuard } from "@/components/auth/PasswordChangeGuard";
 import Layout from "@/components/layout/Layout";
 
 // Pages
-import Index from "@/pages/Index";
 import Login from "@/pages/auth/Login";
 import Clientes from "@/pages/Clientes";
 import NovoCliente from "@/pages/NovoCliente";
@@ -58,8 +57,8 @@ function App() {
         <Router>
           <Routes>
             {/* Public routes */}
+            <Route path="/" element={<PaginaDeVendas />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/vendas-publicas" element={<PaginaDeVendas />} />
             <Route path="/portal-parceiro" element={<PortalParceiro />} />
             <Route path="/seja-franqueado" element={<SejaFranqueado />} />
             
@@ -76,7 +75,7 @@ function App() {
 
             {/* Protected routes */}
             <Route
-              path="/*"
+              path="/dashboard/*"
               element={
                 <ProtectedRoute>
                   <PasswordChangeGuard>
