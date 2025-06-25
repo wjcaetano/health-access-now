@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Building, User, Phone, Mail, Edit, Trash2, Plus } from "lucide-react";
 import { usePrestadores } from "@/hooks/usePrestadores";
 import { useState } from "react";
@@ -87,25 +88,27 @@ const Prestadores = () => {
             {prestadoresFiltrados.map((prestador) => (
               <div
                 key={prestador.id}
-                className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
+                className="flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-lg hover:bg-gray-50 space-y-4 md:space-y-0"
               >
-                <div className="flex items-center space-x-4">
-                  <div className="h-12 w-12 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary">
+                <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4 flex-1">
+                  <div className="h-12 w-12 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary shrink-0">
                     {getTipoIcon(prestador.tipo)}
                   </div>
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <h3 className="font-medium text-lg">{prestador.nome}</h3>
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span>{prestador.cnpj}</span>
-                      <span className="flex items-center">
-                        <Phone className="h-3 w-3 mr-1" />
-                        {prestador.telefone}
-                      </span>
-                      <span className="flex items-center">
-                        <Mail className="h-3 w-3 mr-1" />
-                        {prestador.email}
-                      </span>
-                    </div>
+                    <ScrollArea className="h-16 md:h-auto">
+                      <div className="flex flex-col md:flex-row md:items-center md:space-x-4 text-sm text-gray-500 space-y-1 md:space-y-0">
+                        <span className="break-all">{prestador.cnpj}</span>
+                        <span className="flex items-center">
+                          <Phone className="h-3 w-3 mr-1 shrink-0" />
+                          {prestador.telefone}
+                        </span>
+                        <span className="flex items-center break-all">
+                          <Mail className="h-3 w-3 mr-1 shrink-0" />
+                          {prestador.email}
+                        </span>
+                      </div>
+                    </ScrollArea>
                     {prestador.especialidades && prestador.especialidades.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
                         {prestador.especialidades.map((esp, index) => (
@@ -117,22 +120,24 @@ const Prestadores = () => {
                     )}
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                <div className="flex flex-row md:flex-col lg:flex-row items-center space-x-2 md:space-x-0 md:space-y-2 lg:space-y-0 lg:space-x-2 shrink-0">
+                  <Badge variant="outline" className="bg-blue-50 text-blue-700 whitespace-nowrap">
                     {getTipoLabel(prestador.tipo)}
                   </Badge>
                   <Badge 
                     variant="outline" 
-                    className={prestador.ativo ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}
+                    className={`whitespace-nowrap ${prestador.ativo ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}
                   >
                     {prestador.ativo ? "Ativo" : "Inativo"}
                   </Badge>
-                  <Button variant="ghost" size="sm">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="text-red-600">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center space-x-1">
+                    <Button variant="ghost" size="sm">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="text-red-600">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}
