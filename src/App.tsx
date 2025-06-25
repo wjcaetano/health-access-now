@@ -73,6 +73,10 @@ function App() {
             <Route path="/prestador/faturamento" element={<Faturamento />} />
             <Route path="/prestador/guias" element={<GuiasPrestador />} />
 
+            {/* Checkout and finalization routes */}
+            <Route path="/checkout-vendas" element={<CheckoutVendas />} />
+            <Route path="/venda-finalizada" element={<VendaFinalizada />} />
+
             {/* Protected routes */}
             <Route
               path="/dashboard/*"

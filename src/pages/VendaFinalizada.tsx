@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,12 +15,12 @@ const VendaFinalizada: React.FC = () => {
   const [showRecibo, setShowRecibo] = useState(false);
   const [showGuias, setShowGuias] = useState(false);
 
-  const { venda, servicos, cliente, metodoPagamento } = location.state || {};
+  const { venda, servicos, guias, cliente, metodoPagamento } = location.state || {};
 
   useEffect(() => {
     if (!venda || !servicos || !cliente) {
       console.error('Dados da venda não encontrados:', { venda, servicos, cliente });
-      navigate('/vendas');
+      navigate('/dashboard/vendas');
     }
   }, [venda, servicos, cliente, navigate]);
 
@@ -41,8 +42,8 @@ const VendaFinalizada: React.FC = () => {
     }).format(valor);
   };
 
-  const gerarCodigoGuia = (vendaId: string, servicoIndex: number) => {
-    return `GU${vendaId.slice(0, 8).toUpperCase()}${(servicoIndex + 1).toString().padStart(2, '0')}`;
+  const gerarCodigoGuia = (guiaId: string, index: number) => {
+    return guias && guias[index] ? guias[index].codigo_autenticacao : `GU${guiaId.slice(0, 8).toUpperCase()}${(index + 1).toString().padStart(2, '0')}`;
   };
 
   const imprimirRecibo = () => {
@@ -62,7 +63,7 @@ const VendaFinalizada: React.FC = () => {
   };
 
   const voltarParaVendas = () => {
-    navigate('/vendas');
+    navigate('/dashboard/vendas');
   };
 
   return (

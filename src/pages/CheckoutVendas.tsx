@@ -60,7 +60,7 @@ const CheckoutVendas: React.FC = () => {
         description: "Não foi possível carregar os dados da venda.",
         variant: "destructive"
       });
-      navigate('/vendas');
+      navigate('/dashboard/vendas');
       return;
     }
     
@@ -144,10 +144,11 @@ const CheckoutVendas: React.FC = () => {
             });
 
             // Redirecionar para página de sucesso com dados da venda
-            navigate('/venda-finalizada', { 
+            navigate('/dashboard/venda-finalizada', { 
               state: { 
                 venda: data.venda,
                 servicos: data.servicos,
+                guias: data.guias,
                 cliente: dadosVenda.cliente,
                 metodoPagamento: metodoPagamentoTexto
               }
@@ -174,7 +175,7 @@ const CheckoutVendas: React.FC = () => {
   };
 
   const voltarParaVendas = () => {
-    navigate('/vendas');
+    navigate('/dashboard/vendas');
   };
 
   if (!dadosVenda) {

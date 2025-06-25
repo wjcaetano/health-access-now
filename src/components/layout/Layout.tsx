@@ -1,12 +1,10 @@
 
-import React, { useState, useEffect } from "react";
-import { Outlet, useLocation, Routes, Route } from "react-router-dom";
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { useAuth } from "@/contexts/AuthContext";
 
-// Import all the pages for the nested routes
+// Pages
 import Index from "@/pages/Index";
 import Clientes from "@/pages/Clientes";
 import NovoCliente from "@/pages/NovoCliente";
@@ -31,98 +29,33 @@ import MeuPerfil from "@/pages/MeuPerfil";
 import AnaliseDoSistema from "@/pages/AnaliseDoSistema";
 import NotFound from "@/pages/NotFound";
 
-// Informações de páginas por rota
-const pageInfo: { [key: string]: { title: string; subtitle?: string } } = {
-  "/dashboard": { title: "Dashboard", subtitle: "Visão geral do sistema" },
-  
-  // Páginas originais
-  "/dashboard/clientes": { title: "Clientes", subtitle: "Gerenciamento de clientes" },
-  "/dashboard/vendas": { title: "Vendas", subtitle: "Gerenciamento de vendas" },
-  "/dashboard/checkout-vendas": { title: "Checkout de Vendas", subtitle: "Finalização do pagamento" },
-  "/dashboard/orcamentos": { title: "Orçamentos", subtitle: "Gerenciamento de orçamentos" },
-  "/dashboard/conversas": { title: "Conversas", subtitle: "Gerenciamento de mensagens" },
-  "/dashboard/novo-cliente": { title: "Novo Cliente", subtitle: "Cadastre um novo cliente" },
-  "/dashboard/novo-agendamento": { title: "Novo Agendamento", subtitle: "Cadastre um novo agendamento" },
-  
-  // Novas páginas
-  "/dashboard/prestadores": { title: "Prestadores", subtitle: "Gerenciamento de prestadores de serviço" },
-  "/dashboard/novo-prestador": { title: "Novo Prestador", subtitle: "Cadastre um novo prestador de serviço" },
-  "/dashboard/servicos": { title: "Serviços", subtitle: "Gerenciamento de serviços oferecidos" },
-  "/dashboard/novo-servico": { title: "Novo Serviço", subtitle: "Cadastre um novo serviço" },
-  "/dashboard/financeiro": { title: "Financeiro", subtitle: "Gestão financeira do sistema" },
-  "/dashboard/agenda-pagamentos": { title: "Agenda de Pagamentos", subtitle: "Calendário de pagamentos aos prestadores" },
-  "/dashboard/guias": { title: "Guias", subtitle: "Gerenciamento de guias de serviço" },
-  "/dashboard/configuracoes": { title: "Configurações", subtitle: "Ajustes do sistema" },
-  "/dashboard/colaboradores": { title: "Colaboradores", subtitle: "Gestão de colaboradores e ponto eletrônico" },
-  
-  // Páginas do prestador
-  "/dashboard/prestador": { title: "Portal do Prestador", subtitle: "Bem-vindo ao seu portal" },
-  "/dashboard/prestador/guias": { title: "Minhas Guias", subtitle: "Gerenciamento de guias recebidas" },
-  "/dashboard/prestador/faturamento": { title: "Faturamento", subtitle: "Solicitação de pagamentos" },
-};
+// Prestador pages
+import Portal from "@/pages/prestador/Portal";
+import Faturamento from "@/pages/prestador/Faturamento";
+import GuiasPrestador from "@/pages/prestador/Guias";
 
-// Função para determinar o perfil atual com base na URL
-const getProfileFromPath = (path: string) => {
-  if (path.startsWith("/dashboard/prestador")) {
-    return "prestador";
-  }
-  return "agendaja";
-};
-
-export default function Layout() {
-  const [collapsed, setCollapsed] = useState(false);
-  const location = useLocation();
-  const { isPrestador } = useAuth();
-  
-  const userProfile = isPrestador ? "prestador" : "agendaja";
-  
-  // Detectar se é uma página de visualização de orçamento
-  const isOrcamentoView = location.pathname.startsWith("/dashboard/orcamentos/");
-  const defaultTitle = isOrcamentoView ? "Visualizar Orçamento" : "AGENDAJA";
-  const defaultSubtitle = isOrcamentoView ? "Detalhes do orçamento selecionado" : 
-    (userProfile === "prestador" ? "Portal do Prestador" : "Sistema de Agendamento");
-  
-  const { title, subtitle } = pageInfo[location.pathname] || { 
-    title: defaultTitle, 
-    subtitle: defaultSubtitle
-  };
-
-  const toggleSidebar = () => {
-    setCollapsed(prev => !prev);
-  };
-
+const Layout: React.FC = () => {
   return (
     <div className="flex h-screen bg-gray-50">
-      <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} userProfile={userProfile} />
-      <main 
-        className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
-          !collapsed ? "sm:ml-20 md:ml-72" : ""
-        }`}
-      >
-        <Header 
-          title={title} 
-          subtitle={subtitle} 
-          toggleSidebar={toggleSidebar} 
-        />
-        <div className="flex-1 overflow-x-auto overflow-y-auto p-6">
+      <Sidebar />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <Header />
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/clientes" element={<Clientes />} />
-            <Route path="/novo-cliente" element={<NovoCliente />} />
-            <Route path="/editar-cliente/:id" element={<NovoCliente />} />
+            <Route path="/clientes/novo" element={<NovoCliente />} />
             <Route path="/prestadores" element={<Prestadores />} />
-            <Route path="/novo-prestador" element={<NovoPrestador />} />
-            <Route path="/editar-prestador/:id" element={<NovoPrestador />} />
+            <Route path="/prestadores/novo" element={<NovoPrestador />} />
             <Route path="/servicos" element={<Servicos />} />
-            <Route path="/novo-servico" element={<NovoServico />} />
-            <Route path="/editar-servico/:id" element={<NovoServico />} />
+            <Route path="/servicos/novo" element={<NovoServico />} />
             <Route path="/orcamentos" element={<Orcamentos />} />
-            <Route path="/orcamento/:id" element={<VisualizarOrcamento />} />
+            <Route path="/orcamentos/:id" element={<VisualizarOrcamento />} />
             <Route path="/vendas" element={<Vendas />} />
             <Route path="/checkout-vendas" element={<CheckoutVendas />} />
             <Route path="/venda-finalizada" element={<VendaFinalizada />} />
             <Route path="/agendamentos" element={<Agendamentos />} />
-            <Route path="/novo-agendamento" element={<NovoAgendamento />} />
+            <Route path="/agendamentos/novo" element={<NovoAgendamento />} />
             <Route path="/colaboradores" element={<Colaboradores />} />
             <Route path="/financeiro" element={<Financeiro />} />
             <Route path="/agenda-pagamentos" element={<AgendaPagamentos />} />
@@ -131,10 +64,18 @@ export default function Layout() {
             <Route path="/gestao-usuarios" element={<GestaoUsuarios />} />
             <Route path="/meu-perfil" element={<MeuPerfil />} />
             <Route path="/analise-sistema" element={<AnaliseDoSistema />} />
+            
+            {/* Prestador routes */}
+            <Route path="/prestador" element={<Portal />} />
+            <Route path="/prestador/faturamento" element={<Faturamento />} />
+            <Route path="/prestador/guias" element={<GuiasPrestador />} />
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
-}
+};
+
+export default Layout;

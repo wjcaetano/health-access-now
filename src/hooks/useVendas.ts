@@ -105,11 +105,34 @@ export function useCreateVenda() {
       
       if (servicosError) throw servicosError;
 
-      return { venda: vendaData, servicos: servicosData };
+      // Criar guias para cada serviço
+      const guias = servicosData.map(servico => ({
+        cliente_id: vendaData.cliente_id,
+        servico_id: servico.servico_id,
+        prestador_id: servico.prestador_id,
+        valor: servico.valor,
+        status: 'emitida',
+        codigo_autenticacao: `AG${Date.now()}${Math.floor(Math.random() * 1000)}`
+      }));
+
+      const { data: guiasData, error: guiasError } = await supabase
+        .from("guias")
+        .insert(guias)
+        .select(`
+          *,
+          clientes (*),
+          servicos (*),
+          prestadores (*)
+        `);
+
+      if (guiasError) throw guiasError;
+
+      return { venda: vendaData, servicos: servicosData, guias: guiasData };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vendas"] });
       queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
+      queryClient.invalidateQueries({ queryKey: ["guias"] });
     },
   });
 }
