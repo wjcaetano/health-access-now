@@ -105,3 +105,16 @@ export const truncateText = (text: string, maxLength: number = 100): string => {
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength) + '...';
 };
+
+// Formatação de método de pagamento
+export const formatarMetodoPagamento = (metodo: string): string => {
+  const metodos: Record<string, string> = {
+    'dinheiro': 'Dinheiro',
+    'cartao_credito': 'Cartão de Crédito',
+    'cartao_debito': 'Cartão de Débito',
+    'pix': 'PIX',
+    'transferencia': 'Transferência',
+    'boleto': 'Boleto'
+  };
+  return metodos[metodo] || metodo.replace('_', ' ');
+};
