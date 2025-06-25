@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -121,11 +120,11 @@ const NovoPrestador = () => {
 
   const handleVoltarInicio = () => {
     setShowConfirmacao(false);
-    navigate("/prestadores");
+    navigate("/dashboard/prestadores");
   };
 
   const handleCancelar = () => {
-    navigate("/prestadores");
+    navigate("/dashboard/prestadores");
   };
 
   return (
