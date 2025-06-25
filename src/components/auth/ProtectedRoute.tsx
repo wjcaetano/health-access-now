@@ -15,7 +15,7 @@ export function ProtectedRoute({ children, requiredLevel }: ProtectedRouteProps)
   useEffect(() => {
     if (!loading) {
       if (!user) {
-        navigate('/');
+        navigate('/login');
         return;
       }
 
@@ -25,7 +25,7 @@ export function ProtectedRoute({ children, requiredLevel }: ProtectedRouteProps)
         const requiredLevelIndex = levels.indexOf(requiredLevel);
         
         if (userLevelIndex < requiredLevelIndex) {
-          navigate('/dashboard');
+          navigate('/');
           return;
         }
       }
