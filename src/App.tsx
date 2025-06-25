@@ -18,8 +18,6 @@ import NovoServico from "@/pages/NovoServico";
 import Orcamentos from "@/pages/Orcamentos";
 import VisualizarOrcamento from "@/pages/VisualizarOrcamento";
 import Vendas from "@/pages/Vendas";
-import CheckoutVendas from "@/pages/CheckoutVendas";
-import VendaFinalizada from "@/pages/VendaFinalizada";
 import Agendamentos from "@/pages/Agendamentos";
 import NovoAgendamento from "@/pages/NovoAgendamento";
 import Colaboradores from "@/pages/Colaboradores";
@@ -43,6 +41,11 @@ import PaginaDeVendas from "@/pages/PaginaDeVendas";
 import PortalParceiro from "@/pages/parceiros/PortalParceiro";
 import SejaFranqueado from "@/pages/franquia/SejaFranqueado";
 
+// Prestador pages
+import Portal from "@/pages/prestador/Portal";
+import Faturamento from "@/pages/prestador/Faturamento";
+import GuiasPrestador from "@/pages/prestador/Guias";
+
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -65,10 +68,6 @@ function App() {
             <Route path="/servicos/exames-de-imagem" element={<ExamesDeImagem />} />
             <Route path="/servicos/outros-exames" element={<OutrosExames />} />
 
-            {/* Checkout and finalization routes */}
-            <Route path="/checkout-vendas" element={<CheckoutVendas />} />
-            <Route path="/venda-finalizada" element={<VendaFinalizada />} />
-
             {/* Protected routes */}
             <Route
               path="/dashboard/*"
@@ -80,6 +79,25 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            
+            {/* Prestador protected routes */}
+            <Route
+              path="/prestador/*"
+              element={
+                <ProtectedRoute>
+                  <PasswordChangeGuard>
+                    <Routes>
+                      <Route path="/" element={<Portal />} />
+                      <Route path="/faturamento" element={<Faturamento />} />
+                      <Route path="/guias" element={<GuiasPrestador />} />
+                    </Routes>
+                  </PasswordChangeGuard>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* 404 catch-all */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
         <Toaster />

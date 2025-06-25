@@ -86,13 +86,13 @@ const HeaderVendas: React.FC<HeaderVendasProps> = ({ onAbrirLogin }) => {
                 <NavigationMenuTrigger>Serviços</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                     <ListItem href="/servicos/consultas" title="Consultas Médicas">
+                     <ListItem href="/servicos/consultas-medicas" title="Consultas Médicas">
                        Encontre especialistas para cuidar da sua saúde.
                      </ListItem>
                      <ListItem href="/servicos/exames-laboratoriais" title="Exames Laboratoriais">
                        Check-ups e análises com rapidez e precisão.
                      </ListItem>
-                     <ListItem href="/servicos/exames-imagem" title="Exames de Imagem">
+                     <ListItem href="/servicos/exames-de-imagem" title="Exames de Imagem">
                        Tecnologia de ponta para diagnósticos precisos.
                      </ListItem>
                      <ListItem href="/servicos/outros-exames" title="Outros Exames">
@@ -153,7 +153,7 @@ const HeaderVendas: React.FC<HeaderVendasProps> = ({ onAbrirLogin }) => {
               <div className="px-3 py-2 text-sm font-medium text-gray-900">Serviços</div>
               <div className="pl-6 space-y-1">
                 <Link
-                  to="/servicos/consultas"
+                  to="/servicos/consultas-medicas"
                   onClick={handleLinkClick}
                   className="block px-3 py-2 text-sm hover:bg-accent rounded-md"
                 >
@@ -167,7 +167,7 @@ const HeaderVendas: React.FC<HeaderVendasProps> = ({ onAbrirLogin }) => {
                   Exames Laboratoriais
                 </Link>
                 <Link
-                  to="/servicos/exames-imagem"
+                  to="/servicos/exames-de-imagem"
                   onClick={handleLinkClick}
                   className="block px-3 py-2 text-sm hover:bg-accent rounded-md"
                 >

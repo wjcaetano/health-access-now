@@ -16,8 +16,6 @@ import NovoServico from "@/pages/NovoServico";
 import Orcamentos from "@/pages/Orcamentos";
 import VisualizarOrcamento from "@/pages/VisualizarOrcamento";
 import Vendas from "@/pages/Vendas";
-import CheckoutVendas from "@/pages/CheckoutVendas";
-import VendaFinalizada from "@/pages/VendaFinalizada";
 import Agendamentos from "@/pages/Agendamentos";
 import NovoAgendamento from "@/pages/NovoAgendamento";
 import Colaboradores from "@/pages/Colaboradores";
@@ -30,18 +28,11 @@ import MeuPerfil from "@/pages/MeuPerfil";
 import AnaliseDoSistema from "@/pages/AnaliseDoSistema";
 import NotFound from "@/pages/NotFound";
 
-// Prestador pages
-import Portal from "@/pages/prestador/Portal";
-import Faturamento from "@/pages/prestador/Faturamento";
-import GuiasPrestador from "@/pages/prestador/Guias";
-
 const Layout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { profile } = useAuth();
   
   // Determinar o perfil do usuário baseado no contexto de autenticação
-  // Como nivel_acesso pode ser 'colaborador' | 'atendente' | 'gerente' | 'admin', 
-  // vamos usar 'agendaja' como perfil padrão
   const userProfile = 'agendaja';
   
   const toggleSidebar = () => {
@@ -74,8 +65,6 @@ const Layout: React.FC = () => {
               <Route path="/orcamentos" element={<Orcamentos />} />
               <Route path="/orcamentos/:id" element={<VisualizarOrcamento />} />
               <Route path="/vendas" element={<Vendas />} />
-              <Route path="/checkout-vendas" element={<CheckoutVendas />} />
-              <Route path="/venda-finalizada" element={<VendaFinalizada />} />
               <Route path="/agendamentos" element={<Agendamentos />} />
               <Route path="/agendamentos/novo" element={<NovoAgendamento />} />
               <Route path="/colaboradores" element={<Colaboradores />} />
@@ -86,11 +75,6 @@ const Layout: React.FC = () => {
               <Route path="/gestao-usuarios" element={<GestaoUsuarios />} />
               <Route path="/meu-perfil" element={<MeuPerfil />} />
               <Route path="/analise-sistema" element={<AnaliseDoSistema />} />
-              
-              {/* Prestador routes - corrigidas para usar /dashboard/prestador */}
-              <Route path="/prestador" element={<Portal />} />
-              <Route path="/prestador/faturamento" element={<Faturamento />} />
-              <Route path="/prestador/guias" element={<GuiasPrestador />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
