@@ -60,7 +60,7 @@ const Prestadores = () => {
           </p>
         </div>
         <Button 
-          onClick={() => navigate("/novo-prestador")}
+          onClick={() => navigate("/dashboard/prestadores/novo")}
           className="bg-agendaja-primary hover:bg-agendaja-secondary"
         >
           <Plus className="h-4 w-4 mr-2" />
