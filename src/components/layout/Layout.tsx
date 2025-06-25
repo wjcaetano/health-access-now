@@ -40,7 +40,9 @@ const Layout: React.FC = () => {
   const { profile } = useAuth();
   
   // Determinar o perfil do usuário baseado no contexto de autenticação
-  const userProfile = profile?.nivel_acesso === 'prestador' ? 'prestador' : 'agendaja';
+  // Como nivel_acesso pode ser 'colaborador' | 'atendente' | 'gerente' | 'admin', 
+  // vamos usar 'agendaja' como perfil padrão
+  const userProfile = 'agendaja';
   
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
