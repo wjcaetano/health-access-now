@@ -105,14 +105,14 @@ export function useCreateVenda() {
       
       if (servicosError) throw servicosError;
 
-      // Criar guias para cada serviço
+      // Criar guias para cada serviço automaticamente
       const guias = servicosData.map(servico => ({
         cliente_id: vendaData.cliente_id,
         servico_id: servico.servico_id,
         prestador_id: servico.prestador_id,
         valor: servico.valor,
         status: 'emitida',
-        codigo_autenticacao: `AG${Date.now()}${Math.floor(Math.random() * 1000)}`
+        codigo_autenticacao: `AG${Date.now()}${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`
       }));
 
       const { data: guiasData, error: guiasError } = await supabase

@@ -105,7 +105,7 @@ const CheckoutVendas: React.FC = () => {
 
           toast({
             title: "Pagamento processado com sucesso!",
-            description: `Venda finalizada via ${metodoPagamentoTexto}.`
+            description: `Venda finalizada via ${metodoPagamentoTexto}. Guias de atendimento geradas automaticamente.`
           });
 
           console.log('Redirecionando para página de venda finalizada...');

@@ -51,10 +51,26 @@ const VendaFinalizada: React.FC = () => {
       const printContent = document.querySelector('.recibo-print');
       if (printContent) {
         const originalBody = document.body.innerHTML;
-        document.body.innerHTML = printContent.outerHTML;
-        window.print();
-        document.body.innerHTML = originalBody;
-        window.location.reload();
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+          printWindow.document.write(`
+            <html>
+              <head>
+                <title>Recibo de Venda</title>
+                <style>
+                  body { font-family: Arial, sans-serif; margin: 20px; }
+                  .recibo-print { max-width: 800px; margin: 0 auto; }
+                </style>
+              </head>
+              <body>
+                ${printContent.outerHTML}
+              </body>
+            </html>
+          `);
+          printWindow.document.close();
+          printWindow.print();
+          printWindow.close();
+        }
       }
       setShowRecibo(false);
     }, 1000);
@@ -67,11 +83,29 @@ const VendaFinalizada: React.FC = () => {
     setTimeout(() => {
       const printContent = document.querySelector('.guias-print');
       if (printContent) {
-        const originalBody = document.body.innerHTML;
-        document.body.innerHTML = printContent.outerHTML;
-        window.print();
-        document.body.innerHTML = originalBody;
-        window.location.reload();
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+          printWindow.document.write(`
+            <html>
+              <head>
+                <title>Guias de Serviço</title>
+                <style>
+                  body { font-family: Arial, sans-serif; margin: 20px; }
+                  .page-break-after { page-break-after: always; }
+                  @media print {
+                    .page-break-after { page-break-after: always; }
+                  }
+                </style>
+              </head>
+              <body>
+                ${printContent.outerHTML}
+              </body>
+            </html>
+          `);
+          printWindow.document.close();
+          printWindow.print();
+          printWindow.close();
+        }
       }
       setShowGuias(false);
     }, 1000);
@@ -105,7 +139,7 @@ const VendaFinalizada: React.FC = () => {
       </div>
 
       {showRecibo && (
-        <div className="recibo-print">
+        <div className="recibo-print hidden">
           <ReciboVenda
             venda={venda}
             cliente={cliente}
@@ -116,7 +150,7 @@ const VendaFinalizada: React.FC = () => {
       )}
 
       {showGuias && (
-        <div className="guias-print">
+        <div className="guias-print hidden">
           {servicos.map((servico: any, index: number) => (
             <GuiaServico
               key={servico.id}
