@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
@@ -62,6 +61,8 @@ export function useGuias() {
             cpf,
             telefone,
             email,
+            endereco,
+            data_cadastro,
             id_associado
           ),
           servicos (
@@ -87,28 +88,24 @@ export function useGuias() {
         (data || []).map(async (guia): Promise<GuiaComVendas> => {
           // Buscar vendas relacionadas à guia através do agendamento_id
           if (guia.agendamento_id) {
-            const { data: agendamento, error: agendamentoError } = await supabase
-              .from("agendamentos")
+            const { data: vendasServicos, error: vendasError } = await supabase
+              .from("vendas_servicos")
               .select(`
-                id,
-                vendas_servicos!inner (
-                  venda_id,
-                  vendas (
-                    id,
-                    created_at,
-                    valor_total,
-                    metodo_pagamento
-                  )
+                venda_id,
+                vendas (
+                  id,
+                  created_at,
+                  valor_total,
+                  metodo_pagamento
                 )
               `)
-              .eq("id", guia.agendamento_id)
-              .single();
+              .eq("venda_id", guia.agendamento_id);
               
-            if (!agendamentoError && agendamento?.vendas_servicos && Array.isArray(agendamento.vendas_servicos)) {
+            if (!vendasError && vendasServicos && Array.isArray(vendasServicos)) {
               return {
                 ...guia,
-                vendas_servicos: agendamento.vendas_servicos
-              } as GuiaComVendas;
+                vendas_servicos: vendasServicos
+              };
             }
           }
           
