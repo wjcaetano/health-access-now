@@ -101,8 +101,8 @@ const Hero = () => {
           <div className="relative lg:mt-0 mt-12">
             <div className="relative z-10">
               <img
-                src="https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=800&q=80"
-                alt="Médicos e pacientes satisfeitos com tecnologia"
+                src="/lovable-uploads/06184265-ad11-4d31-9d3b-1a2dab4ee5a2.png"
+                alt="Família feliz e saudável"
                 className="w-full h-auto rounded-2xl shadow-2xl"
               />
               {/* Floating card - Voltando para esquerda inferior */}
