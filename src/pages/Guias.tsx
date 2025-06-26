@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -306,74 +305,100 @@ const Guias: React.FC = () => {
         </Alert>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <Card className={`border-l-4 ${activeTab === "emitidas" ? "border-l-yellow-500" : "border-l-transparent"}`}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-gray-500">Emitidas</p>
-              <Badge variant="outline" className="bg-yellow-100 hover:bg-yellow-100 text-yellow-800">
-                {totalEmitidas}
-              </Badge>
+      {/* Cards reorganizados com melhor layout */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
+        <Card className={`border-l-4 ${activeTab === "emitidas" ? "border-l-yellow-500" : "border-l-transparent"} hover:shadow-md transition-shadow`}>
+          <CardContent className="p-4">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs md:text-sm font-medium text-gray-500">Emitidas</p>
+                <Badge variant="outline" className="bg-yellow-100 hover:bg-yellow-100 text-yellow-800 text-xs">
+                  {totalEmitidas}
+                </Badge>
+              </div>
+              <div className="space-y-1">
+                <p className="text-lg md:text-xl font-bold leading-tight">
+                  {formatarValor(calcularValorPorStatus("emitida"))}
+                </p>
+                <p className="text-xs text-gray-400">Total emitido</p>
+              </div>
             </div>
-            <p className="text-2xl font-bold mt-2 truncate">
-              {formatarValor(calcularValorPorStatus("emitida"))}
-            </p>
           </CardContent>
         </Card>
         
-        <Card className={`border-l-4 ${activeTab === "realizadas" ? "border-l-blue-500" : "border-l-transparent"}`}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-gray-500">Realizadas</p>
-              <Badge variant="outline" className="bg-blue-100 hover:bg-blue-100 text-blue-800">
-                {totalRealizadas}
-              </Badge>
+        <Card className={`border-l-4 ${activeTab === "realizadas" ? "border-l-blue-500" : "border-l-transparent"} hover:shadow-md transition-shadow`}>
+          <CardContent className="p-4">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs md:text-sm font-medium text-gray-500">Realizadas</p>
+                <Badge variant="outline" className="bg-blue-100 hover:bg-blue-100 text-blue-800 text-xs">
+                  {totalRealizadas}
+                </Badge>
+              </div>
+              <div className="space-y-1">
+                <p className="text-lg md:text-xl font-bold leading-tight">
+                  {formatarValor(calcularValorPorStatus("realizada"))}
+                </p>
+                <p className="text-xs text-gray-400">Total realizado</p>
+              </div>
             </div>
-            <p className="text-2xl font-bold mt-2 truncate">
-              {formatarValor(calcularValorPorStatus("realizada"))}
-            </p>
           </CardContent>
         </Card>
         
-        <Card className={`border-l-4 ${activeTab === "faturadas" ? "border-l-green-500" : "border-l-transparent"}`}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-gray-500">Faturadas</p>
-              <Badge variant="outline" className="bg-green-100 hover:bg-green-100 text-green-800">
-                {totalFaturadas}
-              </Badge>
+        <Card className={`border-l-4 ${activeTab === "faturadas" ? "border-l-green-500" : "border-l-transparent"} hover:shadow-md transition-shadow`}>
+          <CardContent className="p-4">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs md:text-sm font-medium text-gray-500">Faturadas</p>
+                <Badge variant="outline" className="bg-green-100 hover:bg-green-100 text-green-800 text-xs">
+                  {totalFaturadas}
+                </Badge>
+              </div>
+              <div className="space-y-1">
+                <p className="text-lg md:text-xl font-bold leading-tight">
+                  {formatarValor(calcularValorPorStatus("faturada"))}
+                </p>
+                <p className="text-xs text-gray-400">Total faturado</p>
+              </div>
             </div>
-            <p className="text-2xl font-bold mt-2 truncate">
-              {formatarValor(calcularValorPorStatus("faturada"))}
-            </p>
           </CardContent>
         </Card>
         
-        <Card className={`border-l-4 ${activeTab === "pagas" ? "border-l-gray-500" : "border-l-transparent"}`}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-gray-500">Pagas</p>
-              <Badge variant="outline" className="bg-gray-100 hover:bg-gray-100 text-gray-800">
-                {totalPagas}
-              </Badge>
+        <Card className={`border-l-4 ${activeTab === "pagas" ? "border-l-gray-500" : "border-l-transparent"} hover:shadow-md transition-shadow`}>
+          <CardContent className="p-4">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs md:text-sm font-medium text-gray-500">Pagas</p>
+                <Badge variant="outline" className="bg-gray-100 hover:bg-gray-100 text-gray-800 text-xs">
+                  {totalPagas}
+                </Badge>
+              </div>
+              <div className="space-y-1">
+                <p className="text-lg md:text-xl font-bold leading-tight">
+                  {formatarValor(calcularValorPorStatus("paga"))}
+                </p>
+                <p className="text-xs text-gray-400">Total pago</p>
+              </div>
             </div>
-            <p className="text-2xl font-bold mt-2 truncate">
-              {formatarValor(calcularValorPorStatus("paga"))}
-            </p>
           </CardContent>
         </Card>
 
-        <Card className={`border-l-4 ${activeTab === "expiradas" ? "border-l-orange-500" : "border-l-transparent"}`}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-gray-500">Expiradas</p>
-              <Badge variant="outline" className="bg-orange-100 hover:bg-orange-100 text-orange-800">
-                {totalExpiradas}
-              </Badge>
+        <Card className={`border-l-4 ${activeTab === "expiradas" ? "border-l-orange-500" : "border-l-transparent"} hover:shadow-md transition-shadow`}>
+          <CardContent className="p-4">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs md:text-sm font-medium text-gray-500">Expiradas</p>
+                <Badge variant="outline" className="bg-orange-100 hover:bg-orange-100 text-orange-800 text-xs">
+                  {totalExpiradas}
+                </Badge>
+              </div>
+              <div className="space-y-1">
+                <p className="text-lg md:text-xl font-bold leading-tight">
+                  {formatarValor(calcularValorPorStatus("expirada"))}
+                </p>
+                <p className="text-xs text-gray-400">Total expirado</p>
+              </div>
             </div>
-            <p className="text-2xl font-bold mt-2 truncate">
-              {formatarValor(calcularValorPorStatus("expirada"))}
-            </p>
           </CardContent>
         </Card>
       </div>
@@ -386,14 +411,16 @@ const Guias: React.FC = () => {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="w-full justify-start overflow-x-auto">
-                <TabsTrigger value="todas" className="whitespace-nowrap">Todas</TabsTrigger>
-                <TabsTrigger value="emitidas" className="whitespace-nowrap">Emitidas</TabsTrigger>
-                <TabsTrigger value="realizadas" className="whitespace-nowrap">Realizadas</TabsTrigger>
-                <TabsTrigger value="faturadas" className="whitespace-nowrap">Faturadas</TabsTrigger>
-                <TabsTrigger value="pagas" className="whitespace-nowrap">Pagas</TabsTrigger>
-                <TabsTrigger value="expiradas" className="whitespace-nowrap">Expiradas</TabsTrigger>
-              </TabsList>
+              <div className="overflow-x-auto">
+                <TabsList className="w-full justify-start">
+                  <TabsTrigger value="todas" className="whitespace-nowrap">Todas</TabsTrigger>
+                  <TabsTrigger value="emitidas" className="whitespace-nowrap">Emitidas</TabsTrigger>
+                  <TabsTrigger value="realizadas" className="whitespace-nowrap">Realizadas</TabsTrigger>
+                  <TabsTrigger value="faturadas" className="whitespace-nowrap">Faturadas</TabsTrigger>
+                  <TabsTrigger value="pagas" className="whitespace-nowrap">Pagas</TabsTrigger>
+                  <TabsTrigger value="expiradas" className="whitespace-nowrap">Expiradas</TabsTrigger>
+                </TabsList>
+              </div>
             </Tabs>
             
             <div className="flex flex-col sm:flex-row gap-2">
