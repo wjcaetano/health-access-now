@@ -1,9 +1,9 @@
-
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import HeaderVendas from "@/components/vendas/HeaderVendas";
 import Hero from "@/components/vendas/Hero";
+import ComoFunciona from "@/components/vendas/ComoFunciona";
 import Sobre from "@/components/vendas/Sobre";
 import ServicosPrincipais from "@/components/vendas/ServicosPrincipais";
 import Depoimentos from "@/components/vendas/Depoimentos";
@@ -43,13 +43,13 @@ const PaginaDeVendas = ({ mostrarLogin }: PaginaDeVendasProps) => {
   return (
     <div className="bg-white">
       <HeaderVendas onAbrirLogin={handleAbrirLogin} />
-      <main className="flex flex-col gap-12 pt-4">
+      <main className="flex flex-col">
         <Hero />
+        <ComoFunciona />
         <Sobre />
         <ServicosPrincipais />
         <Depoimentos />
         <CallToAction />
-        {/* Removido o campo de login antigo */}
       </main>
       <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
         <DialogContent className="max-w-md p-0 bg-transparent shadow-none border-none">
@@ -67,4 +67,3 @@ const PaginaDeVendas = ({ mostrarLogin }: PaginaDeVendasProps) => {
   );
 };
 export default PaginaDeVendas;
-
