@@ -55,15 +55,6 @@ export function useGuias() {
             nome,
             tipo,
             especialidades
-          ),
-          vendas_servicos!inner (
-            venda_id,
-            vendas (
-              id,
-              created_at,
-              valor_total,
-              metodo_pagamento
-            )
           )
         `)
         .order("data_emissao", { ascending: false });
@@ -73,8 +64,42 @@ export function useGuias() {
         throw error;
       }
       
+      // Buscar informações de vendas separadamente para as guias encontradas
+      const guiasComVendas = await Promise.all(
+        (data || []).map(async (guia) => {
+          // Buscar vendas relacionadas à guia através do agendamento_id
+          if (guia.agendamento_id) {
+            const { data: agendamento } = await supabase
+              .from("agendamentos")
+              .select(`
+                id,
+                vendas_servicos!inner (
+                  venda_id,
+                  vendas (
+                    id,
+                    created_at,
+                    valor_total,
+                    metodo_pagamento
+                  )
+                )
+              `)
+              .eq("id", guia.agendamento_id)
+              .single();
+              
+            if (agendamento?.vendas_servicos) {
+              return {
+                ...guia,
+                vendas_servicos: agendamento.vendas_servicos
+              };
+            }
+          }
+          
+          return guia;
+        })
+      );
+      
       // Verificar e marcar guias expiradas (30 dias)
-      const guiasComExpiracao = data?.map(guia => {
+      const guiasComExpiracao = guiasComVendas.map(guia => {
         const dataEmissao = new Date(guia.data_emissao);
         const dataExpiracao = new Date(dataEmissao.getTime() + (30 * 24 * 60 * 60 * 1000));
         const hoje = new Date();
@@ -85,7 +110,7 @@ export function useGuias() {
         }
         
         return { ...guia, data_expiracao: dataExpiracao.toISOString() };
-      }) || [];
+      });
       
       console.log('Guias carregadas do banco:', guiasComExpiracao);
       return guiasComExpiracao;
@@ -185,15 +210,6 @@ export function useGuiasPorStatus(status?: string) {
             nome,
             tipo,
             especialidades
-          ),
-          vendas_servicos!inner (
-            venda_id,
-            vendas (
-              id,
-              created_at,
-              valor_total,
-              metodo_pagamento
-            )
           )
         `);
       
@@ -224,14 +240,7 @@ export function useGuiasProximasVencimento() {
         .select(`
           *,
           clientes (nome),
-          servicos (nome),
-          vendas_servicos!inner (
-            venda_id,
-            vendas (
-              id,
-              created_at
-            )
-          )
+          servicos (nome)
         `)
         .eq('status', 'emitida');
       
