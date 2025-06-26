@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
@@ -86,7 +87,7 @@ export function useGuias() {
         (data || []).map(async (guia): Promise<GuiaComVendas> => {
           // Buscar vendas relacionadas à guia através do agendamento_id
           if (guia.agendamento_id) {
-            const { data: agendamento } = await supabase
+            const { data: agendamento, error: agendamentoError } = await supabase
               .from("agendamentos")
               .select(`
                 id,
@@ -103,11 +104,11 @@ export function useGuias() {
               .eq("id", guia.agendamento_id)
               .single();
               
-            if (agendamento?.vendas_servicos) {
+            if (!agendamentoError && agendamento?.vendas_servicos && Array.isArray(agendamento.vendas_servicos)) {
               return {
                 ...guia,
                 vendas_servicos: agendamento.vendas_servicos
-              };
+              } as GuiaComVendas;
             }
           }
           
