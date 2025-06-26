@@ -78,9 +78,21 @@ export function useGuias() {
             prestador_id
           ),
           prestadores (
+            id,
             nome,
             tipo,
-            especialidades
+            especialidades,
+            cnpj,
+            endereco,
+            telefone,
+            email,
+            banco,
+            agencia,
+            conta,
+            tipo_conta,
+            ativo,
+            data_cadastro,
+            comissao
           )
         `)
         .order("data_emissao", { ascending: false });
@@ -112,7 +124,7 @@ export function useGuias() {
               return {
                 ...guia,
                 vendas_servicos: vendasServicos
-              };
+              } as GuiaComVendas;
             }
           }
           
