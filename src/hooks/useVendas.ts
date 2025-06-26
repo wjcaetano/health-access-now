@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables, TablesInsert } from "@/integrations/supabase/types";
@@ -218,7 +217,6 @@ export function useCreateVenda() {
 
 export function useCancelarVenda() {
   const queryClient = useQueryClient();
-  const { mutate: cancelarGuia } = useCancelarGuia();
   
   return useMutation({
     mutationFn: async (vendaId: string) => {
@@ -242,7 +240,7 @@ export function useCancelarVenda() {
         for (const guia of guiasRelacionadas) {
           if (['emitida', 'realizada', 'faturada'].includes(guia.status)) {
             try {
-              await cancelarGuia({ guiaId: guia.id, userType: 'unidade' });
+              await GuiasService.cancelarGuiaIndividual(guia.id);
             } catch (error) {
               console.error(`Erro ao cancelar guia ${guia.id}:`, error);
               // Continua com as outras guias mesmo se uma falhar

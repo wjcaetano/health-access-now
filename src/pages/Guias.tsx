@@ -23,6 +23,8 @@ import {
 } from "@/hooks/useGuias";
 import { GuiaStatus, UserType } from "@/types/guias";
 import VisualizarGuia from "@/components/guias/VisualizarGuia";
+import { useCancelamentoPedido, useBuscarGuiasRelacionadas } from "@/hooks/useCancelamentoPedido";
+import CancelamentoGuiaModal from "@/components/guias/CancelamentoGuiaModal";
 
 const statusMap: Record<string, { label: string; color: string }> = {
   emitida: {
@@ -62,6 +64,9 @@ const Guias: React.FC = () => {
   const [activeTab, setActiveTab] = useState("todas");
   const [guiaSelecionada, setGuiaSelecionada] = useState<any>(null);
   const [showVisualizarGuia, setShowVisualizarGuia] = useState(false);
+  const [showCancelamentoModal, setShowCancelamentoModal] = useState(false);
+  const [guiaParaCancelar, setGuiaParaCancelar] = useState<any>(null);
+  const [guiasRelacionadas, setGuiasRelacionadas] = useState<any[]>([]);
   
   // Simulando tipo de usuário - em produção viria do contexto de auth
   const [userType] = useState<UserType>('unidade');
@@ -71,6 +76,8 @@ const Guias: React.FC = () => {
   const { mutate: updateGuiaStatus, isPending: isUpdatingStatus } = useUpdateGuiaStatus();
   const { mutate: cancelarGuia, isPending: isCancelingGuia } = useCancelarGuia();
   const { mutate: estornarGuia, isPending: isEstornandoGuia } = useEstornarGuia();
+  const { mutate: cancelarPedido, isPending: isCancelingPedido } = useCancelamentoPedido();
+  const { mutate: buscarGuiasRelacionadas, isPending: isBuscandoGuias } = useBuscarGuiasRelacionadas();
   
   if (error) {
     console.error('Erro ao carregar guias:', error);
@@ -142,19 +149,47 @@ const Guias: React.FC = () => {
     });
   };
 
-  const handleCancelarGuia = (guiaId: string) => {
-    cancelarGuia({ guiaId, userType }, {
-      onSuccess: () => {
-        toast({
-          title: "Guia cancelada",
-          description: "A guia foi cancelada com sucesso.",
-        });
+  const handleCancelarGuia = async (guia: any) => {
+    console.log('Iniciando cancelamento da guia:', guia.id);
+    
+    // Buscar guias relacionadas primeiro
+    buscarGuiasRelacionadas(guia.id, {
+      onSuccess: (guiasEncontradas) => {
+        console.log('Guias relacionadas encontradas:', guiasEncontradas);
+        setGuiaParaCancelar(guia);
+        setGuiasRelacionadas(guiasEncontradas);
+        setShowCancelamentoModal(true);
       },
       onError: (error) => {
-        console.error('Erro ao cancelar guia:', error);
+        console.error('Erro ao buscar guias relacionadas:', error);
         toast({
-          title: "Erro ao cancelar guia",
-          description: error.message || "Ocorreu um erro ao cancelar a guia.",
+          title: "Erro",
+          description: "Erro ao buscar informações do pedido.",
+          variant: "destructive"
+        });
+      }
+    });
+  };
+
+  const confirmarCancelamento = () => {
+    if (!guiaParaCancelar) return;
+
+    cancelarPedido({ guiaId: guiaParaCancelar.id, userType }, {
+      onSuccess: (resultado) => {
+        console.log('Pedido cancelado com sucesso:', resultado);
+        toast({
+          title: "Pedido cancelado",
+          description: `${resultado.guiasCanceladas.length} guia(s) cancelada(s) e venda estornada.`,
+        });
+        setShowCancelamentoModal(false);
+        setGuiaParaCancelar(null);
+        setGuiasRelacionadas([]);
+      },
+      onError: (error) => {
+        console.error('Erro ao cancelar pedido:', error);
+        toast({
+          title: "Erro ao cancelar pedido",
+          description: error.message || "Ocorreu um erro ao cancelar o pedido.",
           variant: "destructive"
         });
       }
@@ -212,11 +247,11 @@ const Guias: React.FC = () => {
             key="cancelar"
             variant="ghost" 
             size="sm"
-            onClick={() => handleCancelarGuia(guia.id)}
-            disabled={isCancelingGuia}
+            onClick={() => handleCancelarGuia(guia)}
+            disabled={isCancelingPedido || isBuscandoGuias}
             className="text-red-600 hover:text-red-700 hover:bg-red-50"
           >
-            Cancelar
+            {isBuscandoGuias ? "Verificando..." : "Cancelar"}
           </Button>
         );
       }
@@ -594,6 +629,18 @@ const Guias: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Modal de cancelamento */}
+      {guiaParaCancelar && (
+        <CancelamentoGuiaModal
+          open={showCancelamentoModal}
+          onOpenChange={setShowCancelamentoModal}
+          guia={guiaParaCancelar}
+          guiasRelacionadas={guiasRelacionadas}
+          onConfirm={confirmarCancelamento}
+          isLoading={isCancelingPedido}
+        />
+      )}
 
       {/* Modal de visualização da guia */}
       {guiaSelecionada && (

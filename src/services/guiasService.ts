@@ -128,32 +128,8 @@ export class GuiasService {
     return data;
   }
 
-  // Método específico para cancelar guias
-  static async cancelarGuia(guiaId: string, userType: UserType = 'unidade') {
-    console.log(`Cancelando guia ${guiaId} pelo usuário tipo ${userType}`);
-    
-    // Buscar o status atual da guia
-    const { data: guiaAtual, error: fetchError } = await supabase
-      .from("guias")
-      .select("status, data_emissao")
-      .eq("id", guiaId)
-      .single();
-    
-    if (fetchError) {
-      console.error('Erro ao buscar guia atual:', fetchError);
-      throw fetchError;
-    }
-
-    const currentStatus = guiaAtual.status as GuiaStatus;
-    
-    // Verificar se pode cancelar
-    const { STATUS_TRANSITIONS } = await import("@/types/guias");
-    const transicoesPossíveis = STATUS_TRANSITIONS[userType][currentStatus];
-    
-    if (!transicoesPossíveis?.includes('cancelada')) {
-      throw new Error(`Não é possível cancelar uma guia com status '${currentStatus}' para usuário tipo '${userType}'`);
-    }
-
+  // Método específico para cancelar guias individuais (usado internamente)
+  static async cancelarGuiaIndividual(guiaId: string) {
     const { data, error } = await supabase
       .from("guias")
       .update({ 
@@ -165,12 +141,109 @@ export class GuiasService {
       .single();
     
     if (error) {
-      console.error('Erro ao cancelar guia:', error);
+      console.error('Erro ao cancelar guia individual:', error);
       throw error;
     }
     
-    console.log('Guia cancelada com sucesso:', data);
     return data;
+  }
+
+  // Método principal para cancelar pedido completo
+  static async cancelarPedidoCompleto(guiaId: string, userType: UserType = 'unidade') {
+    console.log(`Cancelando pedido completo a partir da guia ${guiaId}`);
+    
+    // 1. Buscar a guia e seu agendamento_id (venda_id)
+    const { data: guiaOriginal, error: guiaError } = await supabase
+      .from("guias")
+      .select("agendamento_id, status")
+      .eq("id", guiaId)
+      .single();
+    
+    if (guiaError) {
+      console.error('Erro ao buscar guia original:', guiaError);
+      throw guiaError;
+    }
+
+    if (!guiaOriginal.agendamento_id) {
+      throw new Error('Guia não está vinculada a nenhum pedido.');
+    }
+
+    // 2. Buscar todas as guias relacionadas ao mesmo pedido
+    const { data: guiasRelacionadas, error: guiasError } = await supabase
+      .from("guias")
+      .select("id, status, valor")
+      .eq("agendamento_id", guiaOriginal.agendamento_id)
+      .neq("status", "cancelada");
+    
+    if (guiasError) {
+      console.error('Erro ao buscar guias relacionadas:', guiasError);
+      throw guiasError;
+    }
+
+    // 3. Cancelar todas as guias relacionadas
+    if (guiasRelacionadas && guiasRelacionadas.length > 0) {
+      console.log(`Cancelando ${guiasRelacionadas.length} guias relacionadas`);
+      
+      for (const guia of guiasRelacionadas) {
+        try {
+          await this.cancelarGuiaIndividual(guia.id);
+        } catch (error) {
+          console.error(`Erro ao cancelar guia ${guia.id}:`, error);
+          // Continua com as outras guias mesmo se uma falhar
+        }
+      }
+    }
+
+    // 4. Cancelar a venda
+    const { data: vendaCancelada, error: vendaError } = await supabase
+      .from("vendas")
+      .update({ status: 'cancelada' })
+      .eq("id", guiaOriginal.agendamento_id)
+      .select()
+      .single();
+    
+    if (vendaError) {
+      console.error('Erro ao cancelar venda:', vendaError);
+      throw vendaError;
+    }
+
+    console.log('Pedido cancelado com sucesso:', {
+      vendaId: vendaCancelada.id,
+      guiasCanceladas: guiasRelacionadas?.length || 0
+    });
+
+    return {
+      venda: vendaCancelada,
+      guiasCanceladas: guiasRelacionadas || []
+    };
+  }
+
+  // Buscar guias relacionadas a um pedido
+  static async buscarGuiasRelacionadas(guiaId: string) {
+    // Buscar a guia original
+    const { data: guiaOriginal, error: guiaError } = await supabase
+      .from("guias")
+      .select("agendamento_id")
+      .eq("id", guiaId)
+      .single();
+    
+    if (guiaError) throw guiaError;
+    if (!guiaOriginal.agendamento_id) return [];
+
+    // Buscar todas as guias do mesmo pedido
+    const { data: guiasRelacionadas, error: guiasError } = await supabase
+      .from("guias")
+      .select(`
+        *,
+        servicos (nome, categoria),
+        prestadores (nome),
+        clientes (nome)
+      `)
+      .eq("agendamento_id", guiaOriginal.agendamento_id)
+      .neq("status", "cancelada");
+    
+    if (guiasError) throw guiasError;
+    return guiasRelacionadas || [];
   }
 
   // Método específico para estornar guias

@@ -267,7 +267,9 @@ export type Database = {
           agendamento_id: string | null
           cliente_id: string | null
           codigo_autenticacao: string
+          data_cancelamento: string | null
           data_emissao: string | null
+          data_estorno: string | null
           data_faturamento: string | null
           data_pagamento: string | null
           data_realizacao: string | null
@@ -281,7 +283,9 @@ export type Database = {
           agendamento_id?: string | null
           cliente_id?: string | null
           codigo_autenticacao: string
+          data_cancelamento?: string | null
           data_emissao?: string | null
+          data_estorno?: string | null
           data_faturamento?: string | null
           data_pagamento?: string | null
           data_realizacao?: string | null
@@ -295,7 +299,9 @@ export type Database = {
           agendamento_id?: string | null
           cliente_id?: string | null
           codigo_autenticacao?: string
+          data_cancelamento?: string | null
           data_emissao?: string | null
+          data_estorno?: string | null
           data_faturamento?: string | null
           data_pagamento?: string | null
           data_realizacao?: string | null
