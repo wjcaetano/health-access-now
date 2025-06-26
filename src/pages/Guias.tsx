@@ -80,8 +80,8 @@ const Guias: React.FC = () => {
   
   // Filtrar guias
   const guiasFiltradas = guias?.filter(guia => {
-    const vendaId = guia.vendas_servicos?.[0]?.venda_id || '';
-    const codigoPedido = vendaId.slice(0, 8).toUpperCase();
+    const vendaInfo = Array.isArray(guia.vendas_servicos) ? guia.vendas_servicos[0] : null;
+    const codigoPedido = vendaInfo?.venda_id?.slice(0, 8).toUpperCase() || '';
     
     const matchesSearch = 
       guia.servicos?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -388,9 +388,9 @@ const Guias: React.FC = () => {
                 {guiasFiltradas.map((guia) => {
                   const diasParaExpiracao = calcularDiasParaExpiracao(guia.data_emissao);
                   const proximaExpiracao = diasParaExpiracao <= 5 && diasParaExpiracao > 0 && guia.status === 'emitida';
-                  const vendaId = guia.vendas_servicos?.[0]?.venda_id || '';
-                  const codigoPedido = vendaId.slice(0, 8).toUpperCase();
-                  const valorTotalPedido = guia.vendas_servicos?.[0]?.vendas?.valor_total || 0;
+                  const vendaInfo = Array.isArray(guia.vendas_servicos) ? guia.vendas_servicos[0] : null;
+                  const codigoPedido = vendaInfo?.venda_id?.slice(0, 8).toUpperCase() || 'N/A';
+                  const valorTotalPedido = vendaInfo?.vendas?.valor_total || 0;
                   
                   return (
                     <TableRow key={guia.id} className={proximaExpiracao ? 'bg-orange-50' : ''}>
