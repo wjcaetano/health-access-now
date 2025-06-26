@@ -19,6 +19,7 @@ import {
   calcularDiasParaExpiracao,
   GUIA_STATUS 
 } from "@/hooks/useGuias";
+import { GuiaStatus, UserType } from "@/types/guias";
 import VisualizarGuia from "@/components/guias/VisualizarGuia";
 
 const statusMap: Record<string, { label: string; color: string }> = {
@@ -61,7 +62,7 @@ const Guias: React.FC = () => {
   const [showVisualizarGuia, setShowVisualizarGuia] = useState(false);
   
   // Simulando tipo de usuário - em produção viria do contexto de auth
-  const [userType] = useState<'unidade' | 'prestador'>('unidade');
+  const [userType] = useState<UserType>('unidade');
   
   const { data: guias, isLoading, error, refetch } = useGuias();
   const { data: guiasProximasVencimento } = useGuiasProximasVencimento();
@@ -118,7 +119,7 @@ const Guias: React.FC = () => {
       .reduce((acc, g) => acc + (g.valor || 0), 0) || 0;
   };
 
-  const handleUpdateStatus = (guiaId: string, newStatus: string) => {
+  const handleUpdateStatus = (guiaId: string, newStatus: GuiaStatus) => {
     updateGuiaStatus({ guiaId, status: newStatus, userType }, {
       onSuccess: () => {
         toast({
