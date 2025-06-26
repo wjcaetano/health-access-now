@@ -66,9 +66,16 @@ export function useGuias() {
             id_associado
           ),
           servicos (
+            id,
             nome,
             categoria,
-            valor_venda
+            valor_venda,
+            valor_custo,
+            descricao,
+            tempo_estimado,
+            created_at,
+            ativo,
+            prestador_id
           ),
           prestadores (
             nome,
