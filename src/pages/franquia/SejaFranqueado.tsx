@@ -1,9 +1,10 @@
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import HeaderVendas from "@/components/vendas/HeaderVendas";
-import { useState } from "react";
 import { TrendingUp, DollarSign, Users, Shield, Rocket, Target, CheckCircle, Star, ArrowRight, MapPin, Clock, Award, PieChart, Handshake, BookOpen } from "lucide-react";
+
 const vantagens = [{
   icon: <DollarSign className="w-8 h-8" />,
   title: "Investimento Acessível",
@@ -69,6 +70,7 @@ const resultados = [{
   resultado: "Mais de 300 parceiros credenciados",
   foto: "https://randomuser.me/api/portraits/men/55.jpg"
 }];
+
 const SejaFranqueado = () => {
   const [showForm, setShowForm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -382,4 +384,5 @@ const SejaFranqueado = () => {
             </section>
         </div>;
 };
+
 export default SejaFranqueado;
