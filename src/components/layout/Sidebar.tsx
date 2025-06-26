@@ -41,8 +41,8 @@ export default function Sidebar({ collapsed, setCollapsed, userProfile }: Sideba
   return (
     <div
       className={cn(
-        "fixed inset-y-0 left-0 z-10 hidden h-full w-72 flex-col bg-white shadow-md transition-all sm:flex",
-        collapsed && "w-20"
+        "fixed inset-y-0 left-0 z-30 flex h-full flex-col bg-white shadow-lg transition-all duration-300 ease-in-out",
+        collapsed ? "w-20" : "w-72"
       )}
     >
       <div className="flex h-16 items-center justify-between border-b px-6">

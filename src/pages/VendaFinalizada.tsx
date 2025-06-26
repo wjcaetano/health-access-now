@@ -1,17 +1,21 @@
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import VendaFinalizadaHeader from "@/components/vendas/VendaFinalizadaHeader";
 import VendaResumo from "@/components/vendas/VendaResumo";
 import VendaFinalizadaActions from "@/components/vendas/VendaFinalizadaActions";
-import ReciboVenda from "@/components/vendas/ReciboVenda";
-import GuiaServico from "@/components/vendas/GuiaServico";
+import { PrintableRecibo } from "@/components/print/PrintableRecibo";
+import { PrintableGuia } from "@/components/print/PrintableGuia";
+import { useVendaPrint } from "@/hooks/useVendaPrint";
 
 const VendaFinalizada: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [showRecibo, setShowRecibo] = useState(false);
-  const [showGuias, setShowGuias] = useState(false);
+  const { 
+    imprimirRecibo, 
+    imprimirGuias, 
+    isPrintingRecibo, 
+    isPrintingGuias 
+  } = useVendaPrint();
 
   const { venda, servicos, guias, cliente, metodoPagamento } = location.state || {};
 
@@ -54,13 +58,11 @@ const VendaFinalizada: React.FC = () => {
   const gerarCodigoGuia = (vendaId: string, index: number) => {
     console.log('Gerando código para guia:', { vendaId, index, guias });
     
-    // Se existe uma guia correspondente ao serviço, usa o código dela
     if (guias && guias[index] && guias[index].codigo_autenticacao) {
       console.log('Usando código da guia existente:', guias[index].codigo_autenticacao);
       return guias[index].codigo_autenticacao;
     }
     
-    // Caso contrário, gera um código baseado no serviço
     const servicoAtual = servicos[index];
     if (servicoAtual && servicoAtual.id) {
       const codigoGerado = `AG${servicoAtual.id.slice(0, 6).toUpperCase()}${(index + 1).toString().padStart(2, '0')}`;
@@ -68,85 +70,9 @@ const VendaFinalizada: React.FC = () => {
       return codigoGerado;
     }
     
-    // Fallback final
     const codigoFallback = `AG${Date.now().toString().slice(-6)}${(index + 1).toString().padStart(2, '0')}`;
     console.log('Código fallback gerado:', codigoFallback);
     return codigoFallback;
-  };
-
-  const imprimirRecibo = () => {
-    console.log('Preparando impressão do recibo...');
-    setShowRecibo(true);
-    
-    setTimeout(() => {
-      const printContent = document.querySelector('.recibo-print');
-      if (printContent) {
-        const printWindow = window.open('', '_blank');
-        if (printWindow) {
-          printWindow.document.write(`
-            <html>
-              <head>
-                <title>Recibo de Venda</title>
-                <style>
-                  body { font-family: Arial, sans-serif; margin: 20px; }
-                  .recibo-print { max-width: 800px; margin: 0 auto; }
-                </style>
-              </head>
-              <body>
-                ${printContent.outerHTML}
-              </body>
-            </html>
-          `);
-          printWindow.document.close();
-          printWindow.print();
-          printWindow.close();
-        }
-      }
-      setShowRecibo(false);
-    }, 1000);
-  };
-
-  const imprimirGuias = () => {
-    console.log('Preparando impressão das guias...');
-    console.log('Serviços para impressão:', servicos);
-    console.log('Guias disponíveis:', guias);
-    
-    if (!servicos || servicos.length === 0) {
-      console.error('Não há serviços para imprimir guias');
-      return;
-    }
-    
-    setShowGuias(true);
-    
-    setTimeout(() => {
-      const printContent = document.querySelector('.guias-print');
-      if (printContent) {
-        const printWindow = window.open('', '_blank');
-        if (printWindow) {
-          printWindow.document.write(`
-            <html>
-              <head>
-                <title>Guias de Serviço</title>
-                <style>
-                  body { font-family: Arial, sans-serif; margin: 20px; }
-                  .page-break-after { page-break-after: always; }
-                  @media print {
-                    .page-break-after { page-break-after: always; }
-                  }
-                </style>
-              </head>
-              <body>
-                ${printContent.outerHTML}
-              </body>
-            </html>
-          `);
-          printWindow.document.close();
-          printWindow.print();
-          printWindow.close();
-        }
-      }
-      setShowGuias(false);
-    }, 1000);
   };
 
   const voltarParaVendas = () => {
@@ -170,8 +96,8 @@ const VendaFinalizada: React.FC = () => {
           onImprimirRecibo={imprimirRecibo}
           onImprimirGuias={imprimirGuias}
           onVoltarParaVendas={voltarParaVendas}
-          showRecibo={showRecibo}
-          showGuias={showGuias}
+          showRecibo={isPrintingRecibo}
+          showGuias={isPrintingGuias}
           quantidadeServicos={servicos.length}
         />
 
@@ -210,36 +136,21 @@ const VendaFinalizada: React.FC = () => {
         </div>
       </div>
 
-      {showRecibo && (
-        <div className="recibo-print hidden">
-          <ReciboVenda
-            venda={venda}
-            cliente={cliente}
-            servicos={servicos}
-            metodoPagamento={metodoPagamento}
-          />
-        </div>
-      )}
+      {/* Componentes de impressão */}
+      <PrintableRecibo
+        venda={venda}
+        cliente={cliente}
+        servicos={servicos}
+        metodoPagamento={metodoPagamento}
+      />
 
-      {showGuias && (
-        <div className="guias-print hidden">
-          {servicos.map((servico: any, index: number) => {
-            console.log(`Renderizando guia ${index + 1}:`, servico);
-            const codigoGuia = gerarCodigoGuia(venda.id, index);
-            console.log(`Código gerado para guia ${index + 1}:`, codigoGuia);
-            
-            return (
-              <GuiaServico
-                key={`${servico.id}-${index}`}
-                venda={venda}
-                cliente={cliente}
-                servico={servico}
-                codigoGuia={codigoGuia}
-              />
-            );
-          })}
-        </div>
-      )}
+      <PrintableGuia
+        venda={venda}
+        cliente={cliente}
+        servicos={servicos}
+        guias={guias}
+        gerarCodigoGuia={gerarCodigoGuia}
+      />
     </>
   );
 };

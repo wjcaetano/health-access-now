@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { useAuth } from "@/contexts/AuthContext";
+import { cn } from "@/lib/utils";
 
 // Pages
 import Index from "@/pages/Index";
@@ -46,7 +47,12 @@ const Layout: React.FC = () => {
         setCollapsed={setCollapsed} 
         userProfile={userProfile} 
       />
-      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+      <div 
+        className={cn(
+          "flex-1 flex flex-col overflow-hidden min-w-0 transition-all duration-300 ease-in-out",
+          collapsed ? "ml-20" : "ml-72"
+        )}
+      >
         <Header 
           title="Dashboard" 
           toggleSidebar={toggleSidebar}
