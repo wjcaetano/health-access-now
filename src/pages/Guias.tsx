@@ -7,57 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Search, Calendar, Download, User, Eye } from "lucide-react";
-import { Guia } from "@/types";
+import { FileText, Search, Calendar, Download, User, Eye, RefreshCw, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { useToast } from "@/components/ui/use-toast";
-
-// Dados simulados de guias
-const guiasMock: Guia[] = Array.from({ length: 30 }).map((_, i) => ({
-  id: `guia-${i + 1}`,
-  agendamentoId: `agend-${i + 1}`,
-  prestadorId: `prestador-${Math.floor(Math.random() * 5) + 1}`,
-  prestador: {
-    id: `prestador-${Math.floor(Math.random() * 5) + 1}`,
-    nome: ["Clínica Saúde Plena", "Laboratório Diagnósticos", "Centro Médico Avançado", "Consultório Dr. Roberto", "Hospital Santa Clara"][Math.floor(Math.random() * 5)],
-    tipo: ["clinica", "laboratorio", "profissional"][Math.floor(Math.random() * 3)] as any,
-    cnpj: "12345678000199",
-    endereco: "Rua Exemplo, 123",
-    telefone: "(11) 98765-4321",
-    email: "contato@exemplo.com",
-    contaBancaria: {
-      banco: "Banco",
-      agencia: "1234",
-      conta: "12345-6",
-      tipoConta: "corrente"
-    },
-    comissao: 10,
-    dataCadastro: new Date(),
-    ativo: true
-  },
-  clienteId: `cliente-${Math.floor(Math.random() * 10) + 1}`,
-  cliente: {
-    id: `cliente-${Math.floor(Math.random() * 10) + 1}`,
-    nome: `Cliente ${Math.floor(Math.random() * 10) + 1}`,
-    cpf: "123.456.789-00",
-    telefone: "(11) 98765-4321",
-    email: "cliente@exemplo.com",
-    endereco: "Rua Exemplo, 123",
-    dataCadastro: new Date(),
-    idAssociado: `ASS${Math.floor(10000 + Math.random() * 90000)}`
-  },
-  servico: ["Consulta Cardiologista", "Exame de Sangue", "Raio-X", "Ultrassonografia", "Consulta Dermatologista", "Endoscopia"][Math.floor(Math.random() * 6)],
-  valor: Math.floor(15000 + Math.random() * 50000),
-  codigoAutenticacao: `AG${Math.floor(100000 + Math.random() * 900000)}`,
-  status: ["emitida", "realizada", "faturada", "paga"][Math.floor(Math.random() * 4)] as any,
-  dataEmissao: new Date(2025, Math.floor(Math.random() * 3), Math.floor(1 + Math.random() * 28)),
-  dataRealizacao: Math.random() > 0.3 ? new Date() : undefined,
-  dataFaturamento: Math.random() > 0.6 ? new Date() : undefined,
-  dataPagamento: Math.random() > 0.8 ? new Date() : undefined
-}));
-
-// Ordenar por data de emissão (mais recentes primeiro)
-guiasMock.sort((a, b) => b.dataEmissao.getTime() - a.dataEmissao.getTime());
+import { useGuias, useUpdateGuiaStatus } from "@/hooks/useGuias";
 
 const statusMap: Record<string, { label: string; color: string }> = {
   emitida: {
@@ -65,7 +19,7 @@ const statusMap: Record<string, { label: string; color: string }> = {
     color: "bg-yellow-100 hover:bg-yellow-100 text-yellow-800"
   },
   realizada: {
-    label: "Realizada",
+    label: "Realizada", 
     color: "bg-blue-100 hover:bg-blue-100 text-blue-800"
   },
   faturada: {
@@ -75,6 +29,14 @@ const statusMap: Record<string, { label: string; color: string }> = {
   paga: {
     label: "Paga",
     color: "bg-gray-100 hover:bg-gray-100 text-gray-800"
+  },
+  cancelada: {
+    label: "Cancelada",
+    color: "bg-red-100 hover:bg-red-100 text-red-800"
+  },
+  estornada: {
+    label: "Estornada",
+    color: "bg-purple-100 hover:bg-purple-100 text-purple-800"
   }
 };
 
@@ -84,19 +46,27 @@ const Guias: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [activeTab, setActiveTab] = useState("todas");
   
-  // Estatísticas
-  const totalEmitidas = guiasMock.filter(g => g.status === "emitida").length;
-  const totalRealizadas = guiasMock.filter(g => g.status === "realizada").length;
-  const totalFaturadas = guiasMock.filter(g => g.status === "faturada").length;
-  const totalPagas = guiasMock.filter(g => g.status === "paga").length;
+  const { data: guias, isLoading, error, refetch } = useGuias();
+  const { mutate: updateGuiaStatus, isPending: isUpdatingStatus } = useUpdateGuiaStatus();
+  
+  if (error) {
+    console.error('Erro ao carregar guias:', error);
+  }
+  
+  // Calcular estatísticas
+  const totalEmitidas = guias?.filter(g => g.status === "emitida").length || 0;
+  const totalRealizadas = guias?.filter(g => g.status === "realizada").length || 0;
+  const totalFaturadas = guias?.filter(g => g.status === "faturada").length || 0;
+  const totalPagas = guias?.filter(g => g.status === "paga").length || 0;
   
   // Filtrar guias
-  const guiasFiltradas = guiasMock.filter(guia => {
+  const guiasFiltradas = guias?.filter(guia => {
     const matchesSearch = 
-      guia.servico.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      guia.cliente?.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      guia.prestador?.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      guia.codigoAutenticacao.toLowerCase().includes(searchTerm.toLowerCase());
+      guia.servicos?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      guia.clientes?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      guia.prestadores?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      guia.codigo_autenticacao?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      false;
     
     const matchesStatus = statusFilter === "all" || guia.status === statusFilter;
     
@@ -108,26 +78,86 @@ const Guias: React.FC = () => {
       (activeTab === "pagas" && guia.status === "paga");
     
     return matchesSearch && matchesStatus && matchesTab;
-  });
+  }) || [];
   
   // Formatar valor em reais
   const formatarValor = (valor: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
-    }).format(valor / 100);
+    }).format(valor);
   };
+
+  // Calcular valor total por status
+  const calcularValorPorStatus = (status: string) => {
+    return guias?.filter(g => g.status === status)
+      .reduce((acc, g) => acc + (g.valor || 0), 0) || 0;
+  };
+
+  const handleUpdateStatus = (guiaId: string, newStatus: string) => {
+    updateGuiaStatus({ guiaId, status: newStatus }, {
+      onSuccess: () => {
+        toast({
+          title: "Status atualizado",
+          description: `Guia marcada como ${statusMap[newStatus]?.label.toLowerCase()}`,
+        });
+      },
+      onError: (error) => {
+        console.error('Erro ao atualizar status:', error);
+        toast({
+          title: "Erro ao atualizar status",
+          description: "Ocorreu um erro ao atualizar o status da guia.",
+          variant: "destructive"
+        });
+      }
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-2 text-agendaja-primary" />
+          <p className="text-gray-500">Carregando guias...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <AlertCircle className="h-8 w-8 mx-auto mb-2 text-red-500" />
+          <p className="text-gray-500 mb-4">Erro ao carregar guias</p>
+          <Button onClick={() => refetch()} variant="outline">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Tentar novamente
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Guias</h2>
+          <h2 className="text-3xl font-bold text-gray-900">Guias de Atendimento</h2>
           <p className="text-gray-500 mt-1">
-            Gerencie todas as guias de serviço emitidas
+            Gerencie todas as guias de serviço emitidas ({guias?.length || 0} total)
           </p>
         </div>
         <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => refetch()}
+            disabled={isLoading}
+            className="flex items-center gap-1"
+          >
+            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+            Atualizar
+          </Button>
           <Button variant="outline" className="flex items-center gap-1">
             <Download className="h-4 w-4" />
             Exportar
@@ -145,7 +175,7 @@ const Guias: React.FC = () => {
               </Badge>
             </div>
             <p className="text-2xl font-bold mt-2">
-              {formatarValor(guiasMock.filter(g => g.status === "emitida").reduce((acc, g) => acc + g.valor, 0))}
+              {formatarValor(calcularValorPorStatus("emitida"))}
             </p>
           </CardContent>
         </Card>
@@ -159,7 +189,7 @@ const Guias: React.FC = () => {
               </Badge>
             </div>
             <p className="text-2xl font-bold mt-2">
-              {formatarValor(guiasMock.filter(g => g.status === "realizada").reduce((acc, g) => acc + g.valor, 0))}
+              {formatarValor(calcularValorPorStatus("realizada"))}
             </p>
           </CardContent>
         </Card>
@@ -173,7 +203,7 @@ const Guias: React.FC = () => {
               </Badge>
             </div>
             <p className="text-2xl font-bold mt-2">
-              {formatarValor(guiasMock.filter(g => g.status === "faturada").reduce((acc, g) => acc + g.valor, 0))}
+              {formatarValor(calcularValorPorStatus("faturada"))}
             </p>
           </CardContent>
         </Card>
@@ -187,7 +217,7 @@ const Guias: React.FC = () => {
               </Badge>
             </div>
             <p className="text-2xl font-bold mt-2">
-              {formatarValor(guiasMock.filter(g => g.status === "paga").reduce((acc, g) => acc + g.valor, 0))}
+              {formatarValor(calcularValorPorStatus("paga"))}
             </p>
           </CardContent>
         </Card>
@@ -233,6 +263,8 @@ const Guias: React.FC = () => {
                   <SelectItem value="realizada">Realizadas</SelectItem>
                   <SelectItem value="faturada">Faturadas</SelectItem>
                   <SelectItem value="paga">Pagas</SelectItem>
+                  <SelectItem value="cancelada">Canceladas</SelectItem>
+                  <SelectItem value="estornada">Estornadas</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -257,19 +289,27 @@ const Guias: React.FC = () => {
                 {guiasFiltradas.map((guia) => (
                   <TableRow key={guia.id}>
                     <TableCell className="font-mono text-sm">
-                      {guia.codigoAutenticacao}
+                      {guia.codigo_autenticacao}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center">
                         <div className="h-8 w-8 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary mr-2">
                           <User className="h-4 w-4" />
                         </div>
-                        <span>{guia.cliente?.nome}</span>
+                        <div>
+                          <span className="font-medium">{guia.clientes?.nome}</span>
+                          {guia.clientes?.id_associado && (
+                            <p className="text-xs text-gray-500">ID: {guia.clientes.id_associado}</p>
+                          )}
+                        </div>
                       </div>
                     </TableCell>
-                    <TableCell>{guia.prestador?.nome}</TableCell>
-                    <TableCell className="max-w-[200px] truncate">
-                      {guia.servico}
+                    <TableCell>{guia.prestadores?.nome || "Não informado"}</TableCell>
+                    <TableCell className="max-w-[200px]">
+                      <div>
+                        <p className="font-medium truncate">{guia.servicos?.nome}</p>
+                        <p className="text-xs text-gray-500">{guia.servicos?.categoria}</p>
+                      </div>
                     </TableCell>
                     <TableCell className="font-medium">
                       {formatarValor(guia.valor)}
@@ -278,14 +318,16 @@ const Guias: React.FC = () => {
                       <div className="flex items-center text-sm">
                         <Calendar className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
                         <div className="flex flex-col">
-                          <span>{format(guia.dataEmissao, "dd/MM/yyyy")}</span>
+                          <span>{format(new Date(guia.data_emissao), "dd/MM/yyyy", { locale: ptBR })}</span>
                           {guia.status !== "emitida" && (
                             <span className="text-xs text-gray-500">
-                              {guia.status === "paga" 
-                                ? `Paga: ${guia.dataPagamento ? format(guia.dataPagamento, "dd/MM") : "N/A"}`
-                                : guia.status === "faturada" 
-                                  ? `Faturada: ${guia.dataFaturamento ? format(guia.dataFaturamento, "dd/MM") : "N/A"}`
-                                  : `Realizada: ${guia.dataRealizacao ? format(guia.dataRealizacao, "dd/MM") : "N/A"}`
+                              {guia.status === "paga" && guia.data_pagamento
+                                ? `Paga: ${format(new Date(guia.data_pagamento), "dd/MM", { locale: ptBR })}`
+                                : guia.status === "faturada" && guia.data_faturamento
+                                  ? `Faturada: ${format(new Date(guia.data_faturamento), "dd/MM", { locale: ptBR })}`
+                                  : guia.status === "realizada" && guia.data_realizacao
+                                    ? `Realizada: ${format(new Date(guia.data_realizacao), "dd/MM", { locale: ptBR })}`
+                                    : null
                               }
                             </span>
                           )}
@@ -295,20 +337,33 @@ const Guias: React.FC = () => {
                     <TableCell>
                       <Badge 
                         variant="outline" 
-                        className={statusMap[guia.status].color}
+                        className={statusMap[guia.status]?.color || "bg-gray-100 text-gray-800"}
                       >
-                        {statusMap[guia.status].label}
+                        {statusMap[guia.status]?.label || guia.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        className="text-agendaja-primary hover:text-agendaja-primary/80 hover:bg-agendaja-light/50"
-                      >
-                        <Eye className="h-4 w-4 mr-1" />
-                        Visualizar
-                      </Button>
+                      <div className="flex gap-1 justify-end">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className="text-agendaja-primary hover:text-agendaja-primary/80 hover:bg-agendaja-light/50"
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          Ver
+                        </Button>
+                        {guia.status === 'emitida' && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleUpdateStatus(guia.id, 'realizada')}
+                            disabled={isUpdatingStatus}
+                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          >
+                            Marcar Realizada
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -316,7 +371,15 @@ const Guias: React.FC = () => {
                 {guiasFiltradas.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={8} className="h-24 text-center">
-                      Nenhuma guia encontrada.
+                      <div className="flex flex-col items-center gap-2">
+                        <FileText className="h-8 w-8 text-gray-400" />
+                        <p className="text-gray-500">
+                          {searchTerm || statusFilter !== "all" 
+                            ? "Nenhuma guia encontrada com os filtros aplicados." 
+                            : "Nenhuma guia foi emitida ainda."
+                          }
+                        </p>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}
