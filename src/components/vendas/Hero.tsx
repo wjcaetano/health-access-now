@@ -105,8 +105,8 @@ const Hero = () => {
                 alt="Profissionais de saúde usando tecnologia"
                 className="w-full h-auto rounded-2xl shadow-2xl"
               />
-              {/* Floating card - Ajustado posicionamento */}
-              <div className="absolute -bottom-4 -left-4 sm:-bottom-6 sm:-left-6 lg:-bottom-8 lg:-left-8 bg-white p-4 sm:p-6 rounded-xl shadow-xl border max-w-[280px] sm:max-w-xs">
+              {/* Floating card - Movido para direita inferior */}
+              <div className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 lg:-bottom-8 lg:-right-8 bg-white p-4 sm:p-6 rounded-xl shadow-xl border max-w-[280px] sm:max-w-xs">
                 <div className="flex items-center space-x-3 sm:space-x-4">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
