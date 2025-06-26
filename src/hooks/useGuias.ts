@@ -1,8 +1,7 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { GuiasService } from "@/services/guiasService";
 import { processGuiasWithExpiration, processGuiasWithVendas } from "@/utils/guiaUtils";
-import { GuiaComVendas } from "@/types/guias";
+import { GuiaComVendas, GuiaStatus, UserType } from "@/types/guias";
 
 export function useGuias() {
   return useQuery({
@@ -33,8 +32,8 @@ export function useUpdateGuiaStatus() {
       userType = 'unidade' 
     }: { 
       guiaId: string; 
-      status: string;
-      userType?: 'prestador' | 'unidade';
+      status: GuiaStatus;
+      userType?: UserType;
     }) => {
       // Buscar o status atual da guia
       const { supabase } = await import("@/integrations/supabase/client");
@@ -50,7 +49,7 @@ export function useUpdateGuiaStatus() {
       return GuiasService.updateGuiaStatus(
         guiaId, 
         status, 
-        guiaAtual.status, 
+        guiaAtual.status as GuiaStatus, 
         guiaAtual.data_emissao, 
         userType
       );
