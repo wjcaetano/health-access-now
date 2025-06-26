@@ -98,22 +98,22 @@ const Hero = () => {
           </div>
 
           {/* Lado direito - Imagem */}
-          <div className="relative">
+          <div className="relative lg:mt-0 mt-12">
             <div className="relative z-10">
               <img
                 src="https://images.unsplash.com/photo-1576091160550-2173dba999ab?auto=format&fit=crop&w=800&q=80"
                 alt="Profissionais de saúde usando tecnologia"
                 className="w-full h-auto rounded-2xl shadow-2xl"
               />
-              {/* Floating card */}
-              <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-xl border">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-6 h-6 text-green-600" />
+              {/* Floating card - Ajustado posicionamento */}
+              <div className="absolute -bottom-4 -left-4 sm:-bottom-6 sm:-left-6 lg:-bottom-8 lg:-left-8 bg-white p-4 sm:p-6 rounded-xl shadow-xl border max-w-[280px] sm:max-w-xs">
+                <div className="flex items-center space-x-3 sm:space-x-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
                   </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Consulta Agendada!</p>
-                    <p className="text-sm text-gray-600">Economia de R$ 150,00</p>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base">Consulta Agendada!</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Economia de R$ 150,00</p>
                   </div>
                 </div>
               </div>
