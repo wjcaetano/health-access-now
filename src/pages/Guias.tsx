@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -314,7 +315,7 @@ const Guias: React.FC = () => {
                 {totalEmitidas}
               </Badge>
             </div>
-            <p className="text-2xl font-bold mt-2">
+            <p className="text-2xl font-bold mt-2 truncate">
               {formatarValor(calcularValorPorStatus("emitida"))}
             </p>
           </CardContent>
@@ -328,7 +329,7 @@ const Guias: React.FC = () => {
                 {totalRealizadas}
               </Badge>
             </div>
-            <p className="text-2xl font-bold mt-2">
+            <p className="text-2xl font-bold mt-2 truncate">
               {formatarValor(calcularValorPorStatus("realizada"))}
             </p>
           </CardContent>
@@ -342,7 +343,7 @@ const Guias: React.FC = () => {
                 {totalFaturadas}
               </Badge>
             </div>
-            <p className="text-2xl font-bold mt-2">
+            <p className="text-2xl font-bold mt-2 truncate">
               {formatarValor(calcularValorPorStatus("faturada"))}
             </p>
           </CardContent>
@@ -356,7 +357,7 @@ const Guias: React.FC = () => {
                 {totalPagas}
               </Badge>
             </div>
-            <p className="text-2xl font-bold mt-2">
+            <p className="text-2xl font-bold mt-2 truncate">
               {formatarValor(calcularValorPorStatus("paga"))}
             </p>
           </CardContent>
@@ -370,7 +371,7 @@ const Guias: React.FC = () => {
                 {totalExpiradas}
               </Badge>
             </div>
-            <p className="text-2xl font-bold mt-2">
+            <p className="text-2xl font-bold mt-2 truncate">
               {formatarValor(calcularValorPorStatus("expirada"))}
             </p>
           </CardContent>
@@ -379,28 +380,28 @@ const Guias: React.FC = () => {
 
       <Card>
         <CardHeader>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex flex-col gap-4">
             <Tabs 
               value={activeTab} 
               onValueChange={setActiveTab}
-              className="w-full md:w-auto"
+              className="w-full"
             >
-              <TabsList className="grid w-full md:w-auto grid-cols-3 md:grid-cols-6">
-                <TabsTrigger value="todas">Todas</TabsTrigger>
-                <TabsTrigger value="emitidas">Emitidas</TabsTrigger>
-                <TabsTrigger value="realizadas" className="hidden md:inline-flex">Realizadas</TabsTrigger>
-                <TabsTrigger value="faturadas" className="hidden md:inline-flex">Faturadas</TabsTrigger>
-                <TabsTrigger value="pagas" className="hidden md:inline-flex">Pagas</TabsTrigger>
-                <TabsTrigger value="expiradas" className="hidden md:inline-flex">Expiradas</TabsTrigger>
+              <TabsList className="w-full justify-start overflow-x-auto">
+                <TabsTrigger value="todas" className="whitespace-nowrap">Todas</TabsTrigger>
+                <TabsTrigger value="emitidas" className="whitespace-nowrap">Emitidas</TabsTrigger>
+                <TabsTrigger value="realizadas" className="whitespace-nowrap">Realizadas</TabsTrigger>
+                <TabsTrigger value="faturadas" className="whitespace-nowrap">Faturadas</TabsTrigger>
+                <TabsTrigger value="pagas" className="whitespace-nowrap">Pagas</TabsTrigger>
+                <TabsTrigger value="expiradas" className="whitespace-nowrap">Expiradas</TabsTrigger>
               </TabsList>
             </Tabs>
             
             <div className="flex flex-col sm:flex-row gap-2">
-              <div className="relative">
+              <div className="relative flex-1">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
                 <Input
                   placeholder="Buscar guias..."
-                  className="pl-8 w-full sm:w-64"
+                  className="pl-8"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -409,7 +410,7 @@ const Guias: React.FC = () => {
                 value={statusFilter}
                 onValueChange={setStatusFilter}
               >
-                <SelectTrigger className="w-full sm:w-40">
+                <SelectTrigger className="w-full sm:w-48">
                   <SelectValue placeholder="Filtrar por status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -428,137 +429,141 @@ const Guias: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="rounded-md border overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Código</TableHead>
-                  <TableHead>Pedido</TableHead>
-                  <TableHead>Cliente</TableHead>
-                  <TableHead>Prestador</TableHead>
-                  <TableHead>Serviço</TableHead>
-                  <TableHead>Valor</TableHead>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {guiasFiltradas.map((guia) => {
-                  const diasParaExpiracao = calcularDiasParaExpiracao(guia.data_emissao);
-                  const proximaExpiracao = diasParaExpiracao <= 5 && diasParaExpiracao > 0 && guia.status === 'emitida';
-                  const vendaInfo = Array.isArray(guia.vendas_servicos) ? guia.vendas_servicos[0] : null;
-                  const codigoPedido = vendaInfo?.venda_id?.slice(0, 8).toUpperCase() || 'N/A';
-                  const valorTotalPedido = vendaInfo?.vendas?.valor_total || 0;
-                  
-                  return (
-                    <TableRow key={guia.id} className={proximaExpiracao ? 'bg-orange-50' : ''}>
-                      <TableCell className="font-mono text-sm">
-                        <div className="flex items-center gap-2">
-                          {guia.codigo_autenticacao}
-                          {proximaExpiracao && (
-                            <Clock className="h-4 w-4 text-orange-500" />
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div className="h-6 w-6 rounded bg-blue-100 flex items-center justify-center">
-                            <ShoppingCart className="h-3 w-3 text-blue-600" />
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="font-mono text-sm font-medium">{codigoPedido}</span>
-                            <span className="text-xs text-gray-500">
-                              {formatarValor(valorTotalPedido)}
-                            </span>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center">
-                          <div className="h-8 w-8 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary mr-2">
-                            <User className="h-4 w-4" />
-                          </div>
-                          <div>
-                            <span className="font-medium">{guia.clientes?.nome}</span>
-                            {guia.clientes?.id_associado && (
-                              <p className="text-xs text-gray-500">ID: {guia.clientes.id_associado}</p>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="whitespace-nowrap">Código</TableHead>
+                    <TableHead className="whitespace-nowrap">Pedido</TableHead>
+                    <TableHead className="whitespace-nowrap">Cliente</TableHead>
+                    <TableHead className="whitespace-nowrap">Prestador</TableHead>
+                    <TableHead className="whitespace-nowrap">Serviço</TableHead>
+                    <TableHead className="whitespace-nowrap">Valor</TableHead>
+                    <TableHead className="whitespace-nowrap">Data</TableHead>
+                    <TableHead className="whitespace-nowrap">Status</TableHead>
+                    <TableHead className="text-right whitespace-nowrap">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {guiasFiltradas.map((guia) => {
+                    const diasParaExpiracao = calcularDiasParaExpiracao(guia.data_emissao);
+                    const proximaExpiracao = diasParaExpiracao <= 5 && diasParaExpiracao > 0 && guia.status === 'emitida';
+                    const vendaInfo = Array.isArray(guia.vendas_servicos) ? guia.vendas_servicos[0] : null;
+                    const codigoPedido = vendaInfo?.venda_id?.slice(0, 8).toUpperCase() || 'N/A';
+                    const valorTotalPedido = vendaInfo?.vendas?.valor_total || 0;
+                    
+                    return (
+                      <TableRow key={guia.id} className={proximaExpiracao ? 'bg-orange-50' : ''}>
+                        <TableCell className="font-mono text-sm">
+                          <div className="flex items-center gap-2">
+                            <span className="truncate max-w-[120px]">{guia.codigo_autenticacao}</span>
+                            {proximaExpiracao && (
+                              <Clock className="h-4 w-4 text-orange-500 flex-shrink-0" />
                             )}
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>{guia.prestadores?.nome || "Não informado"}</TableCell>
-                      <TableCell className="max-w-[200px]">
-                        <div>
-                          <p className="font-medium truncate">{guia.servicos?.nome}</p>
-                          <p className="text-xs text-gray-500">{guia.servicos?.categoria}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        {formatarValor(guia.valor)}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center text-sm">
-                          <Calendar className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
-                          <div className="flex flex-col">
-                            <span>{format(new Date(guia.data_emissao), "dd/MM/yyyy", { locale: ptBR })}</span>
-                            {guia.status !== "emitida" && (
-                              <span className="text-xs text-gray-500">
-                                {guia.status === "paga" && guia.data_pagamento
-                                  ? `Paga: ${format(new Date(guia.data_pagamento), "dd/MM", { locale: ptBR })}`
-                                  : guia.status === "faturada" && guia.data_faturamento
-                                    ? `Faturada: ${format(new Date(guia.data_faturamento), "dd/MM", { locale: ptBR })}`
-                                    : guia.status === "realizada" && guia.data_realizacao
-                                      ? `Realizada: ${format(new Date(guia.data_realizacao), "dd/MM", { locale: ptBR })}`
-                                      : null
-                                }
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <div className="h-6 w-6 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
+                              <ShoppingCart className="h-3 w-3 text-blue-600" />
+                            </div>
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-mono text-sm font-medium truncate">{codigoPedido}</span>
+                              <span className="text-xs text-gray-500 truncate">
+                                {formatarValor(valorTotalPedido)}
                               </span>
-                            )}
+                            </div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge 
-                          variant="outline" 
-                          className={statusMap[guia.status]?.color || "bg-gray-100 text-gray-800"}
-                        >
-                          {statusMap[guia.status]?.label || guia.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex gap-1 justify-end">
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => visualizarGuia(guia)}
-                            className="text-agendaja-primary hover:text-agendaja-primary/80 hover:bg-agendaja-light/50"
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center min-w-0">
+                            <div className="h-8 w-8 rounded-full bg-agendaja-light flex items-center justify-center mr-2 flex-shrink-0">
+                              <User className="h-4 w-4" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <span className="font-medium truncate block">{guia.clientes?.nome}</span>
+                              {guia.clientes?.id_associado && (
+                                <p className="text-xs text-gray-500 truncate">ID: {guia.clientes.id_associado}</p>
+                              )}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className="truncate block max-w-[150px]">{guia.prestadores?.nome || "Não informado"}</span>
+                        </TableCell>
+                        <TableCell className="max-w-[200px]">
+                          <div>
+                            <p className="font-medium truncate">{guia.servicos?.nome}</p>
+                            <p className="text-xs text-gray-500 truncate">{guia.servicos?.categoria}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-medium whitespace-nowrap">
+                          {formatarValor(guia.valor)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center text-sm">
+                            <Calendar className="h-3.5 w-3.5 mr-1.5 text-gray-500 flex-shrink-0" />
+                            <div className="flex flex-col min-w-0">
+                              <span className="whitespace-nowrap">{format(new Date(guia.data_emissao), "dd/MM/yyyy", { locale: ptBR })}</span>
+                              {guia.status !== "emitida" && (
+                                <span className="text-xs text-gray-500 truncate">
+                                  {guia.status === "paga" && guia.data_pagamento
+                                    ? `Paga: ${format(new Date(guia.data_pagamento), "dd/MM", { locale: ptBR })}`
+                                    : guia.status === "faturada" && guia.data_faturamento
+                                      ? `Faturada: ${format(new Date(guia.data_faturamento), "dd/MM", { locale: ptBR })}`
+                                      : guia.status === "realizada" && guia.data_realizacao
+                                        ? `Realizada: ${format(new Date(guia.data_realizacao), "dd/MM", { locale: ptBR })}`
+                                        : null
+                                  }
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant="outline" 
+                            className={`${statusMap[guia.status]?.color || "bg-gray-100 text-gray-800"} whitespace-nowrap`}
                           >
-                            <Eye className="h-4 w-4 mr-1" />
-                            Ver
-                          </Button>
-                          {renderStatusActions(guia)}
+                            {statusMap[guia.status]?.label || guia.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex gap-1 justify-end">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => visualizarGuia(guia)}
+                              className="text-agendaja-primary hover:text-agendaja-primary/80 hover:bg-agendaja-light/50 whitespace-nowrap"
+                            >
+                              <Eye className="h-4 w-4 mr-1" />
+                              Ver
+                            </Button>
+                            {renderStatusActions(guia)}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                  
+                  {guiasFiltradas.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={9} className="h-24 text-center">
+                        <div className="flex flex-col items-center gap-2">
+                          <FileText className="h-8 w-8 text-gray-400" />
+                          <p className="text-gray-500">
+                            {searchTerm || statusFilter !== "all" 
+                              ? "Nenhuma guia encontrada com os filtros aplicados." 
+                              : "Nenhuma guia foi emitida ainda."
+                            }
+                          </p>
                         </div>
                       </TableCell>
                     </TableRow>
-                  );
-                })}
-                
-                {guiasFiltradas.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={9} className="h-24 text-center">
-                      <div className="flex flex-col items-center gap-2">
-                        <FileText className="h-8 w-8 text-gray-400" />
-                        <p className="text-gray-500">
-                          {searchTerm || statusFilter !== "all" 
-                            ? "Nenhuma guia encontrada com os filtros aplicados." 
-                            : "Nenhuma guia foi emitida ainda."
-                          }
-                        </p>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </CardContent>
       </Card>
