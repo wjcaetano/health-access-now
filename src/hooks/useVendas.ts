@@ -1,7 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables, TablesInsert } from "@/integrations/supabase/types";
-import { useCancelarGuia, useEstornarGuia } from "@/hooks/useGuias";
+import { GuiasService } from "@/services/guiasService";
+import { useEstornarGuia } from "@/hooks/useGuias";
 
 type Venda = Tables<"vendas">;
 type NovaVenda = TablesInsert<"vendas">;
