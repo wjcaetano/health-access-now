@@ -15,7 +15,6 @@ import {
   useGuias, 
   useUpdateGuiaStatus, 
   useGuiasProximasVencimento,
-  useCancelarGuia,
   useEstornarGuia,
   isStatusTransitionAllowed,
   calcularDiasParaExpiracao,
@@ -74,7 +73,6 @@ const Guias: React.FC = () => {
   const { data: guias, isLoading, error, refetch } = useGuias();
   const { data: guiasProximasVencimento } = useGuiasProximasVencimento();
   const { mutate: updateGuiaStatus, isPending: isUpdatingStatus } = useUpdateGuiaStatus();
-  const { mutate: cancelarGuia, isPending: isCancelingGuia } = useCancelarGuia();
   const { mutate: estornarGuia, isPending: isEstornandoGuia } = useEstornarGuia();
   const { mutate: cancelarPedido, isPending: isCancelingPedido } = useCancelamentoPedido();
   const { mutate: buscarGuiasRelacionadas, isPending: isBuscandoGuias } = useBuscarGuiasRelacionadas();
