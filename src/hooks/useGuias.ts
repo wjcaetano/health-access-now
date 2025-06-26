@@ -4,6 +4,23 @@ import { Tables } from "@/integrations/supabase/types";
 
 type Guia = Tables<"guias">;
 
+// Tipo estendido da guia com informações de vendas
+type GuiaComVendas = Guia & {
+  clientes?: Tables<"clientes">;
+  servicos?: Tables<"servicos">;
+  prestadores?: Tables<"prestadores">;
+  vendas_servicos?: Array<{
+    venda_id: string;
+    vendas: {
+      id: string;
+      created_at: string;
+      valor_total: number;
+      metodo_pagamento: string;
+    };
+  }>;
+  data_expiracao?: string;
+};
+
 // Definição dos status permitidos e suas transições
 export const GUIA_STATUS = {
   emitida: 'emitida',
@@ -33,7 +50,7 @@ export const STATUS_TRANSITIONS = {
 export function useGuias() {
   return useQuery({
     queryKey: ["guias"],
-    queryFn: async () => {
+    queryFn: async (): Promise<GuiaComVendas[]> => {
       const { data, error } = await supabase
         .from("guias")
         .select(`
@@ -66,7 +83,7 @@ export function useGuias() {
       
       // Buscar informações de vendas separadamente para as guias encontradas
       const guiasComVendas = await Promise.all(
-        (data || []).map(async (guia) => {
+        (data || []).map(async (guia): Promise<GuiaComVendas> => {
           // Buscar vendas relacionadas à guia através do agendamento_id
           if (guia.agendamento_id) {
             const { data: agendamento } = await supabase
@@ -94,7 +111,7 @@ export function useGuias() {
             }
           }
           
-          return guia;
+          return guia as GuiaComVendas;
         })
       );
       
@@ -188,7 +205,7 @@ export function useUpdateGuiaStatus() {
 export function useGuiasPorStatus(status?: string) {
   return useQuery({
     queryKey: ["guias", "status", status],
-    queryFn: async () => {
+    queryFn: async (): Promise<GuiaComVendas[]> => {
       let query = supabase
         .from("guias")
         .select(`
@@ -224,7 +241,7 @@ export function useGuiasPorStatus(status?: string) {
         throw error;
       }
       
-      return data;
+      return (data || []) as GuiaComVendas[];
     },
     enabled: !!status,
   });

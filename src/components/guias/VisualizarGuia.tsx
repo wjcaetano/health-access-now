@@ -21,6 +21,7 @@ type GuiaCompleta = Tables<"guias"> & {
       metodo_pagamento: string;
     };
   }>;
+  data_expiracao?: string;
 };
 
 interface VisualizarGuiaProps {
