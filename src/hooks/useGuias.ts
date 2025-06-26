@@ -5,6 +5,32 @@ import { Tables } from "@/integrations/supabase/types";
 
 type Guia = Tables<"guias">;
 
+// Definição dos status permitidos e suas transições
+export const GUIA_STATUS = {
+  emitida: 'emitida',
+  realizada: 'realizada', 
+  faturada: 'faturada',
+  paga: 'paga',
+  cancelada: 'cancelada',
+  estornada: 'estornada',
+  expirada: 'expirada'
+} as const;
+
+// Transições permitidas por tipo de usuário
+export const STATUS_TRANSITIONS = {
+  prestador: {
+    emitida: ['realizada', 'cancelada'],
+    realizada: ['faturada', 'cancelada'],
+    faturada: ['cancelada']
+  },
+  unidade: {
+    emitida: ['cancelada'],
+    realizada: ['cancelada'],
+    faturada: ['paga', 'cancelada', 'estornada'],
+    paga: ['estornada']
+  }
+};
+
 export function useGuias() {
   return useQuery({
     queryKey: ["guias"],
@@ -39,8 +65,22 @@ export function useGuias() {
         throw error;
       }
       
-      console.log('Guias carregadas do banco:', data);
-      return data;
+      // Verificar e marcar guias expiradas (30 dias)
+      const guiasComExpiracao = data?.map(guia => {
+        const dataEmissao = new Date(guia.data_emissao);
+        const dataExpiracao = new Date(dataEmissao.getTime() + (30 * 24 * 60 * 60 * 1000));
+        const hoje = new Date();
+        
+        // Se a guia está emitida e passou de 30 dias, marcar como expirada
+        if (guia.status === 'emitida' && hoje > dataExpiracao) {
+          return { ...guia, status: 'expirada', data_expiracao: dataExpiracao.toISOString() };
+        }
+        
+        return { ...guia, data_expiracao: dataExpiracao.toISOString() };
+      }) || [];
+      
+      console.log('Guias carregadas do banco:', guiasComExpiracao);
+      return guiasComExpiracao;
     },
   });
 }
@@ -49,7 +89,42 @@ export function useUpdateGuiaStatus() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ guiaId, status }: { guiaId: string; status: string }) => {
+    mutationFn: async ({ 
+      guiaId, 
+      status, 
+      userType = 'unidade' 
+    }: { 
+      guiaId: string; 
+      status: string;
+      userType?: 'prestador' | 'unidade';
+    }) => {
+      // Primeiro, buscar o status atual da guia
+      const { data: guiaAtual, error: fetchError } = await supabase
+        .from("guias")
+        .select("status, data_emissao")
+        .eq("id", guiaId)
+        .single();
+      
+      if (fetchError) throw fetchError;
+      
+      // Verificar se a transição é permitida
+      const transicoesPossíveis = STATUS_TRANSITIONS[userType][guiaAtual.status as keyof typeof STATUS_TRANSITIONS[typeof userType]];
+      
+      if (!transicoesPossíveis?.includes(status)) {
+        throw new Error(`Transição de status não permitida: ${guiaAtual.status} → ${status} para ${userType}`);
+      }
+      
+      // Verificar se a guia não está expirada (exceto para cancelamento)
+      if (status !== 'cancelada') {
+        const dataEmissao = new Date(guiaAtual.data_emissao);
+        const dataExpiracao = new Date(dataEmissao.getTime() + (30 * 24 * 60 * 60 * 1000));
+        const hoje = new Date();
+        
+        if (hoje > dataExpiracao && guiaAtual.status === 'emitida') {
+          throw new Error('Esta guia está expirada e não pode ter seu status alterado. Emita uma nova guia.');
+        }
+      }
+      
       const updateData: any = { status };
       
       // Adicionar timestamp baseado no status
@@ -120,4 +195,53 @@ export function useGuiasPorStatus(status?: string) {
     },
     enabled: !!status,
   });
+}
+
+// Hook para obter guias próximas do vencimento
+export function useGuiasProximasVencimento() {
+  return useQuery({
+    queryKey: ["guias", "proximas-vencimento"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("guias")
+        .select(`
+          *,
+          clientes (nome),
+          servicos (nome)
+        `)
+        .eq('status', 'emitida');
+      
+      if (error) throw error;
+      
+      // Filtrar guias que vencem em 5 dias ou menos
+      const hoje = new Date();
+      const proximasVencimento = data?.filter(guia => {
+        const dataEmissao = new Date(guia.data_emissao);
+        const dataExpiracao = new Date(dataEmissao.getTime() + (30 * 24 * 60 * 60 * 1000));
+        const diasRestantes = Math.ceil((dataExpiracao.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+        return diasRestantes <= 5 && diasRestantes > 0;
+      }) || [];
+      
+      return proximasVencimento;
+    },
+  });
+}
+
+// Função para validar se uma transição de status é permitida
+export function isStatusTransitionAllowed(
+  currentStatus: string, 
+  newStatus: string, 
+  userType: 'prestador' | 'unidade'
+): boolean {
+  const allowedTransitions = STATUS_TRANSITIONS[userType][currentStatus as keyof typeof STATUS_TRANSITIONS[typeof userType]];
+  return allowedTransitions?.includes(newStatus) || false;
+}
+
+// Função para calcular dias até expiração
+export function calcularDiasParaExpiracao(dataEmissao: string): number {
+  const emissao = new Date(dataEmissao);
+  const expiracao = new Date(emissao.getTime() + (30 * 24 * 60 * 60 * 1000));
+  const hoje = new Date();
+  
+  return Math.ceil((expiracao.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
 }

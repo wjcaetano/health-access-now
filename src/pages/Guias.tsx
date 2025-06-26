@@ -7,11 +7,20 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Search, Calendar, Download, User, Eye, RefreshCw, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { FileText, Search, Calendar, Download, User, Eye, RefreshCw, AlertCircle, Clock, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useToast } from "@/components/ui/use-toast";
-import { useGuias, useUpdateGuiaStatus } from "@/hooks/useGuias";
+import { 
+  useGuias, 
+  useUpdateGuiaStatus, 
+  useGuiasProximasVencimento,
+  isStatusTransitionAllowed,
+  calcularDiasParaExpiracao,
+  GUIA_STATUS 
+} from "@/hooks/useGuias";
+import VisualizarGuia from "@/components/guias/VisualizarGuia";
 
 const statusMap: Record<string, { label: string; color: string }> = {
   emitida: {
@@ -37,6 +46,10 @@ const statusMap: Record<string, { label: string; color: string }> = {
   estornada: {
     label: "Estornada",
     color: "bg-purple-100 hover:bg-purple-100 text-purple-800"
+  },
+  expirada: {
+    label: "Expirada",
+    color: "bg-orange-100 hover:bg-orange-100 text-orange-800"
   }
 };
 
@@ -45,8 +58,14 @@ const Guias: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [activeTab, setActiveTab] = useState("todas");
+  const [guiaSelecionada, setGuiaSelecionada] = useState<any>(null);
+  const [showVisualizarGuia, setShowVisualizarGuia] = useState(false);
+  
+  // Simulando tipo de usuário - em produção viria do contexto de auth
+  const [userType] = useState<'unidade' | 'prestador'>('unidade');
   
   const { data: guias, isLoading, error, refetch } = useGuias();
+  const { data: guiasProximasVencimento } = useGuiasProximasVencimento();
   const { mutate: updateGuiaStatus, isPending: isUpdatingStatus } = useUpdateGuiaStatus();
   
   if (error) {
@@ -58,6 +77,7 @@ const Guias: React.FC = () => {
   const totalRealizadas = guias?.filter(g => g.status === "realizada").length || 0;
   const totalFaturadas = guias?.filter(g => g.status === "faturada").length || 0;
   const totalPagas = guias?.filter(g => g.status === "paga").length || 0;
+  const totalExpiradas = guias?.filter(g => g.status === "expirada").length || 0;
   
   // Filtrar guias
   const guiasFiltradas = guias?.filter(guia => {
@@ -75,7 +95,8 @@ const Guias: React.FC = () => {
       (activeTab === "emitidas" && guia.status === "emitida") ||
       (activeTab === "realizadas" && guia.status === "realizada") ||
       (activeTab === "faturadas" && guia.status === "faturada") ||
-      (activeTab === "pagas" && guia.status === "paga");
+      (activeTab === "pagas" && guia.status === "paga") ||
+      (activeTab === "expiradas" && guia.status === "expirada");
     
     return matchesSearch && matchesStatus && matchesTab;
   }) || [];
@@ -95,7 +116,7 @@ const Guias: React.FC = () => {
   };
 
   const handleUpdateStatus = (guiaId: string, newStatus: string) => {
-    updateGuiaStatus({ guiaId, status: newStatus }, {
+    updateGuiaStatus({ guiaId, status: newStatus, userType }, {
       onSuccess: () => {
         toast({
           title: "Status atualizado",
@@ -106,11 +127,56 @@ const Guias: React.FC = () => {
         console.error('Erro ao atualizar status:', error);
         toast({
           title: "Erro ao atualizar status",
-          description: "Ocorreu um erro ao atualizar o status da guia.",
+          description: error.message || "Ocorreu um erro ao atualizar o status da guia.",
           variant: "destructive"
         });
       }
     });
+  };
+
+  const visualizarGuia = (guia: any) => {
+    setGuiaSelecionada(guia);
+    setShowVisualizarGuia(true);
+  };
+
+  const renderStatusActions = (guia: any) => {
+    const currentStatus = guia.status;
+    const actions = [];
+
+    // Ações baseadas no tipo de usuário e status atual
+    if (userType === 'unidade') {
+      if (currentStatus === 'faturada' && isStatusTransitionAllowed(currentStatus, 'paga', userType)) {
+        actions.push(
+          <Button 
+            key="pagar"
+            variant="ghost" 
+            size="sm"
+            onClick={() => handleUpdateStatus(guia.id, 'paga')}
+            disabled={isUpdatingStatus}
+            className="text-green-600 hover:text-green-700 hover:bg-green-50"
+          >
+            Marcar Paga
+          </Button>
+        );
+      }
+      
+      if (['emitida', 'realizada', 'faturada'].includes(currentStatus)) {
+        actions.push(
+          <Button 
+            key="cancelar"
+            variant="ghost" 
+            size="sm"
+            onClick={() => handleUpdateStatus(guia.id, 'cancelada')}
+            disabled={isUpdatingStatus}
+            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          >
+            Cancelar
+          </Button>
+        );
+      }
+    }
+
+    return actions;
   };
 
   if (isLoading) {
@@ -165,7 +231,20 @@ const Guias: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Alerta para guias próximas do vencimento */}
+      {guiasProximasVencimento && guiasProximasVencimento.length > 0 && (
+        <Alert className="border-orange-200 bg-orange-50">
+          <AlertTriangle className="h-4 w-4 text-orange-600" />
+          <AlertDescription className="text-orange-800">
+            <strong>{guiasProximasVencimento.length} guia(s)</strong> próximas do vencimento (30 dias).
+            <Button variant="link" className="p-0 ml-2 text-orange-800" onClick={() => setStatusFilter('emitida')}>
+              Ver guias
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card className={`border-l-4 ${activeTab === "emitidas" ? "border-l-yellow-500" : "border-l-transparent"}`}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -221,6 +300,20 @@ const Guias: React.FC = () => {
             </p>
           </CardContent>
         </Card>
+
+        <Card className={`border-l-4 ${activeTab === "expiradas" ? "border-l-orange-500" : "border-l-transparent"}`}>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-gray-500">Expiradas</p>
+              <Badge variant="outline" className="bg-orange-100 hover:bg-orange-100 text-orange-800">
+                {totalExpiradas}
+              </Badge>
+            </div>
+            <p className="text-2xl font-bold mt-2">
+              {formatarValor(calcularValorPorStatus("expirada"))}
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
@@ -231,12 +324,13 @@ const Guias: React.FC = () => {
               onValueChange={setActiveTab}
               className="w-full md:w-auto"
             >
-              <TabsList className="grid w-full md:w-auto grid-cols-2 md:grid-cols-5">
+              <TabsList className="grid w-full md:w-auto grid-cols-3 md:grid-cols-6">
                 <TabsTrigger value="todas">Todas</TabsTrigger>
                 <TabsTrigger value="emitidas">Emitidas</TabsTrigger>
                 <TabsTrigger value="realizadas" className="hidden md:inline-flex">Realizadas</TabsTrigger>
                 <TabsTrigger value="faturadas" className="hidden md:inline-flex">Faturadas</TabsTrigger>
                 <TabsTrigger value="pagas" className="hidden md:inline-flex">Pagas</TabsTrigger>
+                <TabsTrigger value="expiradas" className="hidden md:inline-flex">Expiradas</TabsTrigger>
               </TabsList>
             </Tabs>
             
@@ -265,6 +359,7 @@ const Guias: React.FC = () => {
                   <SelectItem value="paga">Pagas</SelectItem>
                   <SelectItem value="cancelada">Canceladas</SelectItem>
                   <SelectItem value="estornada">Estornadas</SelectItem>
+                  <SelectItem value="expirada">Expiradas</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -286,87 +381,88 @@ const Guias: React.FC = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {guiasFiltradas.map((guia) => (
-                  <TableRow key={guia.id}>
-                    <TableCell className="font-mono text-sm">
-                      {guia.codigo_autenticacao}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <div className="h-8 w-8 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary mr-2">
-                          <User className="h-4 w-4" />
+                {guiasFiltradas.map((guia) => {
+                  const diasParaExpiracao = calcularDiasParaExpiracao(guia.data_emissao);
+                  const proximaExpiracao = diasParaExpiracao <= 5 && diasParaExpiracao > 0 && guia.status === 'emitida';
+                  
+                  return (
+                    <TableRow key={guia.id} className={proximaExpiracao ? 'bg-orange-50' : ''}>
+                      <TableCell className="font-mono text-sm">
+                        <div className="flex items-center gap-2">
+                          {guia.codigo_autenticacao}
+                          {proximaExpiracao && (
+                            <Clock className="h-4 w-4 text-orange-500" title={`Expira em ${diasParaExpiracao} dias`} />
+                          )}
                         </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <div className="h-8 w-8 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary mr-2">
+                            <User className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <span className="font-medium">{guia.clientes?.nome}</span>
+                            {guia.clientes?.id_associado && (
+                              <p className="text-xs text-gray-500">ID: {guia.clientes.id_associado}</p>
+                            )}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>{guia.prestadores?.nome || "Não informado"}</TableCell>
+                      <TableCell className="max-w-[200px]">
                         <div>
-                          <span className="font-medium">{guia.clientes?.nome}</span>
-                          {guia.clientes?.id_associado && (
-                            <p className="text-xs text-gray-500">ID: {guia.clientes.id_associado}</p>
-                          )}
+                          <p className="font-medium truncate">{guia.servicos?.nome}</p>
+                          <p className="text-xs text-gray-500">{guia.servicos?.categoria}</p>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{guia.prestadores?.nome || "Não informado"}</TableCell>
-                    <TableCell className="max-w-[200px]">
-                      <div>
-                        <p className="font-medium truncate">{guia.servicos?.nome}</p>
-                        <p className="text-xs text-gray-500">{guia.servicos?.categoria}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {formatarValor(guia.valor)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center text-sm">
-                        <Calendar className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
-                        <div className="flex flex-col">
-                          <span>{format(new Date(guia.data_emissao), "dd/MM/yyyy", { locale: ptBR })}</span>
-                          {guia.status !== "emitida" && (
-                            <span className="text-xs text-gray-500">
-                              {guia.status === "paga" && guia.data_pagamento
-                                ? `Paga: ${format(new Date(guia.data_pagamento), "dd/MM", { locale: ptBR })}`
-                                : guia.status === "faturada" && guia.data_faturamento
-                                  ? `Faturada: ${format(new Date(guia.data_faturamento), "dd/MM", { locale: ptBR })}`
-                                  : guia.status === "realizada" && guia.data_realizacao
-                                    ? `Realizada: ${format(new Date(guia.data_realizacao), "dd/MM", { locale: ptBR })}`
-                                    : null
-                              }
-                            </span>
-                          )}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {formatarValor(guia.valor)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center text-sm">
+                          <Calendar className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
+                          <div className="flex flex-col">
+                            <span>{format(new Date(guia.data_emissao), "dd/MM/yyyy", { locale: ptBR })}</span>
+                            {guia.status !== "emitida" && (
+                              <span className="text-xs text-gray-500">
+                                {guia.status === "paga" && guia.data_pagamento
+                                  ? `Paga: ${format(new Date(guia.data_pagamento), "dd/MM", { locale: ptBR })}`
+                                  : guia.status === "faturada" && guia.data_faturamento
+                                    ? `Faturada: ${format(new Date(guia.data_faturamento), "dd/MM", { locale: ptBR })}`
+                                    : guia.status === "realizada" && guia.data_realizacao
+                                      ? `Realizada: ${format(new Date(guia.data_realizacao), "dd/MM", { locale: ptBR })}`
+                                      : null
+                                }
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge 
-                        variant="outline" 
-                        className={statusMap[guia.status]?.color || "bg-gray-100 text-gray-800"}
-                      >
-                        {statusMap[guia.status]?.label || guia.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex gap-1 justify-end">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className="text-agendaja-primary hover:text-agendaja-primary/80 hover:bg-agendaja-light/50"
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant="outline" 
+                          className={statusMap[guia.status]?.color || "bg-gray-100 text-gray-800"}
                         >
-                          <Eye className="h-4 w-4 mr-1" />
-                          Ver
-                        </Button>
-                        {guia.status === 'emitida' && (
+                          {statusMap[guia.status]?.label || guia.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex gap-1 justify-end">
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            onClick={() => handleUpdateStatus(guia.id, 'realizada')}
-                            disabled={isUpdatingStatus}
-                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                            onClick={() => visualizarGuia(guia)}
+                            className="text-agendaja-primary hover:text-agendaja-primary/80 hover:bg-agendaja-light/50"
                           >
-                            Marcar Realizada
+                            <Eye className="h-4 w-4 mr-1" />
+                            Ver
                           </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                          {renderStatusActions(guia)}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
                 
                 {guiasFiltradas.length === 0 && (
                   <TableRow>
@@ -388,6 +484,15 @@ const Guias: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Modal de visualização da guia */}
+      {guiaSelecionada && (
+        <VisualizarGuia
+          guia={guiaSelecionada}
+          open={showVisualizarGuia}
+          onOpenChange={setShowVisualizarGuia}
+        />
+      )}
     </div>
   );
 };
