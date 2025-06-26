@@ -23,11 +23,11 @@ export function SidebarContent({
   const location = useLocation();
   const isMobile = useIsMobile();
 
-  const isActive = (path: string) => {
-    if (path === "/dashboard") {
+  const isActive = (href: string) => {
+    if (href === "/dashboard") {
       return location.pathname === "/dashboard" || location.pathname === "/";
     }
-    return location.pathname.startsWith(path);
+    return location.pathname.startsWith(href);
   };
 
   const MenuSection = ({ title, items }: { title?: string; items: MenuItem[] }) => (
@@ -39,11 +39,11 @@ export function SidebarContent({
       )}
       <nav className="space-y-1">
         {items.map((item) => {
-          const active = isActive(item.path);
+          const active = isActive(item.href);
           return (
             <Link
-              key={item.path}
-              to={item.path}
+              key={item.href}
+              to={item.href}
               onClick={onItemClick}
               className={cn(
                 "group flex items-center rounded-lg text-sm font-medium transition-all duration-200",
@@ -54,9 +54,9 @@ export function SidebarContent({
                     : "bg-agendaja-light text-agendaja-primary border-r-2 border-agendaja-primary"
                   : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               )}
-              title={collapsed ? item.label : undefined}
+              title={collapsed ? item.title : undefined}
             >
-              <item.icon
+              <div
                 className={cn(
                   "flex-shrink-0 transition-colors",
                   isMobile ? "h-5 w-5" : "h-4 w-4",
@@ -65,7 +65,9 @@ export function SidebarContent({
                     : "text-gray-400 group-hover:text-gray-500",
                   collapsed ? "" : "mr-3"
                 )}
-              />
+              >
+                {item.icon}
+              </div>
               {!collapsed && (
                 <span className={cn(
                   "truncate transition-colors",
@@ -74,7 +76,7 @@ export function SidebarContent({
                     ? isMobile ? "text-white" : "text-agendaja-primary" 
                     : ""
                 )}>
-                  {item.label}
+                  {item.title}
                 </span>
               )}
             </Link>
