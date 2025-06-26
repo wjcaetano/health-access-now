@@ -101,12 +101,12 @@ const Hero = () => {
           <div className="relative lg:mt-0 mt-12">
             <div className="relative z-10">
               <img
-                src="https://images.unsplash.com/photo-1576091160550-2173dba999ab?auto=format&fit=crop&w=800&q=80"
-                alt="Profissionais de saúde usando tecnologia"
+                src="https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=800&q=80"
+                alt="Médicos e pacientes satisfeitos com tecnologia"
                 className="w-full h-auto rounded-2xl shadow-2xl"
               />
-              {/* Floating card - Movido para direita inferior */}
-              <div className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 lg:-bottom-8 lg:-right-8 bg-white p-4 sm:p-6 rounded-xl shadow-xl border max-w-[280px] sm:max-w-xs">
+              {/* Floating card - Voltando para esquerda inferior */}
+              <div className="absolute -bottom-4 -left-4 sm:-bottom-6 sm:-left-6 lg:-bottom-8 lg:-left-8 bg-white p-4 sm:p-6 rounded-xl shadow-xl border max-w-[280px] sm:max-w-xs">
                 <div className="flex items-center space-x-3 sm:space-x-4">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
