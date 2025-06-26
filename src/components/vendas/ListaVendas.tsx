@@ -64,10 +64,11 @@ const ListaVendas: React.FC<ListaVendasProps> = ({ vendas }) => {
 
   const handleCancelar = (vendaId: string) => {
     cancelarVenda(vendaId, {
-      onSuccess: () => {
+      onSuccess: (resultado) => {
+        const { guiasCanceladas, totalGuias } = resultado;
         toast({
           title: "Venda cancelada",
-          description: "A venda foi cancelada com sucesso."
+          description: `A venda foi cancelada com sucesso. ${guiasCanceladas} de ${totalGuias} guias foram canceladas automaticamente.`
         });
       },
       onError: (error) => {

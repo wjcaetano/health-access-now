@@ -234,6 +234,8 @@ export function useCancelarVenda() {
         throw guiasError;
       }
 
+      let guiasCanceladas = 0;
+
       // Cancelar todas as guias relacionadas que podem ser canceladas
       if (guiasRelacionadas && guiasRelacionadas.length > 0) {
         console.log('Cancelando guias relacionadas:', guiasRelacionadas);
@@ -242,6 +244,7 @@ export function useCancelarVenda() {
           if (['emitida', 'realizada', 'faturada'].includes(guia.status)) {
             try {
               await GuiasService.cancelarGuiaIndividual(guia.id);
+              guiasCanceladas++;
             } catch (error) {
               console.error(`Erro ao cancelar guia ${guia.id}:`, error);
               // Continua com as outras guias mesmo se uma falhar
@@ -263,8 +266,8 @@ export function useCancelarVenda() {
         throw error;
       }
       
-      console.log('Venda cancelada com sucesso:', data);
-      return data;
+      console.log(`Venda cancelada com sucesso. ${guiasCanceladas} guias foram canceladas.`);
+      return { venda: data, guiasCanceladas, totalGuias: guiasRelacionadas?.length || 0 };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vendas"] });
