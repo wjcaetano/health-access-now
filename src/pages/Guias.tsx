@@ -15,6 +15,8 @@ import {
   useGuias, 
   useUpdateGuiaStatus, 
   useGuiasProximasVencimento,
+  useCancelarGuia,
+  useEstornarGuia,
   isStatusTransitionAllowed,
   calcularDiasParaExpiracao,
   GUIA_STATUS 
@@ -67,6 +69,8 @@ const Guias: React.FC = () => {
   const { data: guias, isLoading, error, refetch } = useGuias();
   const { data: guiasProximasVencimento } = useGuiasProximasVencimento();
   const { mutate: updateGuiaStatus, isPending: isUpdatingStatus } = useUpdateGuiaStatus();
+  const { mutate: cancelarGuia, isPending: isCancelingGuia } = useCancelarGuia();
+  const { mutate: estornarGuia, isPending: isEstornandoGuia } = useEstornarGuia();
   
   if (error) {
     console.error('Erro ao carregar guias:', error);
@@ -138,6 +142,44 @@ const Guias: React.FC = () => {
     });
   };
 
+  const handleCancelarGuia = (guiaId: string) => {
+    cancelarGuia({ guiaId, userType }, {
+      onSuccess: () => {
+        toast({
+          title: "Guia cancelada",
+          description: "A guia foi cancelada com sucesso.",
+        });
+      },
+      onError: (error) => {
+        console.error('Erro ao cancelar guia:', error);
+        toast({
+          title: "Erro ao cancelar guia",
+          description: error.message || "Ocorreu um erro ao cancelar a guia.",
+          variant: "destructive"
+        });
+      }
+    });
+  };
+
+  const handleEstornarGuia = (guiaId: string) => {
+    estornarGuia({ guiaId, userType }, {
+      onSuccess: () => {
+        toast({
+          title: "Guia estornada",
+          description: "A guia foi estornada com sucesso.",
+        });
+      },
+      onError: (error) => {
+        console.error('Erro ao estornar guia:', error);
+        toast({
+          title: "Erro ao estornar guia",
+          description: error.message || "Ocorreu um erro ao estornar a guia.",
+          variant: "destructive"
+        });
+      }
+    });
+  };
+
   const visualizarGuia = (guia: any) => {
     setGuiaSelecionada(guia);
     setShowVisualizarGuia(true);
@@ -170,11 +212,26 @@ const Guias: React.FC = () => {
             key="cancelar"
             variant="ghost" 
             size="sm"
-            onClick={() => handleUpdateStatus(guia.id, 'cancelada')}
-            disabled={isUpdatingStatus}
+            onClick={() => handleCancelarGuia(guia.id)}
+            disabled={isCancelingGuia}
             className="text-red-600 hover:text-red-700 hover:bg-red-50"
           >
             Cancelar
+          </Button>
+        );
+      }
+
+      if (currentStatus === 'paga') {
+        actions.push(
+          <Button 
+            key="estornar"
+            variant="ghost" 
+            size="sm"
+            onClick={() => handleEstornarGuia(guia.id)}
+            disabled={isEstornandoGuia}
+            className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+          >
+            Estornar
           </Button>
         );
       }

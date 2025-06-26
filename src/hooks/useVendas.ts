@@ -1,6 +1,8 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables, TablesInsert } from "@/integrations/supabase/types";
+import { useCancelarGuia, useEstornarGuia } from "@/hooks/useGuias";
 
 type Venda = Tables<"vendas">;
 type NovaVenda = TablesInsert<"vendas">;
@@ -136,6 +138,7 @@ export function useCreateVenda() {
         const codigoAutenticacao = `AG${Date.now().toString().slice(-6)}${(index + 1).toString().padStart(3, '0')}`;
         
         const guia = {
+          agendamento_id: vendaData.id, // Vinculando à venda
           cliente_id: vendaData.cliente_id,
           servico_id: servico.servico_id,
           prestador_id: servico.prestador_id,
@@ -215,16 +218,38 @@ export function useCreateVenda() {
 
 export function useCancelarVenda() {
   const queryClient = useQueryClient();
+  const { mutate: cancelarGuia } = useCancelarGuia();
   
   return useMutation({
     mutationFn: async (vendaId: string) => {
-      // Primeiro buscar os serviços da venda
-      const { data: vendaServicos, error: servicosError } = await supabase
-        .from("vendas_servicos")
-        .select("servico_id")
-        .eq("venda_id", vendaId);
+      console.log('Cancelando venda:', vendaId);
       
-      if (servicosError) throw servicosError;
+      // Primeiro buscar as guias relacionadas à venda
+      const { data: guiasRelacionadas, error: guiasError } = await supabase
+        .from("guias")
+        .select("id, status")
+        .eq("agendamento_id", vendaId);
+      
+      if (guiasError) {
+        console.error('Erro ao buscar guias da venda:', guiasError);
+        throw guiasError;
+      }
+
+      // Cancelar todas as guias relacionadas que podem ser canceladas
+      if (guiasRelacionadas && guiasRelacionadas.length > 0) {
+        console.log('Cancelando guias relacionadas:', guiasRelacionadas);
+        
+        for (const guia of guiasRelacionadas) {
+          if (['emitida', 'realizada', 'faturada'].includes(guia.status)) {
+            try {
+              await cancelarGuia({ guiaId: guia.id, userType: 'unidade' });
+            } catch (error) {
+              console.error(`Erro ao cancelar guia ${guia.id}:`, error);
+              // Continua com as outras guias mesmo se uma falhar
+            }
+          }
+        }
+      }
 
       // Atualizar o status da venda
       const { data, error } = await supabase
@@ -234,19 +259,12 @@ export function useCancelarVenda() {
         .select()
         .single();
       
-      if (error) throw error;
-      
-      // Cancelar todas as guias relacionadas à venda
-      if (vendaServicos && vendaServicos.length > 0) {
-        const servicoIds = vendaServicos.map(vs => vs.servico_id);
-        const { error: guiasError } = await supabase
-          .from("guias")
-          .update({ status: 'cancelada' })
-          .in("servico_id", servicoIds);
-          
-        if (guiasError) throw guiasError;
+      if (error) {
+        console.error('Erro ao cancelar venda:', error);
+        throw error;
       }
       
+      console.log('Venda cancelada com sucesso:', data);
       return data;
     },
     onSuccess: () => {
@@ -258,16 +276,38 @@ export function useCancelarVenda() {
 
 export function useEstornarVenda() {
   const queryClient = useQueryClient();
+  const { mutate: estornarGuia } = useEstornarGuia();
   
   return useMutation({
     mutationFn: async (vendaId: string) => {
-      // Primeiro buscar os serviços da venda
-      const { data: vendaServicos, error: servicosError } = await supabase
-        .from("vendas_servicos")
-        .select("servico_id")
-        .eq("venda_id", vendaId);
+      console.log('Estornando venda:', vendaId);
       
-      if (servicosError) throw servicosError;
+      // Primeiro buscar as guias relacionadas à venda
+      const { data: guiasRelacionadas, error: guiasError } = await supabase
+        .from("guias")
+        .select("id, status")
+        .eq("agendamento_id", vendaId);
+      
+      if (guiasError) {
+        console.error('Erro ao buscar guias da venda:', guiasError);
+        throw guiasError;
+      }
+
+      // Estornar todas as guias relacionadas que podem ser estornadas
+      if (guiasRelacionadas && guiasRelacionadas.length > 0) {
+        console.log('Estornando guias relacionadas:', guiasRelacionadas);
+        
+        for (const guia of guiasRelacionadas) {
+          if (guia.status === 'paga') {
+            try {
+              await estornarGuia({ guiaId: guia.id, userType: 'unidade' });
+            } catch (error) {
+              console.error(`Erro ao estornar guia ${guia.id}:`, error);
+              // Continua com as outras guias mesmo se uma falhar
+            }
+          }
+        }
+      }
 
       // Atualizar o status da venda
       const { data, error } = await supabase
@@ -277,19 +317,12 @@ export function useEstornarVenda() {
         .select()
         .single();
       
-      if (error) throw error;
-      
-      // Estornar todas as guias relacionadas à venda
-      if (vendaServicos && vendaServicos.length > 0) {
-        const servicoIds = vendaServicos.map(vs => vs.servico_id);
-        const { error: guiasError } = await supabase
-          .from("guias")
-          .update({ status: 'estornada' })
-          .in("servico_id", servicoIds);
-          
-        if (guiasError) throw guiasError;
+      if (error) {
+        console.error('Erro ao estornar venda:', error);
+        throw error;
       }
       
+      console.log('Venda estornada com sucesso:', data);
       return data;
     },
     onSuccess: () => {

@@ -82,7 +82,7 @@ export class GuiasService {
 
   static async updateGuiaStatus(
     guiaId: string, 
-    status: string, 
+    status: GuiaStatus, 
     currentStatus: GuiaStatus,
     dataEmissao: string,
     userType: UserType = 'unidade'
@@ -91,7 +91,7 @@ export class GuiasService {
     const { STATUS_TRANSITIONS } = await import("@/types/guias");
     const transicoesPossíveis = STATUS_TRANSITIONS[userType][currentStatus];
     
-    if (!transicoesPossíveis?.includes(status as GuiaStatus)) {
+    if (!transicoesPossíveis?.includes(status)) {
       throw new Error(`Transição de status não permitida: ${currentStatus} → ${status} para ${userType}`);
     }
     
@@ -125,6 +125,96 @@ export class GuiasService {
       .single();
     
     if (error) throw error;
+    return data;
+  }
+
+  // Método específico para cancelar guias
+  static async cancelarGuia(guiaId: string, userType: UserType = 'unidade') {
+    console.log(`Cancelando guia ${guiaId} pelo usuário tipo ${userType}`);
+    
+    // Buscar o status atual da guia
+    const { data: guiaAtual, error: fetchError } = await supabase
+      .from("guias")
+      .select("status, data_emissao")
+      .eq("id", guiaId)
+      .single();
+    
+    if (fetchError) {
+      console.error('Erro ao buscar guia atual:', fetchError);
+      throw fetchError;
+    }
+
+    const currentStatus = guiaAtual.status as GuiaStatus;
+    
+    // Verificar se pode cancelar
+    const { STATUS_TRANSITIONS } = await import("@/types/guias");
+    const transicoesPossíveis = STATUS_TRANSITIONS[userType][currentStatus];
+    
+    if (!transicoesPossíveis?.includes('cancelada')) {
+      throw new Error(`Não é possível cancelar uma guia com status '${currentStatus}' para usuário tipo '${userType}'`);
+    }
+
+    const { data, error } = await supabase
+      .from("guias")
+      .update({ 
+        status: 'cancelada',
+        data_cancelamento: new Date().toISOString()
+      })
+      .eq("id", guiaId)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Erro ao cancelar guia:', error);
+      throw error;
+    }
+    
+    console.log('Guia cancelada com sucesso:', data);
+    return data;
+  }
+
+  // Método específico para estornar guias
+  static async estornarGuia(guiaId: string, userType: UserType = 'unidade') {
+    console.log(`Estornando guia ${guiaId} pelo usuário tipo ${userType}`);
+    
+    // Buscar o status atual da guia
+    const { data: guiaAtual, error: fetchError } = await supabase
+      .from("guias")
+      .select("status, data_emissao")
+      .eq("id", guiaId)
+      .single();
+    
+    if (fetchError) {
+      console.error('Erro ao buscar guia atual:', fetchError);
+      throw fetchError;
+    }
+
+    const currentStatus = guiaAtual.status as GuiaStatus;
+    
+    // Verificar se pode estornar
+    const { STATUS_TRANSITIONS } = await import("@/types/guias");
+    const transicoesPossíveis = STATUS_TRANSITIONS[userType][currentStatus];
+    
+    if (!transicoesPossíveis?.includes('estornada')) {
+      throw new Error(`Não é possível estornar uma guia com status '${currentStatus}' para usuário tipo '${userType}'`);
+    }
+
+    const { data, error } = await supabase
+      .from("guias")
+      .update({ 
+        status: 'estornada',
+        data_estorno: new Date().toISOString()
+      })
+      .eq("id", guiaId)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Erro ao estornar guia:', error);
+      throw error;
+    }
+    
+    console.log('Guia estornada com sucesso:', data);
     return data;
   }
 }

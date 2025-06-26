@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { GuiasService } from "@/services/guiasService";
 import { processGuiasWithExpiration, processGuiasWithVendas } from "@/utils/guiaUtils";
@@ -56,6 +57,7 @@ export function useUpdateGuiaStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["guias"] });
+      queryClient.invalidateQueries({ queryKey: ["vendas"] });
     },
   });
 }
@@ -134,6 +136,36 @@ export function useGuiasProximasVencimento() {
       }) || [];
       
       return proximasVencimento;
+    },
+  });
+}
+
+// Hook específico para cancelar guias (usado tanto em vendas quanto em guias)
+export function useCancelarGuia() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ guiaId, userType = 'unidade' }: { guiaId: string; userType?: UserType }) => {
+      return GuiasService.cancelarGuia(guiaId, userType);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["guias"] });
+      queryClient.invalidateQueries({ queryKey: ["vendas"] });
+    },
+  });
+}
+
+// Hook específico para estornar guias
+export function useEstornarGuia() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ guiaId, userType = 'unidade' }: { guiaId: string; userType?: UserType }) => {
+      return GuiasService.estornarGuia(guiaId, userType);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["guias"] });
+      queryClient.invalidateQueries({ queryKey: ["vendas"] });
     },
   });
 }
