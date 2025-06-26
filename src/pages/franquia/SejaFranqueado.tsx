@@ -122,7 +122,7 @@ const SejaFranqueado = () => {
                         Quero Ser Franqueado
                         <ArrowRight className="ml-2 w-5 h-5" />
                       </Button>
-                      <Button variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-agendaja-primary text-lg px-8 py-4" onClick={() => document.getElementById('vantagens')?.scrollIntoView({
+                      <Button variant="outline" size="lg" className="border-2 border-white text-agendaja-primary hover:bg-white hover:text-agendaja-primary text-lg px-8 py-4" onClick={() => document.getElementById('vantagens')?.scrollIntoView({
                 behavior: 'smooth'
               })}>
                         Ver Vantagens
