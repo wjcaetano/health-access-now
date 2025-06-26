@@ -1,4 +1,3 @@
-
 import React from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Calendar } from "lucide-react";
@@ -8,6 +7,7 @@ import VendaInfo from "./VendaInfo";
 import VendaStatus from "./VendaStatus";
 import VendaActions from "./VendaActions";
 import { formatCurrency, formatarMetodoPagamento } from "@/lib/formatters";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Venda {
   id: string;
@@ -58,6 +58,24 @@ const VendaTableRow: React.FC<VendaTableRowProps> = ({
   isLoading,
   impressaoAtiva
 }) => {
+  const isMobile = useIsMobile();
+
+  // Se for mobile, renderizar apenas as ações (será usado dentro do card)
+  if (isMobile) {
+    return (
+      <VendaActions
+        venda={venda}
+        onCancelar={onCancelar}
+        onEstornar={onEstornar}
+        onImprimirRecibo={onImprimirRecibo}
+        onImprimirGuias={onImprimirGuias}
+        isLoading={isLoading}
+        impressaoAtiva={impressaoAtiva}
+      />
+    );
+  }
+
+  // Layout desktop normal
   return (
     <TableRow key={venda.id}>
       <TableCell>

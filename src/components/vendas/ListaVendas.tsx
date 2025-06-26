@@ -1,4 +1,3 @@
-
 import React from "react";
 import { 
   Card, 
@@ -16,7 +15,8 @@ import {
 import { Eye } from "lucide-react";
 import { useCancelarVenda, useEstornarVenda } from "@/hooks/useVendas";
 import { useToast } from "@/hooks/use-toast";
-import { useVendaImpressao } from "@/hooks/useVendaImpressao";
+import { useMobilePrint } from "@/hooks/useMobilePrint";
+import { useIsMobile } from "@/hooks/use-mobile";
 import VendaTableRow from "./VendaTableRow";
 import ReciboVenda from "./ReciboVenda";
 import GuiaServico from "./GuiaServico";
@@ -60,7 +60,8 @@ const ListaVendas: React.FC<ListaVendasProps> = ({ vendas }) => {
   const { mutate: cancelarVenda, isPending: isCanceling } = useCancelarVenda();
   const { mutate: estornarVenda, isPending: isEstornando } = useEstornarVenda();
   const { toast } = useToast();
-  const { impressaoAtiva, imprimirRecibo, imprimirGuias, gerarCodigoGuia } = useVendaImpressao();
+  const { impressaoAtiva, imprimirRecibo, imprimirGuias, gerarCodigoGuia } = useMobilePrint();
+  const isMobile = useIsMobile();
 
   const handleCancelar = (vendaId: string) => {
     cancelarVenda(vendaId, {
@@ -126,64 +127,110 @@ const ListaVendas: React.FC<ListaVendasProps> = ({ vendas }) => {
             Vendas Realizadas ({vendas.length})
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className={isMobile ? "p-2" : ""}>
           <div className="rounded-md border overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Cliente</TableHead>
-                  <TableHead className="hidden md:table-cell">Data</TableHead>
-                  <TableHead>Valor</TableHead>
-                  <TableHead className="hidden lg:table-cell">Pagamento</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="hidden sm:table-cell">Serviços</TableHead>
-                  <TableHead className="text-center">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            {isMobile ? (
+              // Layout móvel com cards
+              <div className="space-y-3">
                 {vendas.map((venda) => (
-                  <VendaTableRow
-                    key={venda.id}
-                    venda={venda}
-                    onCancelar={handleCancelar}
-                    onEstornar={handleEstornar}
-                    onImprimirRecibo={imprimirRecibo}
-                    onImprimirGuias={imprimirGuias}
-                    isLoading={isCanceling || isEstornando}
-                    impressaoAtiva={impressaoAtiva}
-                  />
+                  <div key={venda.id} className="border rounded-lg p-4 bg-white">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-medium text-sm">{venda.clientes?.nome || 'Cliente não identificado'}</p>
+                          <p className="text-xs text-gray-500">{venda.clientes?.cpf || ''}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-green-600 text-sm">
+                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(venda.valor_total)}
+                          </p>
+                          <p className="text-xs text-gray-500 capitalize">
+                            {formatarMetodoPagamento(venda.metodo_pagamento)}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <div className="text-xs text-gray-500">
+                          {new Date(venda.created_at).toLocaleDateString('pt-BR')}
+                        </div>
+                        <div className="flex gap-1">
+                          <VendaTableRow
+                            venda={venda}
+                            onCancelar={handleCancelar}
+                            onEstornar={handleEstornar}
+                            onImprimirRecibo={imprimirRecibo}
+                            onImprimirGuias={imprimirGuias}
+                            isLoading={isCanceling || isEstornando}
+                            impressaoAtiva={impressaoAtiva}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            ) : (
+              // Layout desktop com tabela
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Cliente</TableHead>
+                    <TableHead className="hidden md:table-cell">Data</TableHead>
+                    <TableHead>Valor</TableHead>
+                    <TableHead className="hidden lg:table-cell">Pagamento</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="hidden sm:table-cell">Serviços</TableHead>
+                    <TableHead className="text-center">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {vendas.map((venda) => (
+                    <VendaTableRow
+                      key={venda.id}
+                      venda={venda}
+                      onCancelar={handleCancelar}
+                      onEstornar={handleEstornar}
+                      onImprimirRecibo={imprimirRecibo}
+                      onImprimirGuias={imprimirGuias}
+                      isLoading={isCanceling || isEstornando}
+                      impressaoAtiva={impressaoAtiva}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </div>
         </CardContent>
       </Card>
 
       {/* Componentes de impressão ocultos */}
-      {vendas.map((venda) => (
-        <div key={`print-${venda.id}`} className="hidden">
-          <div id={`recibo-${venda.id}`} className="print:block">
-            <ReciboVenda
-              venda={venda}
-              cliente={venda.clientes!}
-              servicos={venda.vendas_servicos || []}
-              metodoPagamento={formatarMetodoPagamento(venda.metodo_pagamento)}
-            />
-          </div>
-          
-          <div id={`guias-${venda.id}`} className="print:block">
-            {venda.vendas_servicos?.map((servico, index) => (
-              <GuiaServico
-                key={`guia-${servico.id}`}
+      <div className="hidden print:hidden">
+        {vendas.map((venda) => (
+          <div key={`print-${venda.id}`}>
+            <div id={`recibo-${venda.id}`}>
+              <ReciboVenda
                 venda={venda}
                 cliente={venda.clientes!}
-                servico={servico}
-                codigoGuia={gerarCodigoGuia(venda.id, index)}
+                servicos={venda.vendas_servicos || []}
+                metodoPagamento={formatarMetodoPagamento(venda.metodo_pagamento)}
               />
-            ))}
+            </div>
+            
+            <div id={`guias-${venda.id}`}>
+              {venda.vendas_servicos?.map((servico, index) => (
+                <GuiaServico
+                  key={`guia-${servico.id}`}
+                  venda={venda}
+                  cliente={venda.clientes!}
+                  servico={servico}
+                  codigoGuia={gerarCodigoGuia(venda.id, index)}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </>
   );
 };
