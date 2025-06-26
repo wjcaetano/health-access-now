@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { GuiaComVendas } from "@/types/guias";
+import { GuiaComVendas, GuiaStatus, UserType } from "@/types/guias";
 
 export class GuiasService {
   static async fetchGuiasWithRelations(): Promise<GuiaComVendas[]> {
@@ -83,15 +83,15 @@ export class GuiasService {
   static async updateGuiaStatus(
     guiaId: string, 
     status: string, 
-    currentStatus: string,
+    currentStatus: GuiaStatus,
     dataEmissao: string,
-    userType: 'prestador' | 'unidade' = 'unidade'
+    userType: UserType = 'unidade'
   ) {
     // Verificar se a transição é permitida
     const { STATUS_TRANSITIONS } = await import("@/types/guias");
-    const transicoesPossíveis = STATUS_TRANSITIONS[userType][currentStatus as keyof typeof STATUS_TRANSITIONS[typeof userType]];
+    const transicoesPossíveis = STATUS_TRANSITIONS[userType][currentStatus];
     
-    if (!transicoesPossíveis?.includes(status)) {
+    if (!transicoesPossíveis?.includes(status as GuiaStatus)) {
       throw new Error(`Transição de status não permitida: ${currentStatus} → ${status} para ${userType}`);
     }
     

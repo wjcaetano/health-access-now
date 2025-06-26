@@ -1,13 +1,13 @@
 
-import { GuiaComVendas, STATUS_TRANSITIONS, UserType } from "@/types/guias";
+import { GuiaComVendas, STATUS_TRANSITIONS, UserType, GuiaStatus } from "@/types/guias";
 
 export const isStatusTransitionAllowed = (
-  currentStatus: string, 
+  currentStatus: GuiaStatus, 
   newStatus: string, 
   userType: UserType
 ): boolean => {
-  const allowedTransitions = STATUS_TRANSITIONS[userType][currentStatus as keyof typeof STATUS_TRANSITIONS[typeof userType]];
-  return allowedTransitions?.includes(newStatus) || false;
+  const allowedTransitions = STATUS_TRANSITIONS[userType][currentStatus];
+  return allowedTransitions?.includes(newStatus as GuiaStatus) || false;
 };
 
 export const calcularDiasParaExpiracao = (dataEmissao: string): number => {
