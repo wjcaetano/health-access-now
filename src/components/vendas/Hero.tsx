@@ -101,7 +101,7 @@ const Hero = () => {
           <div className="relative lg:mt-0 mt-12">
             <div className="relative z-10">
               <img
-                src="https://images.unsplash.com/photo-1609220136736-443140cffec6?auto=format&fit=crop&w=800&q=80"
+                src="https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=800&q=80"
                 alt="Família feliz e saudável"
                 className="w-full h-auto rounded-2xl shadow-2xl"
               />
