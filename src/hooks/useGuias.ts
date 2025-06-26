@@ -155,6 +155,52 @@ export function useEstornarGuia() {
   });
 }
 
+// Hook para buscar guias por pedido (número do pedido)
+export function useGuiasPorPedido(vendaId: string) {
+  return useQuery({
+    queryKey: ["guias", "pedido", vendaId],
+    queryFn: async (): Promise<GuiaComVendas[]> => {
+      if (!vendaId) return [];
+      
+      const { supabase } = await import("@/integrations/supabase/client");
+      
+      const { data, error } = await supabase
+        .from("guias")
+        .select(`
+          *,
+          clientes (
+            id,
+            nome,
+            cpf,
+            telefone,
+            email,
+            id_associado
+          ),
+          servicos (
+            nome,
+            categoria,
+            valor_venda
+          ),
+          prestadores (
+            nome,
+            tipo,
+            especialidades
+          )
+        `)
+        .eq('agendamento_id', vendaId)
+        .order("data_emissao", { ascending: false });
+      
+      if (error) {
+        console.error('Erro ao buscar guias por pedido:', error);
+        throw error;
+      }
+      
+      return (data || []) as GuiaComVendas[];
+    },
+    enabled: !!vendaId,
+  });
+}
+
 // Re-exportar utilitários para manter compatibilidade
 export { isStatusTransitionAllowed, calcularDiasParaExpiracao } from "@/utils/guiaUtils";
 export { GUIA_STATUS, STATUS_TRANSITIONS } from "@/types/guias";

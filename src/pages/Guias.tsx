@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { FileText, Search, Calendar, Download, User, Eye, RefreshCw, AlertCircle, Clock, AlertTriangle, ShoppingCart } from "lucide-react";
+import { FileText, Search, Calendar, Download, User, Eye, RefreshCw, AlertCircle, Clock, AlertTriangle, ShoppingCart, Package } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useToast } from "@/components/ui/use-toast";
@@ -24,6 +24,7 @@ import { GuiaStatus, UserType } from "@/types/guias";
 import VisualizarGuia from "@/components/guias/VisualizarGuia";
 import { useCancelamentoPedido, useBuscarGuiasRelacionadas } from "@/hooks/useCancelamentoPedido";
 import CancelamentoGuiaModal from "@/components/guias/CancelamentoGuiaModal";
+import { formatarDadosPedido } from "@/utils/pedidoUtils";
 
 const statusMap: Record<string, { label: string; color: string }> = {
   emitida: {
@@ -91,14 +92,14 @@ const Guias: React.FC = () => {
   // Filtrar guias
   const guiasFiltradas = guias?.filter(guia => {
     const vendaInfo = Array.isArray(guia.vendas_servicos) ? guia.vendas_servicos[0] : null;
-    const codigoPedido = vendaInfo?.venda_id?.slice(0, 8).toUpperCase() || '';
+    const dadosPedido = formatarDadosPedido(vendaInfo);
     
     const matchesSearch = 
       guia.servicos?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       guia.clientes?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       guia.prestadores?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       guia.codigo_autenticacao?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      codigoPedido.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      dadosPedido.numeroPedido.toLowerCase().includes(searchTerm.toLowerCase()) ||
       false;
     
     const matchesStatus = statusFilter === "all" || guia.status === statusFilter;
@@ -460,7 +461,7 @@ const Guias: React.FC = () => {
               <div className="relative flex-1">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
                 <Input
-                  placeholder="Buscar guias..."
+                  placeholder="Buscar por código, pedido, cliente..."
                   className="pl-8"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -509,8 +510,7 @@ const Guias: React.FC = () => {
                     const diasParaExpiracao = calcularDiasParaExpiracao(guia.data_emissao);
                     const proximaExpiracao = diasParaExpiracao <= 5 && diasParaExpiracao > 0 && guia.status === 'emitida';
                     const vendaInfo = Array.isArray(guia.vendas_servicos) ? guia.vendas_servicos[0] : null;
-                    const codigoPedido = vendaInfo?.venda_id?.slice(0, 8).toUpperCase() || 'N/A';
-                    const valorTotalPedido = vendaInfo?.vendas?.valor_total || 0;
+                    const dadosPedido = formatarDadosPedido(vendaInfo);
                     
                     return (
                       <TableRow key={guia.id} className={proximaExpiracao ? 'bg-orange-50' : ''}>
@@ -525,12 +525,12 @@ const Guias: React.FC = () => {
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <div className="h-6 w-6 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
-                              <ShoppingCart className="h-3 w-3 text-blue-600" />
+                              <Package className="h-3 w-3 text-blue-600" />
                             </div>
                             <div className="flex flex-col min-w-0">
-                              <span className="font-mono text-sm font-medium truncate">{codigoPedido}</span>
+                              <span className="font-mono text-sm font-medium truncate">{dadosPedido.numeroPedido}</span>
                               <span className="text-xs text-gray-500 truncate">
-                                {formatarValor(valorTotalPedido)}
+                                {formatarValor(dadosPedido.valorTotal)}
                               </span>
                             </div>
                           </div>

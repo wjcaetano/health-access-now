@@ -5,8 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Printer, Download, ShoppingCart } from "lucide-react";
+import { Printer, Download, Package, Info } from "lucide-react";
 import { Tables } from "@/integrations/supabase/types";
+import { formatarDadosPedido } from "@/utils/pedidoUtils";
 
 type GuiaCompleta = Tables<"guias"> & {
   clientes?: Tables<"clientes">;
@@ -44,11 +45,12 @@ const VisualizarGuia: React.FC<VisualizarGuiaProps> = ({ guia, open, onOpenChang
     faturada: { label: "Faturada", color: "bg-green-100 text-green-800" },
     paga: { label: "Paga", color: "bg-gray-100 text-gray-800" },
     cancelada: { label: "Cancelada", color: "bg-red-100 text-red-800" },
-    estornada: { label: "Estornada", color: "bg-purple-100 text-purple-800" }
+    estornada: { label: "Estornada", color: "bg-purple-100 text-purple-800" },
+    expirada: { label: "Expirada", color: "bg-orange-100 text-orange-800" }
   };
 
   const vendaInfo = guia.vendas_servicos?.[0];
-  const codigoPedido = vendaInfo?.venda_id?.slice(0, 8).toUpperCase() || '';
+  const dadosPedido = formatarDadosPedido(vendaInfo);
 
   const imprimirGuia = () => {
     window.print();
@@ -67,37 +69,58 @@ const VisualizarGuia: React.FC<VisualizarGuiaProps> = ({ guia, open, onOpenChang
         </DialogHeader>
         
         <div className="space-y-6">
-          {/* Informações do Pedido */}
-          {vendaInfo && (
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <h3 className="text-lg font-semibold border-b pb-2 mb-4 flex items-center gap-2">
-                <ShoppingCart className="h-5 w-5 text-blue-600" />
-                Informações do Pedido
-              </h3>
-              <div className="grid grid-cols-2 gap-4 text-sm">
+          {/* Informações do Pedido - Melhoradas */}
+          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+            <h3 className="text-lg font-semibold border-b pb-2 mb-4 flex items-center gap-2">
+              <Package className="h-5 w-5 text-blue-600" />
+              Informações do Pedido
+            </h3>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="font-medium">Número do Pedido:</span>
+                <span className="ml-2 font-mono bg-blue-100 px-3 py-1 rounded text-blue-800 font-bold">
+                  {dadosPedido.numeroPedido}
+                </span>
+              </div>
+              <div>
+                <span className="font-medium">Status da Venda:</span>
+                <span className="ml-2 px-2 py-1 rounded bg-green-100 text-green-800 text-xs">
+                  Concluída
+                </span>
+              </div>
+              {dadosPedido.dataVenda && (
                 <div>
-                  <span className="font-medium">Código do Pedido:</span>
-                  <span className="ml-2 font-mono bg-blue-100 px-2 py-1 rounded">
-                    {codigoPedido}
+                  <span className="font-medium">Data da Venda:</span>
+                  <span className="ml-2">
+                    {format(new Date(dadosPedido.dataVenda), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
                   </span>
                 </div>
-                <div>
-                  <span className="font-medium">Data do Pedido:</span> 
-                  {format(new Date(vendaInfo.vendas.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-                </div>
-                <div>
-                  <span className="font-medium">Valor Total do Pedido:</span>
-                  <span className="ml-2 text-lg font-bold text-blue-700">
-                    {formatarValor(vendaInfo.vendas.valor_total)}
-                  </span>
-                </div>
-                <div>
-                  <span className="font-medium">Método de Pagamento:</span> 
-                  <span className="ml-2 capitalize">{vendaInfo.vendas.metodo_pagamento}</span>
+              )}
+              <div>
+                <span className="font-medium">Método de Pagamento:</span> 
+                <span className="ml-2 capitalize font-medium">{dadosPedido.metodoPagamento}</span>
+              </div>
+              <div className="col-span-2">
+                <span className="font-medium">Valor Total do Pedido:</span>
+                <span className="ml-2 text-xl font-bold text-blue-700">
+                  {formatarValor(dadosPedido.valorTotal)}
+                </span>
+              </div>
+            </div>
+            
+            {/* Alerta sobre o cancelamento de pedido */}
+            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="flex items-start gap-2">
+                <Info className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-yellow-800">
+                  <p className="font-medium">Importante sobre cancelamentos:</p>
+                  <p className="mt-1">
+                    Ao cancelar esta guia, <strong>TODAS as guias do pedido {dadosPedido.numeroPedido}</strong> serão automaticamente canceladas e a venda será estornada.
+                  </p>
                 </div>
               </div>
             </div>
-          )}
+          </div>
 
           {/* Informações do Cliente */}
           <div className="grid grid-cols-2 gap-6">
@@ -211,6 +234,18 @@ const VisualizarGuia: React.FC<VisualizarGuiaProps> = ({ guia, open, onOpenChang
                   <div>
                     <span className="font-medium">Paga em:</span> 
                     {format(new Date(guia.data_pagamento), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                  </div>
+                )}
+                {guia.data_cancelamento && (
+                  <div>
+                    <span className="font-medium">Cancelada em:</span> 
+                    {format(new Date(guia.data_cancelamento), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                  </div>
+                )}
+                {guia.data_estorno && (
+                  <div>
+                    <span className="font-medium">Estornada em:</span> 
+                    {format(new Date(guia.data_estorno), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
                   </div>
                 )}
               </div>
