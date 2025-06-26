@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { FileText, Search, Calendar, Download, User, Eye, RefreshCw, AlertCircle, Clock, AlertTriangle } from "lucide-react";
+import { FileText, Search, Calendar, Download, User, Eye, RefreshCw, AlertCircle, Clock, AlertTriangle, ShoppingCart } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useToast } from "@/components/ui/use-toast";
@@ -81,11 +80,15 @@ const Guias: React.FC = () => {
   
   // Filtrar guias
   const guiasFiltradas = guias?.filter(guia => {
+    const vendaId = guia.vendas_servicos?.[0]?.venda_id || '';
+    const codigoPedido = vendaId.slice(0, 8).toUpperCase();
+    
     const matchesSearch = 
       guia.servicos?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       guia.clientes?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       guia.prestadores?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       guia.codigo_autenticacao?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      codigoPedido.toLowerCase().includes(searchTerm.toLowerCase()) ||
       false;
     
     const matchesStatus = statusFilter === "all" || guia.status === statusFilter;
@@ -371,6 +374,7 @@ const Guias: React.FC = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Código</TableHead>
+                  <TableHead>Pedido</TableHead>
                   <TableHead>Cliente</TableHead>
                   <TableHead>Prestador</TableHead>
                   <TableHead>Serviço</TableHead>
@@ -384,6 +388,9 @@ const Guias: React.FC = () => {
                 {guiasFiltradas.map((guia) => {
                   const diasParaExpiracao = calcularDiasParaExpiracao(guia.data_emissao);
                   const proximaExpiracao = diasParaExpiracao <= 5 && diasParaExpiracao > 0 && guia.status === 'emitida';
+                  const vendaId = guia.vendas_servicos?.[0]?.venda_id || '';
+                  const codigoPedido = vendaId.slice(0, 8).toUpperCase();
+                  const valorTotalPedido = guia.vendas_servicos?.[0]?.vendas?.valor_total || 0;
                   
                   return (
                     <TableRow key={guia.id} className={proximaExpiracao ? 'bg-orange-50' : ''}>
@@ -393,6 +400,19 @@ const Guias: React.FC = () => {
                           {proximaExpiracao && (
                             <Clock className="h-4 w-4 text-orange-500" />
                           )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div className="h-6 w-6 rounded bg-blue-100 flex items-center justify-center">
+                            <ShoppingCart className="h-3 w-3 text-blue-600" />
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="font-mono text-sm font-medium">{codigoPedido}</span>
+                            <span className="text-xs text-gray-500">
+                              {formatarValor(valorTotalPedido)}
+                            </span>
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -466,7 +486,7 @@ const Guias: React.FC = () => {
                 
                 {guiasFiltradas.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={8} className="h-24 text-center">
+                    <TableCell colSpan={9} className="h-24 text-center">
                       <div className="flex flex-col items-center gap-2">
                         <FileText className="h-8 w-8 text-gray-400" />
                         <p className="text-gray-500">

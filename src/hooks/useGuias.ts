@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
@@ -56,6 +55,15 @@ export function useGuias() {
             nome,
             tipo,
             especialidades
+          ),
+          vendas_servicos!inner (
+            venda_id,
+            vendas (
+              id,
+              created_at,
+              valor_total,
+              metodo_pagamento
+            )
           )
         `)
         .order("data_emissao", { ascending: false });
@@ -177,6 +185,15 @@ export function useGuiasPorStatus(status?: string) {
             nome,
             tipo,
             especialidades
+          ),
+          vendas_servicos!inner (
+            venda_id,
+            vendas (
+              id,
+              created_at,
+              valor_total,
+              metodo_pagamento
+            )
           )
         `);
       
@@ -207,7 +224,14 @@ export function useGuiasProximasVencimento() {
         .select(`
           *,
           clientes (nome),
-          servicos (nome)
+          servicos (nome),
+          vendas_servicos!inner (
+            venda_id,
+            vendas (
+              id,
+              created_at
+            )
+          )
         `)
         .eq('status', 'emitida');
       

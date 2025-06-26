@@ -5,13 +5,22 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Printer, Download } from "lucide-react";
+import { Printer, Download, ShoppingCart } from "lucide-react";
 import { Tables } from "@/integrations/supabase/types";
 
 type GuiaCompleta = Tables<"guias"> & {
   clientes?: Tables<"clientes">;
   servicos?: Tables<"servicos">;
   prestadores?: Tables<"prestadores">;
+  vendas_servicos?: Array<{
+    venda_id: string;
+    vendas: {
+      id: string;
+      created_at: string;
+      valor_total: number;
+      metodo_pagamento: string;
+    };
+  }>;
 };
 
 interface VisualizarGuiaProps {
@@ -37,6 +46,9 @@ const VisualizarGuia: React.FC<VisualizarGuiaProps> = ({ guia, open, onOpenChang
     estornada: { label: "Estornada", color: "bg-purple-100 text-purple-800" }
   };
 
+  const vendaInfo = guia.vendas_servicos?.[0];
+  const codigoPedido = vendaInfo?.venda_id?.slice(0, 8).toUpperCase() || '';
+
   const imprimirGuia = () => {
     window.print();
   };
@@ -54,6 +66,38 @@ const VisualizarGuia: React.FC<VisualizarGuiaProps> = ({ guia, open, onOpenChang
         </DialogHeader>
         
         <div className="space-y-6">
+          {/* Informações do Pedido */}
+          {vendaInfo && (
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold border-b pb-2 mb-4 flex items-center gap-2">
+                <ShoppingCart className="h-5 w-5 text-blue-600" />
+                Informações do Pedido
+              </h3>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="font-medium">Código do Pedido:</span>
+                  <span className="ml-2 font-mono bg-blue-100 px-2 py-1 rounded">
+                    {codigoPedido}
+                  </span>
+                </div>
+                <div>
+                  <span className="font-medium">Data do Pedido:</span> 
+                  {format(new Date(vendaInfo.vendas.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                </div>
+                <div>
+                  <span className="font-medium">Valor Total do Pedido:</span>
+                  <span className="ml-2 text-lg font-bold text-blue-700">
+                    {formatarValor(vendaInfo.vendas.valor_total)}
+                  </span>
+                </div>
+                <div>
+                  <span className="font-medium">Método de Pagamento:</span> 
+                  <span className="ml-2 capitalize">{vendaInfo.vendas.metodo_pagamento}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Informações do Cliente */}
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-4">
