@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 // Pages
@@ -32,6 +33,7 @@ import NotFound from "@/pages/NotFound";
 const Layout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { profile } = useAuth();
+  const isMobile = useIsMobile();
   
   // Determinar o perfil do usuário baseado no contexto de autenticação
   const userProfile = 'agendaja';
@@ -50,14 +52,19 @@ const Layout: React.FC = () => {
       <div 
         className={cn(
           "flex-1 flex flex-col overflow-hidden min-w-0 transition-all duration-300 ease-in-out",
-          collapsed ? "ml-20" : "ml-72"
+          // No mobile, sempre ocupar toda a largura
+          isMobile ? "ml-0" : collapsed ? "ml-20" : "ml-72"
         )}
       >
         <Header 
           title="Dashboard" 
           toggleSidebar={toggleSidebar}
         />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-3 md:p-6">
+        <main className={cn(
+          "flex-1 overflow-x-hidden overflow-y-auto bg-gray-50",
+          // Ajustar padding para mobile
+          isMobile ? "p-3" : "p-6"
+        )}>
           <div className="max-w-full">
             <Routes>
               <Route path="/" element={<Index />} />

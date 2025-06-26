@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { LogOut, Menu, Search, User, Users, Settings, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Link } from "react-router-dom";
 import NotificationBell from "./NotificationBell";
 import {
@@ -25,6 +26,7 @@ interface HeaderProps {
 export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) {
   const { toast } = useToast();
   const { signOut, profile, user, isAdmin, isManager } = useAuth();
+  const isMobile = useIsMobile();
 
   const handleLogout = async () => {
     try {
@@ -43,43 +45,55 @@ export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) 
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 py-3 md:py-4 px-4 md:px-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+      <div className={`flex items-center justify-between ${isMobile ? 'px-4 py-3' : 'px-6 py-4'}`}>
+        <div className="flex items-center gap-3 min-w-0 flex-1">
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={toggleSidebar} 
-            className="lg:hidden h-8 w-8"
+            className={`${isMobile ? 'h-9 w-9' : 'h-8 w-8'} flex-shrink-0`}
           >
-            <Menu className="h-4 w-4" />
+            <Menu className="h-5 w-5" />
           </Button>
           
           <div className="min-w-0 flex-1">
-            <h1 className="text-lg md:text-xl font-semibold text-gray-900 truncate">{title}</h1>
-            {subtitle && <p className="text-xs md:text-sm text-gray-500 truncate">{subtitle}</p>}
+            <h1 className={`font-semibold text-gray-900 truncate ${isMobile ? 'text-lg' : 'text-xl'}`}>
+              {title}
+            </h1>
+            {subtitle && !isMobile && (
+              <p className="text-sm text-gray-500 truncate">{subtitle}</p>
+            )}
           </div>
         </div>
         
-        <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
-          <div className="hidden lg:block w-48 xl:w-64">
-            <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
-              <Input 
-                placeholder="Buscar..." 
-                className="pl-8 bg-gray-50 border-gray-200 focus:bg-white text-sm" 
-              />
-            </div>
-          </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Search - hidden on mobile */}
+          {!isMobile && (
+            <>
+              <div className="hidden lg:block w-48 xl:w-64">
+                <div className="relative">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+                  <Input 
+                    placeholder="Buscar..." 
+                    className="pl-8 bg-gray-50 border-gray-200 focus:bg-white text-sm" 
+                  />
+                </div>
+              </div>
+              
+              <Button variant="outline" size="sm" className="hidden md:flex gap-1 text-sm">
+                <Search className="h-4 w-4" />
+                <span className="hidden lg:inline">Buscar</span>
+              </Button>
+            </>
+          )}
           
-          <Button variant="outline" size="sm" className="hidden md:flex gap-1 text-sm">
-            <Search className="h-4 w-4" />
-            <span className="hidden lg:inline">Buscar</span>
-          </Button>
-          
-          <Button variant="outline" size="sm" className="md:hidden">
-            <Search className="h-4 w-4" />
-          </Button>
+          {/* Mobile search button */}
+          {isMobile && (
+            <Button variant="ghost" size="icon" className="h-9 w-9">
+              <Search className="h-5 w-5" />
+            </Button>
+          )}
           
           {/* Notification Bell */}
           <NotificationBell />
@@ -87,11 +101,17 @@ export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) 
           {/* User menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="flex gap-1 md:gap-2 ml-1 md:ml-2">
-                <User className="h-4 w-4" />
-                <span className="hidden sm:inline text-sm truncate max-w-24 md:max-w-none">
-                  {profile?.nome || user?.email}
-                </span>
+              <Button 
+                variant="ghost" 
+                size={isMobile ? "icon" : "sm"} 
+                className={`flex ${isMobile ? 'h-9 w-9' : 'gap-2'}`}
+              >
+                <User className={isMobile ? "h-5 w-5" : "h-4 w-4"} />
+                {!isMobile && (
+                  <span className="hidden sm:inline text-sm truncate max-w-24 md:max-w-none">
+                    {profile?.nome || user?.email}
+                  </span>
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
