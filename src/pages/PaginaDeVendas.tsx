@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -54,11 +55,6 @@ const PaginaDeVendas = ({ mostrarLogin }: PaginaDeVendasProps) => {
       <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
         <DialogContent className="max-w-md p-0 bg-transparent shadow-none border-none">
           <div className="bg-white rounded-lg shadow-lg p-0">
-            <button
-              aria-label="Fechar"
-              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-lg"
-              onClick={handleFecharLogin}
-            >×</button>
             <Login />
           </div>
         </DialogContent>
