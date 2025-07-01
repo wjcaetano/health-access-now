@@ -1,49 +1,92 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Tables, TablesInsert } from "@/integrations/supabase/types";
-
-type Prestador = Tables<"prestadores">;
-type NovoPrestador = TablesInsert<"prestadores">;
+import { prestadoresService, Prestador, NovoPrestador } from "@/services/prestadoresService";
+import { useToast } from "@/hooks/use-toast";
 
 export function usePrestadores() {
   return useQuery({
     queryKey: ["prestadores"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("prestadores")
-        .select("*")
-        .order("data_cadastro", { ascending: false });
-      
-      if (error) throw error;
-      return data as Prestador[];
-    },
+    queryFn: prestadoresService.fetchPrestadores,
+    staleTime: 5 * 60 * 1000, // 5 minutos
+    gcTime: 10 * 60 * 1000, // 10 minutos
   });
 }
 
 export function useCreatePrestador() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   
   return useMutation({
-    mutationFn: async (prestador: NovoPrestador) => {
-      console.log('Dados sendo enviados para o banco:', prestador);
+    mutationFn: prestadoresService.createPrestador,
+    onSuccess: (newPrestador) => {
+      queryClient.setQueryData<Prestador[]>(["prestadores"], (old) => 
+        old ? [newPrestador, ...old] : [newPrestador]
+      );
       
-      const { data, error } = await supabase
-        .from("prestadores")
-        .insert([prestador])
-        .select()
-        .single();
-      
-      if (error) {
-        console.error('Erro ao inserir prestador:', error);
-        throw error;
-      }
-      
-      console.log('Prestador criado com sucesso:', data);
-      return data;
+      toast({
+        title: "Prestador cadastrado",
+        description: `${newPrestador.nome} foi cadastrado com sucesso.`,
+      });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["prestadores"] });
+    onError: (error: any) => {
+      toast({
+        title: "Erro ao cadastrar prestador",
+        description: error.message || "Ocorreu um erro inesperado.",
+        variant: "destructive",
+      });
+    },
+  });
+}
+
+export function useUpdatePrestador() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  
+  return useMutation({
+    mutationFn: ({ id, updates }: { id: string; updates: Partial<Prestador> }) =>
+      prestadoresService.updatePrestador(id, updates),
+    onSuccess: (updatedPrestador) => {
+      queryClient.setQueryData<Prestador[]>(["prestadores"], (old) =>
+        old ? old.map(prest => prest.id === updatedPrestador.id ? updatedPrestador : prest) : []
+      );
+      
+      toast({
+        title: "Prestador atualizado",
+        description: `${updatedPrestador.nome} foi atualizado com sucesso.`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro ao atualizar prestador",
+        description: error.message || "Ocorreu um erro inesperado.",
+        variant: "destructive",
+      });
+    },
+  });
+}
+
+export function useDeletePrestador() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  
+  return useMutation({
+    mutationFn: prestadoresService.deletePrestador,
+    onSuccess: (_, deletedId) => {
+      queryClient.setQueryData<Prestador[]>(["prestadores"], (old) =>
+        old ? old.filter(prest => prest.id !== deletedId) : []
+      );
+      
+      toast({
+        title: "Prestador removido",
+        description: "Prestador foi removido com sucesso.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro ao remover prestador",
+        description: error.message || "Ocorreu um erro inesperado.",
+        variant: "destructive",
+      });
     },
   });
 }

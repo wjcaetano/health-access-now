@@ -1,20 +1,44 @@
-import React from "react";
+
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, User, Phone, Mail, MapPin, Edit, Trash2 } from "lucide-react";
-import { useClientes } from "@/hooks/useClientes";
-import { useState } from "react";
+import { useClientes, useDeleteCliente } from "@/hooks/useClientes";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ClientesSkeleton } from "./ClientesSkeleton";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function ListaClientes() {
   const { data: clientes, isLoading, error } = useClientes();
+  const deleteCliente = useDeleteCliente();
   const [searchTerm, setSearchTerm] = useState("");
   const isMobile = useIsMobile();
 
-  if (isLoading) return <div className="p-4">Carregando clientes...</div>;
-  if (error) return <div className="p-4 text-red-600">Erro ao carregar clientes: {error.message}</div>;
+  if (isLoading) return <ClientesSkeleton />;
+  
+  if (error) {
+    return (
+      <Card className="w-full">
+        <CardContent className="p-6">
+          <div className="text-center text-red-600">
+            Erro ao carregar clientes: {error.message}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const clientesFiltrados = clientes?.filter((cliente) =>
     cliente.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -22,6 +46,10 @@ export default function ListaClientes() {
     cliente.telefone.includes(searchTerm) ||
     cliente.email.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
+
+  const handleDeleteCliente = (id: string) => {
+    deleteCliente.mutate(id);
+  };
 
   return (
     <Card className="w-full">
@@ -86,9 +114,30 @@ export default function ListaClientes() {
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="text-red-600 h-8 w-8 p-0">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="text-red-600 h-8 w-8 p-0">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Tem certeza que deseja excluir o cliente {cliente.nome}? Esta ação não pode ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={() => handleDeleteCliente(cliente.id)}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            Excluir
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               </div>
@@ -141,9 +190,30 @@ export default function ListaClientes() {
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="text-red-600 h-8 w-8 p-0">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="text-red-600 h-8 w-8 p-0">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Tem certeza que deseja excluir o cliente {cliente.nome}? Esta ação não pode ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={() => handleDeleteCliente(cliente.id)}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            Excluir
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               </div>
