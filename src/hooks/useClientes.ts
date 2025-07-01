@@ -31,7 +31,7 @@ export function useCreateCliente() {
         description: `${newCliente.nome} foi cadastrado com sucesso.`,
       });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Erro ao cadastrar cliente",
         description: error.message || "Ocorreu um erro inesperado.",
@@ -60,7 +60,7 @@ export function useUpdateCliente() {
         description: `${updatedCliente.nome} foi atualizado com sucesso.`,
       });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Erro ao atualizar cliente",
         description: error.message || "Ocorreu um erro inesperado.",
@@ -88,7 +88,7 @@ export function useDeleteCliente() {
         description: "Cliente foi removido com sucesso.",
       });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Erro ao remover cliente",
         description: error.message || "Ocorreu um erro inesperado.",

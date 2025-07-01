@@ -28,7 +28,7 @@ export function useCreatePrestador() {
         description: `${newPrestador.nome} foi cadastrado com sucesso.`,
       });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Erro ao cadastrar prestador",
         description: error.message || "Ocorreu um erro inesperado.",
@@ -55,7 +55,7 @@ export function useUpdatePrestador() {
         description: `${updatedPrestador.nome} foi atualizado com sucesso.`,
       });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Erro ao atualizar prestador",
         description: error.message || "Ocorreu um erro inesperado.",
@@ -81,7 +81,7 @@ export function useDeletePrestador() {
         description: "Prestador foi removido com sucesso.",
       });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Erro ao remover prestador",
         description: error.message || "Ocorreu um erro inesperado.",
