@@ -1,9 +1,11 @@
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { PasswordChangeGuard } from "@/components/auth/PasswordChangeGuard";
+import { PasswordRecoveryHandler } from "@/components/auth/PasswordRecoveryHandler";
 import Layout from "@/components/layout/Layout";
 
 // Pages
@@ -60,6 +62,7 @@ function App() {
             <Route path="/" element={<PaginaDeVendas />} />
             <Route path="/login" element={<Login />} />
             <Route path="/troca-senha-obrigatoria" element={<TrocaSenhaObrigatoria />} />
+            <Route path="/recovery" element={<PasswordRecoveryHandler />} />
             <Route path="/portal-parceiro" element={<PortalParceiro />} />
             <Route path="/seja-franqueado" element={<SejaFranqueado />} />
             

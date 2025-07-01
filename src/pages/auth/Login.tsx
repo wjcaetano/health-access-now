@@ -98,7 +98,7 @@ export default function Login() {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: `${window.location.origin}/troca-senha-obrigatoria`,
+        redirectTo: `${window.location.origin}/recovery`,
       });
 
       if (error) {

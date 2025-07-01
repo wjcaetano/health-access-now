@@ -14,10 +14,8 @@ export default function TrocaSenhaObrigatoria() {
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  const [senhaAtual, setSenhaAtual] = useState("");
   const [novaSenha, setNovaSenha] = useState("");
   const [confirmaSenha, setConfirmaSenha] = useState("");
-  const [mostrarSenhaAtual, setMostrarSenhaAtual] = useState(false);
   const [mostrarNovaSenha, setMostrarNovaSenha] = useState(false);
   const [mostrarConfirmaSenha, setMostrarConfirmaSenha] = useState(false);
   const [carregando, setCarregando] = useState(false);
@@ -39,15 +37,6 @@ export default function TrocaSenhaObrigatoria() {
       toast({
         title: "Erro de validação",
         description: "Por favor, verifique se todos os requisitos da senha foram atendidos",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (novaSenha === senhaAtual) {
-      toast({
-        title: "Erro",
-        description: "A nova senha deve ser diferente da senha atual",
         variant: "destructive",
       });
       return;
@@ -99,38 +88,14 @@ export default function TrocaSenhaObrigatoria() {
           <div className="mx-auto mb-4 p-3 bg-orange-100 rounded-full w-fit">
             <Lock className="h-8 w-8 text-orange-600" />
           </div>
-          <CardTitle className="text-2xl font-bold">Troca de Senha Obrigatória</CardTitle>
+          <CardTitle className="text-2xl font-bold">Defina sua Nova Senha</CardTitle>
           <p className="text-gray-600 mt-2">
-            Por motivos de segurança, você deve atualizar sua senha provisória antes de continuar.
+            Digite sua nova senha para continuar.
           </p>
         </CardHeader>
         
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="senha-atual">Senha Atual (Provisória)</Label>
-              <div className="relative">
-                <Input
-                  id="senha-atual"
-                  type={mostrarSenhaAtual ? "text" : "password"}
-                  value={senhaAtual}
-                  onChange={(e) => setSenhaAtual(e.target.value)}
-                  placeholder="Digite sua senha atual"
-                  required
-                  className="pr-10"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3"
-                  onClick={() => setMostrarSenhaAtual(!mostrarSenhaAtual)}
-                >
-                  {mostrarSenhaAtual ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-              </div>
-            </div>
-
             <div>
               <Label htmlFor="nova-senha">Nova Senha</Label>
               <div className="relative">
@@ -197,14 +162,13 @@ export default function TrocaSenhaObrigatoria() {
               className="w-full" 
               disabled={!todasValidacoesOk || carregando}
             >
-              {carregando ? "Atualizando..." : "Atualizar Senha"}
+              {carregando ? "Atualizando..." : "Definir Nova Senha"}
             </Button>
           </form>
 
           <div className="mt-4 p-3 bg-blue-50 rounded-lg">
             <p className="text-sm text-blue-800">
-              <strong>Importante:</strong> Esta tela é obrigatória por motivos de segurança. 
-              Você só poderá acessar o sistema após atualizar sua senha.
+              <strong>Importante:</strong> Após definir sua nova senha, você será redirecionado para o sistema.
             </p>
           </div>
         </CardContent>
