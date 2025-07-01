@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -9,6 +8,7 @@ import Layout from "@/components/layout/Layout";
 
 // Pages
 import Login from "@/pages/auth/Login";
+import TrocaSenhaObrigatoria from "@/components/auth/TrocaSenhaObrigatoria";
 import Clientes from "@/pages/Clientes";
 import NovoCliente from "@/pages/NovoCliente";
 import Prestadores from "@/pages/Prestadores";
@@ -59,6 +59,7 @@ function App() {
             {/* Public routes */}
             <Route path="/" element={<PaginaDeVendas />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/troca-senha-obrigatoria" element={<TrocaSenhaObrigatoria />} />
             <Route path="/portal-parceiro" element={<PortalParceiro />} />
             <Route path="/seja-franqueado" element={<SejaFranqueado />} />
             
