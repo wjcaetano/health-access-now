@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -15,6 +16,9 @@ export default function Login() {
   const [nome, setNome] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [isResetting, setIsResetting] = useState(false);
   
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -88,6 +92,102 @@ export default function Login() {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsResetting(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/troca-senha-obrigatoria`,
+      });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "Não foi possível enviar o email de recuperação"
+        });
+      } else {
+        toast({
+          title: "Email enviado!",
+          description: "Verifique sua caixa de entrada para instruções de recuperação de senha"
+        });
+        setShowForgotPassword(false);
+        setResetEmail("");
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Ocorreu um erro inesperado"
+      });
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
+  if (showForgotPassword) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-agendaja-primary">
+              AGENDA<span className="text-agendaja-secondary">JA</span>
+            </h1>
+            <p className="text-gray-600 mt-2">Sistema de Agendamento de Saúde</p>
+          </div>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl text-center">
+                Recuperar Senha
+              </CardTitle>
+              <CardDescription className="text-center">
+                Digite seu email para receber as instruções de recuperação
+              </CardDescription>
+            </CardHeader>
+            
+            <form onSubmit={handleForgotPassword}>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="resetEmail">Email</Label>
+                  <Input 
+                    id="resetEmail" 
+                    type="email" 
+                    placeholder="seu.email@empresa.com" 
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    required
+                  />
+                </div>
+              </CardContent>
+              
+              <CardFooter className="flex flex-col space-y-4">
+                <Button 
+                  type="submit" 
+                  className="w-full bg-agendaja-primary hover:bg-agendaja-secondary"
+                  disabled={isResetting}
+                >
+                  {isResetting ? "Enviando..." : "Enviar Email de Recuperação"}
+                </Button>
+                
+                <Button 
+                  type="button"
+                  variant="link" 
+                  className="text-sm"
+                  onClick={() => setShowForgotPassword(false)}
+                  disabled={isResetting}
+                >
+                  Voltar ao login
+                </Button>
+              </CardFooter>
+            </form>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-md">
@@ -143,7 +243,12 @@ export default function Login() {
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Senha</Label>
                   {!isSignUp && (
-                    <Button variant="link" className="px-0 h-auto text-xs">
+                    <Button 
+                      type="button"
+                      variant="link" 
+                      className="px-0 h-auto text-xs"
+                      onClick={() => setShowForgotPassword(true)}
+                    >
                       Esqueceu a senha?
                     </Button>
                   )}
