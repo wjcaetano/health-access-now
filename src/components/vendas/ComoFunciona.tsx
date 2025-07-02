@@ -1,6 +1,8 @@
-
+import { useState } from 'react';
 import { ArrowRight, Search, Calendar, CreditCard, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import SelecaoUnidadeModal from "@/components/vendas/SelecaoUnidadeModal";
 
 const passos = [
   {
@@ -34,6 +36,8 @@ const passos = [
 ];
 
 const ComoFunciona = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+
   return (
     <section id="como-funciona" className="py-20 bg-white">
       <div className="container mx-auto px-4 max-w-7xl">
@@ -87,13 +91,19 @@ const ComoFunciona = () => {
 
         {/* CTA */}
         <div className="text-center">
-          <Button
-            size="lg"
-            className="bg-agendaja-primary hover:bg-agendaja-primary/90 text-white px-8 py-4 text-lg shadow-lg transition-all duration-300 hover:scale-105"
-          >
-            Começar Agora
-            <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
+          <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+            <DialogTrigger asChild>
+              <Button
+                size="lg"
+                className="bg-agendaja-primary hover:bg-agendaja-primary/90 text-white px-8 py-4 text-lg shadow-lg transition-all duration-300 hover:scale-105"
+                onClick={() => setModalOpen(true)}
+              >
+                Agendar Consulta ou Exame
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </DialogTrigger>
+            <SelecaoUnidadeModal tipoServico="Consulta ou Exame" />
+          </Dialog>
         </div>
       </div>
     </section>
