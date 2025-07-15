@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Header from "./Header";
@@ -29,6 +28,10 @@ import Conversas from "@/pages/Conversas";
 import GestaoUsuarios from "@/pages/GestaoUsuarios";
 import MeuPerfil from "@/pages/MeuPerfil";
 import AnaliseDoSistema from "@/pages/AnaliseDoSistema";
+import AdvancedDashboardPage from "@/pages/AdvancedDashboard";
+import ReportsPage from "@/pages/ReportsPage";
+import BackupPage from "@/pages/BackupPage";
+import SystemSettings from "@/pages/SystemSettings";
 
 const Layout: React.FC = () => {
   const { loading, isActive, profile } = useAuth();
@@ -111,6 +114,10 @@ const Layout: React.FC = () => {
                 <Route path="/gestao-usuarios" element={<GestaoUsuarios />} />
                 <Route path="/meu-perfil" element={<MeuPerfil />} />
                 <Route path="/analise-sistema" element={<AnaliseDoSistema />} />
+                <Route path="/dashboard-avancado" element={<AdvancedDashboardPage />} />
+                <Route path="/relatorios" element={<ReportsPage />} />
+                <Route path="/backup" element={<BackupPage />} />
+                <Route path="/configuracoes-sistema" element={<SystemSettings />} />
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </main>
