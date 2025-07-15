@@ -33,12 +33,12 @@ export function MobileSidebar({
       
       {/* Sidebar */}
       <div
-        className="fixed inset-y-0 left-0 z-50 w-80 bg-white shadow-2xl transition-all duration-300 ease-in-out"
+        className="fixed inset-y-0 left-0 z-50 w-full max-w-sm bg-white shadow-2xl transition-all duration-300 ease-in-out overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex h-16 items-center justify-between border-b px-6 bg-gradient-to-r from-agendaja-primary to-agendaja-secondary">
-          <Link to="/" className="font-bold text-xl text-white" onClick={onClose}>
+        <div className="flex h-16 items-center justify-between border-b px-4 bg-gradient-to-r from-agendaja-primary to-agendaja-secondary">
+          <Link to="/" className="font-bold text-lg text-white" onClick={onClose}>
             AGENDA<span className="text-agendaja-light">JA</span>
           </Link>
           <Button
@@ -53,7 +53,7 @@ export function MobileSidebar({
         </div>
         
         {/* Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto max-h-[calc(100vh-8rem)]">
           <SidebarContent 
             menuItems={menuItems} 
             gerenteMenuItems={gerenteMenuItems} 

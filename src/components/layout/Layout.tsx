@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Header from "./Header";
@@ -5,6 +6,7 @@ import Sidebar from "./Sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Pages
 import Index from "@/pages/Index";
@@ -36,6 +38,7 @@ import SystemSettings from "@/pages/SystemSettings";
 const Layout: React.FC = () => {
   const { loading, isActive, profile } = useAuth();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const isMobile = useIsMobile();
   
   // Determine user profile type
   const userProfile = profile?.prestador_id ? "prestador" : "agendaja";
@@ -43,11 +46,11 @@ const Layout: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <div className="grid grid-cols-[250px_1fr] h-screen">
-          <Skeleton className="h-full" />
-          <div className="flex flex-col">
+        <div className={`${isMobile ? 'flex flex-col' : 'grid grid-cols-[250px_1fr]'} h-screen`}>
+          {!isMobile && <Skeleton className="h-full" />}
+          <div className="flex flex-col flex-1">
             <Skeleton className="h-16" />
-            <div className="flex-1 p-6 space-y-4">
+            <div className="flex-1 p-4 space-y-4 overflow-hidden">
               <Skeleton className="h-8 w-64" />
               <Skeleton className="h-32 w-full" />
               <Skeleton className="h-64 w-full" />
@@ -60,8 +63,8 @@ const Layout: React.FC = () => {
 
   if (!isActive) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+        <div className="text-center max-w-md w-full">
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
             Conta Inativa
           </h2>
@@ -76,6 +79,56 @@ const Layout: React.FC = () => {
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
+
+  if (isMobile) {
+    return (
+      <ErrorBoundary>
+        <div className="min-h-screen bg-gray-50 flex flex-col">
+          <Header 
+            title="Dashboard"
+            toggleSidebar={toggleSidebar}
+          />
+          <Sidebar 
+            collapsed={sidebarCollapsed}
+            setCollapsed={setSidebarCollapsed}
+            userProfile={userProfile}
+          />
+          <main className="flex-1 overflow-x-hidden overflow-y-auto">
+            <div className="p-3 pb-20">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/clientes" element={<Clientes />} />
+                <Route path="/clientes/novo" element={<NovoCliente />} />
+                <Route path="/prestadores" element={<Prestadores />} />
+                <Route path="/prestadores/novo" element={<NovoPrestador />} />
+                <Route path="/servicos" element={<Servicos />} />
+                <Route path="/servicos/novo" element={<NovoServico />} />
+                <Route path="/orcamentos" element={<Orcamentos />} />
+                <Route path="/orcamentos/:id" element={<VisualizarOrcamento />} />
+                <Route path="/vendas" element={<Vendas />} />
+                <Route path="/vendas/finalizada" element={<VendaFinalizada />} />
+                <Route path="/agendamentos" element={<Agendamentos />} />
+                <Route path="/agendamentos/novo" element={<NovoAgendamento />} />
+                <Route path="/colaboradores" element={<Colaboradores />} />
+                <Route path="/financeiro" element={<Financeiro />} />
+                <Route path="/agenda-pagamentos" element={<AgendaPagamentos />} />
+                <Route path="/guias" element={<Guias />} />
+                <Route path="/conversas" element={<Conversas />} />
+                <Route path="/gestao-usuarios" element={<GestaoUsuarios />} />
+                <Route path="/meu-perfil" element={<MeuPerfil />} />
+                <Route path="/analise-sistema" element={<AnaliseDoSistema />} />
+                <Route path="/dashboard-avancado" element={<AdvancedDashboardPage />} />
+                <Route path="/relatorios" element={<ReportsPage />} />
+                <Route path="/backup" element={<BackupPage />} />
+                <Route path="/configuracoes-sistema" element={<SystemSettings />} />
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
+            </div>
+          </main>
+        </div>
+      </ErrorBoundary>
+    );
+  }
 
   return (
     <ErrorBoundary>
