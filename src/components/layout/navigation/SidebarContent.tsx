@@ -66,7 +66,7 @@ export function SidebarContent({
                   collapsed ? "" : "mr-3"
                 )}
               >
-                {item.icon}
+                {React.createElement(item.icon)}
               </div>
               {!collapsed && (
                 <span className={cn(

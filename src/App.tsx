@@ -8,7 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Layout from "@/components/layout/Layout";
-import ProtectedRoute from "@/components/shared/ProtectedRoute";
+import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 import Login from "@/pages/auth/Login";
 import Index from "@/pages/Index";
 import Vendas from "@/pages/Vendas";
@@ -78,7 +78,7 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" storageKey="agendaja-theme">
+      <ThemeProvider>
         <AuthProvider>
           <NotificationProvider>
             <Router>

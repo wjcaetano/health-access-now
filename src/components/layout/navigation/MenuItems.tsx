@@ -1,6 +1,5 @@
 
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
 import { 
   Calendar, 
   Users, 
@@ -26,15 +25,136 @@ import {
   Calculator,
   PieChart
 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/contexts/AuthContext";
+
+export interface MenuItem {
+  title: string;
+  icon: React.ElementType;
+  href: string;
+  roles?: string[];
+  isSection?: boolean;
+}
 
 interface MenuItemsProps {
   onItemClick?: () => void;
 }
 
+// Menu items for AGENDAJA units
+export const agendajaMenu: MenuItem[] = [
+  {
+    title: "Dashboard",
+    icon: BarChart3,
+    href: "/dashboard",
+    roles: ["admin", "gerente", "colaborador"]
+  },
+  {
+    title: "Vendas",
+    icon: DollarSign,
+    href: "/vendas",
+    roles: ["admin", "gerente", "colaborador"]
+  },
+  {
+    title: "Agendamentos",
+    icon: Calendar,
+    href: "/agendamentos",
+    roles: ["admin", "gerente", "colaborador"]
+  },
+  {
+    title: "Orçamentos",
+    icon: FileText,
+    href: "/orcamentos",
+    roles: ["admin", "gerente", "colaborador"]
+  },
+  {
+    title: "Clientes",
+    icon: Users,
+    href: "/clientes",
+    roles: ["admin", "gerente", "colaborador"]
+  },
+  {
+    title: "Prestadores",
+    icon: Stethoscope,
+    href: "/prestadores",
+    roles: ["admin", "gerente", "colaborador"]
+  },
+  {
+    title: "Serviços",
+    icon: Package,
+    href: "/servicos",
+    roles: ["admin", "gerente", "colaborador"]
+  },
+  {
+    title: "Conversas",
+    icon: MessageSquare,
+    href: "/conversas",
+    roles: ["admin", "gerente", "colaborador"]
+  },
+  {
+    title: "Guias",
+    icon: ClipboardList,
+    href: "/guias",
+    roles: ["admin", "gerente", "colaborador"]
+  }
+];
+
+// Menu items for managers
+export const gerenteMenu: MenuItem[] = [
+  {
+    title: "Financeiro",
+    icon: CreditCard,
+    href: "/financeiro",
+    roles: ["admin", "gerente"]
+  },
+  {
+    title: "Colaboradores",
+    icon: Users,
+    href: "/colaboradores",
+    roles: ["admin", "gerente"]
+  },
+  {
+    title: "Relatórios",
+    icon: BarChart3,
+    href: "/relatorios",
+    roles: ["admin", "gerente"]
+  },
+  {
+    title: "Usuários",
+    icon: UserPlus,
+    href: "/usuarios",
+    roles: ["admin"]
+  },
+  {
+    title: "Configurações",
+    icon: Settings,
+    href: "/configuracoes",
+    roles: ["admin"]
+  }
+];
+
+// Menu items for prestadores
+export const prestadorMenu: MenuItem[] = [
+  {
+    title: "Portal",
+    icon: BarChart3,
+    href: "/prestador/portal",
+    roles: ["prestador"]
+  },
+  {
+    title: "Guias",
+    icon: ClipboardList,
+    href: "/prestador/guias",
+    roles: ["prestador"]
+  },
+  {
+    title: "Faturamento",
+    icon: DollarSign,
+    href: "/prestador/faturamento",
+    roles: ["prestador"]
+  }
+];
+
 const MenuItems: React.FC<MenuItemsProps> = ({ onItemClick }) => {
-  const location = useLocation();
-  const { user } = useAuth();
+  const { profile } = useAuth();
   
   const isActive = (path: string) => location.pathname === path;
   
@@ -48,7 +168,7 @@ const MenuItems: React.FC<MenuItemsProps> = ({ onItemClick }) => {
     },
     
     // Seção Franqueadora (apenas para admins)
-    ...(user?.nivel_acesso === "admin" ? [
+    ...(profile?.nivel_acesso === "admin" ? [
       {
         title: "Franqueadora",
         icon: Crown,
@@ -213,7 +333,7 @@ const MenuItems: React.FC<MenuItemsProps> = ({ onItemClick }) => {
   ];
 
   const filteredItems = menuItems.filter(item => 
-    !item.roles || item.roles.includes(user?.nivel_acesso || "")
+    !item.roles || item.roles.includes(profile?.nivel_acesso || "")
   );
 
   return (
