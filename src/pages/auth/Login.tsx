@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -17,8 +17,7 @@ export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [resetEmail, setResetEmail] = useState("");
-  const [isResetting, setIsResetting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -92,97 +91,18 @@ export default function Login() {
     }
   };
 
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsResetting(true);
-
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: `${window.location.origin}/recovery`,
-      });
-
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Erro",
-          description: "Não foi possível enviar o email de recuperação"
-        });
-      } else {
-        toast({
-          title: "Email enviado!",
-          description: "Verifique sua caixa de entrada para instruções de recuperação de senha"
-        });
-        setShowForgotPassword(false);
-        setResetEmail("");
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Ocorreu um erro inesperado"
-      });
-    } finally {
-      setIsResetting(false);
-    }
-  };
-
   if (showForgotPassword) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
+        <div className="w-full max-w-md space-y-6">
+          <div className="text-center">
             <h1 className="text-4xl font-bold text-agendaja-primary">
               AGENDA<span className="text-agendaja-secondary">JA</span>
             </h1>
             <p className="text-gray-600 mt-2">Sistema de Agendamento de Saúde</p>
           </div>
           
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl text-center">
-                Recuperar Senha
-              </CardTitle>
-              <CardDescription className="text-center">
-                Digite seu email para receber as instruções de recuperação
-              </CardDescription>
-            </CardHeader>
-            
-            <form onSubmit={handleForgotPassword}>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="resetEmail">Email</Label>
-                  <Input 
-                    id="resetEmail" 
-                    type="email" 
-                    placeholder="seu.email@empresa.com" 
-                    value={resetEmail}
-                    onChange={(e) => setResetEmail(e.target.value)}
-                    required
-                  />
-                </div>
-              </CardContent>
-              
-              <CardFooter className="flex flex-col space-y-4">
-                <Button 
-                  type="submit" 
-                  className="w-full bg-agendaja-primary hover:bg-agendaja-secondary"
-                  disabled={isResetting}
-                >
-                  {isResetting ? "Enviando..." : "Enviar Email de Recuperação"}
-                </Button>
-                
-                <Button 
-                  type="button"
-                  variant="link" 
-                  className="text-sm"
-                  onClick={() => setShowForgotPassword(false)}
-                  disabled={isResetting}
-                >
-                  Voltar ao login
-                </Button>
-              </CardFooter>
-            </form>
-          </Card>
+          <ForgotPasswordForm onBackToLogin={() => setShowForgotPassword(false)} />
         </div>
       </div>
     );
@@ -190,8 +110,8 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
+      <div className="w-full max-w-md space-y-6">
+        <div className="text-center">
           <h1 className="text-4xl font-bold text-agendaja-primary">
             AGENDA<span className="text-agendaja-secondary">JA</span>
           </h1>
@@ -223,6 +143,7 @@ export default function Login() {
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
                     required={isSignUp}
+                    disabled={isLoading}
                   />
                 </div>
               )}
@@ -236,6 +157,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={isLoading}
                 />
               </div>
               
@@ -246,21 +168,36 @@ export default function Login() {
                     <Button 
                       type="button"
                       variant="link" 
-                      className="px-0 h-auto text-xs"
+                      className="px-0 h-auto text-xs text-agendaja-primary hover:text-agendaja-secondary"
                       onClick={() => setShowForgotPassword(true)}
+                      disabled={isLoading}
                     >
                       Esqueceu a senha?
                     </Button>
                   )}
                 </div>
-                <Input 
-                  id="password" 
-                  type="password" 
-                  placeholder="••••••••" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+                <div className="relative">
+                  <Input 
+                    id="password" 
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    disabled={isLoading}
+                    className="pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3"
+                    onClick={() => setShowPassword(!showPassword)}
+                    disabled={isLoading}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
                 {isSignUp && (
                   <p className="text-xs text-gray-500">Mínimo 6 caracteres</p>
                 )}
@@ -273,6 +210,7 @@ export default function Login() {
                 className="w-full bg-agendaja-primary hover:bg-agendaja-secondary"
                 disabled={isLoading}
               >
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isLoading ? "Processando..." : (isSignUp ? "Criar Conta" : "Entrar")}
               </Button>
               
