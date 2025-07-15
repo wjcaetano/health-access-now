@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -62,6 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
 
+  // Verificar se é senha provisória
   const requiresPasswordChange = user?.user_metadata?.senha_provisoria === true;
 
   const fetchUserProfile = useCallback(async (userId: string) => {
@@ -114,6 +114,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setUser(session?.user ?? null);
             
             if (session?.user) {
+              // Verificar se precisa trocar senha
+              const senhaProvisoria = session.user.user_metadata?.senha_provisoria;
+              if (senhaProvisoria) {
+                console.log('Usuário com senha provisória detectado');
+              }
+              
               // Defer profile fetching to prevent deadlocks
               setTimeout(() => {
                 if (mounted) {
@@ -250,7 +256,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { error } = await supabase.auth.updateUser({
         password: newPassword,
         data: {
-          senha_provisoria: false
+          senha_provisoria: false,
+          senha_alterada_em: new Date().toISOString()
         }
       });
       
@@ -261,7 +268,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           ...user,
           user_metadata: {
             ...user.user_metadata,
-            senha_provisoria: false
+            senha_provisoria: false,
+            senha_alterada_em: new Date().toISOString()
           }
         });
       }

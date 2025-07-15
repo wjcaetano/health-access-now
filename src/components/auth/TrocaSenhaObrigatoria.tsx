@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Lock, Eye, EyeOff, Check, X, Shield, Loader2 } from "lucide-react";
+import { Lock, Eye, EyeOff, Check, X, Shield, Loader2, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function TrocaSenhaObrigatoria() {
@@ -21,6 +21,10 @@ export default function TrocaSenhaObrigatoria() {
   const [mostrarConfirmaSenha, setMostrarConfirmaSenha] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [senhaFoco, setSenhaFoco] = useState(false);
+
+  // Verificar se é um reset de senha por admin
+  const isPasswordReset = user?.user_metadata?.senha_resetada_em;
+  const resetDate = isPasswordReset ? new Date(user.user_metadata.senha_resetada_em) : null;
 
   // Validações da nova senha com pontuação
   const validacoes = {
@@ -155,10 +159,26 @@ export default function TrocaSenhaObrigatoria() {
             <div className="mx-auto mb-4 p-3 bg-orange-100 rounded-full w-fit">
               <Shield className="h-8 w-8 text-orange-600" />
             </div>
-            <CardTitle className="text-2xl font-bold">Defina sua Nova Senha</CardTitle>
+            <CardTitle className="text-2xl font-bold">
+              {isPasswordReset ? "Alterar Senha Resetada" : "Defina sua Nova Senha"}
+            </CardTitle>
             <p className="text-gray-600 mt-2">
-              Por segurança, você precisa definir uma nova senha para continuar.
+              {isPasswordReset 
+                ? "Sua senha foi resetada por um administrador. Por segurança, defina uma nova senha."
+                : "Por segurança, você precisa definir uma nova senha para continuar."
+              }
             </p>
+            
+            {isPasswordReset && resetDate && (
+              <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                <div className="flex items-center gap-2 text-blue-700">
+                  <AlertCircle className="h-4 w-4" />
+                  <span className="text-sm">
+                    Reset realizado em {resetDate.toLocaleString('pt-BR')}
+                  </span>
+                </div>
+              </div>
+            )}
           </CardHeader>
           
           <CardContent>
@@ -261,7 +281,7 @@ export default function TrocaSenhaObrigatoria() {
                 disabled={!todasValidacoesObrigatorias || !senhasIguais || carregando}
               >
                 {carregando && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Definir Nova Senha
+                {isPasswordReset ? "Alterar Senha" : "Definir Nova Senha"}
               </Button>
             </form>
 
