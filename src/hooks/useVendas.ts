@@ -1,8 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables, TablesInsert } from "@/integrations/supabase/types";
-import { GuiasService } from "@/services/guiasService";
-import { useEstornarGuia } from "@/hooks/useGuias";
 
 type Venda = Tables<"vendas">;
 type NovaVenda = TablesInsert<"vendas">;
@@ -17,66 +15,8 @@ type CreateVendaResponse = {
   erro_guias?: string;
 };
 
-export function useVendas() {
-  return useQuery({
-    queryKey: ["vendas"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("vendas")
-        .select(`
-          *,
-          clientes (
-            id,
-            nome,
-            cpf
-          ),
-          vendas_servicos (
-            *,
-            servicos (
-              nome,
-              categoria
-            ),
-            prestadores (
-              nome
-            )
-          )
-        `)
-        .order("created_at", { ascending: false });
-      
-      if (error) throw error;
-      return data;
-    },
-  });
-}
-
-export function useVendasPorCliente(clienteId: string) {
-  return useQuery({
-    queryKey: ["vendas", "cliente", clienteId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("vendas")
-        .select(`
-          *,
-          vendas_servicos (
-            *,
-            servicos (
-              nome,
-              categoria
-            ),
-            prestadores (
-              nome
-            )
-          )
-        `)
-        .eq("cliente_id", clienteId)
-        .order("created_at", { ascending: false });
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!clienteId,
-  });
-}
+export { useVendas, useVendasPorCliente } from "./vendas/useVendaQueries";
+export { useCancelarVenda, useEstornarVenda } from "./vendas/useVendaActions";
 
 export function useCreateVenda() {
   const queryClient = useQueryClient();
@@ -211,124 +151,6 @@ export function useCreateVenda() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vendas"] });
       queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
-      queryClient.invalidateQueries({ queryKey: ["guias"] });
-    },
-  });
-}
-
-export function useCancelarVenda() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async (vendaId: string) => {
-      console.log('Cancelando venda:', vendaId);
-      
-      // Primeiro buscar as guias relacionadas à venda
-      const { data: guiasRelacionadas, error: guiasError } = await supabase
-        .from("guias")
-        .select("id, status")
-        .eq("agendamento_id", vendaId);
-      
-      if (guiasError) {
-        console.error('Erro ao buscar guias da venda:', guiasError);
-        throw guiasError;
-      }
-
-      let guiasCanceladas = 0;
-
-      // Cancelar todas as guias relacionadas que podem ser canceladas
-      if (guiasRelacionadas && guiasRelacionadas.length > 0) {
-        console.log('Cancelando guias relacionadas:', guiasRelacionadas);
-        
-        for (const guia of guiasRelacionadas) {
-          if (['emitida', 'realizada', 'faturada'].includes(guia.status)) {
-            try {
-              await GuiasService.cancelarGuiaIndividual(guia.id);
-              guiasCanceladas++;
-            } catch (error) {
-              console.error(`Erro ao cancelar guia ${guia.id}:`, error);
-              // Continua com as outras guias mesmo se uma falhar
-            }
-          }
-        }
-      }
-
-      // Atualizar o status da venda
-      const { data, error } = await supabase
-        .from("vendas")
-        .update({ status: 'cancelada' })
-        .eq("id", vendaId)
-        .select()
-        .single();
-      
-      if (error) {
-        console.error('Erro ao cancelar venda:', error);
-        throw error;
-      }
-      
-      console.log(`Venda cancelada com sucesso. ${guiasCanceladas} guias foram canceladas.`);
-      return { venda: data, guiasCanceladas, totalGuias: guiasRelacionadas?.length || 0 };
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["vendas"] });
-      queryClient.invalidateQueries({ queryKey: ["guias"] });
-    },
-  });
-}
-
-export function useEstornarVenda() {
-  const queryClient = useQueryClient();
-  const { mutate: estornarGuia } = useEstornarGuia();
-  
-  return useMutation({
-    mutationFn: async (vendaId: string) => {
-      console.log('Estornando venda:', vendaId);
-      
-      // Primeiro buscar as guias relacionadas à venda
-      const { data: guiasRelacionadas, error: guiasError } = await supabase
-        .from("guias")
-        .select("id, status")
-        .eq("agendamento_id", vendaId);
-      
-      if (guiasError) {
-        console.error('Erro ao buscar guias da venda:', guiasError);
-        throw guiasError;
-      }
-
-      // Estornar todas as guias relacionadas que podem ser estornadas
-      if (guiasRelacionadas && guiasRelacionadas.length > 0) {
-        console.log('Estornando guias relacionadas:', guiasRelacionadas);
-        
-        for (const guia of guiasRelacionadas) {
-          if (guia.status === 'paga') {
-            try {
-              await estornarGuia({ guiaId: guia.id, userType: 'unidade' });
-            } catch (error) {
-              console.error(`Erro ao estornar guia ${guia.id}:`, error);
-              // Continua com as outras guias mesmo se uma falhar
-            }
-          }
-        }
-      }
-
-      // Atualizar o status da venda
-      const { data, error } = await supabase
-        .from("vendas")
-        .update({ status: 'estornada' })
-        .eq("id", vendaId)
-        .select()
-        .single();
-      
-      if (error) {
-        console.error('Erro ao estornar venda:', error);
-        throw error;
-      }
-      
-      console.log('Venda estornada com sucesso:', data);
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["vendas"] });
       queryClient.invalidateQueries({ queryKey: ["guias"] });
     },
   });

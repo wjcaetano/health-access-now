@@ -6,6 +6,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { PasswordChangeGuard } from "@/components/auth/PasswordChangeGuard";
 import { PasswordRecoveryHandler } from "@/components/auth/PasswordRecoveryHandler";
+import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import Layout from "@/components/layout/Layout";
 
 // Pages
@@ -50,63 +51,72 @@ import GuiasPrestador from "@/pages/prestador/Guias";
 
 import "./App.css";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 1,
+    },
+  },
+});
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Router>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<PaginaDeVendas />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/troca-senha-obrigatoria" element={<TrocaSenhaObrigatoria />} />
-            <Route path="/recovery" element={<PasswordRecoveryHandler />} />
-            <Route path="/portal-parceiro" element={<PortalParceiro />} />
-            <Route path="/seja-franqueado" element={<SejaFranqueado />} />
-            
-            {/* Service pages */}
-            <Route path="/servicos/consultas-medicas" element={<ConsultasMedicas />} />
-            <Route path="/servicos/exames-laboratoriais" element={<ExamesLaboratoriais />} />
-            <Route path="/servicos/exames-de-imagem" element={<ExamesDeImagem />} />
-            <Route path="/servicos/outros-exames" element={<OutrosExames />} />
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Router>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<PaginaDeVendas />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/troca-senha-obrigatoria" element={<TrocaSenhaObrigatoria />} />
+              <Route path="/recovery" element={<PasswordRecoveryHandler />} />
+              <Route path="/portal-parceiro" element={<PortalParceiro />} />
+              <Route path="/seja-franqueado" element={<SejaFranqueado />} />
+              
+              {/* Service pages */}
+              <Route path="/servicos/consultas-medicas" element={<ConsultasMedicas />} />
+              <Route path="/servicos/exames-laboratoriais" element={<ExamesLaboratoriais />} />
+              <Route path="/servicos/exames-de-imagem" element={<ExamesDeImagem />} />
+              <Route path="/servicos/outros-exames" element={<OutrosExames />} />
 
-            {/* Protected routes */}
-            <Route
-              path="/dashboard/*"
-              element={
-                <ProtectedRoute>
-                  <PasswordChangeGuard>
-                    <Layout />
-                  </PasswordChangeGuard>
-                </ProtectedRoute>
-              }
-            />
-            
-            {/* Prestador protected routes */}
-            <Route
-              path="/prestador/*"
-              element={
-                <ProtectedRoute>
-                  <PasswordChangeGuard>
-                    <Routes>
-                      <Route path="/" element={<Portal />} />
-                      <Route path="/faturamento" element={<Faturamento />} />
-                      <Route path="/guias" element={<GuiasPrestador />} />
-                    </Routes>
-                  </PasswordChangeGuard>
-                </ProtectedRoute>
-              }
-            />
+              {/* Protected routes */}
+              <Route
+                path="/dashboard/*"
+                element={
+                  <ProtectedRoute>
+                    <PasswordChangeGuard>
+                      <Layout />
+                    </PasswordChangeGuard>
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* Prestador protected routes */}
+              <Route
+                path="/prestador/*"
+                element={
+                  <ProtectedRoute>
+                    <PasswordChangeGuard>
+                      <Routes>
+                        <Route path="/" element={<Portal />} />
+                        <Route path="/faturamento" element={<Faturamento />} />
+                        <Route path="/guias" element={<GuiasPrestador />} />
+                      </Routes>
+                    </PasswordChangeGuard>
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* 404 catch-all */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Router>
-        <Toaster />
-      </AuthProvider>
-    </QueryClientProvider>
+              {/* 404 catch-all */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Router>
+          <Toaster />
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
