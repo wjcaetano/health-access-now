@@ -17,6 +17,30 @@ export interface BackupStatus {
   error?: string;
 }
 
+// Definir as tabelas válidas baseadas no schema do Supabase
+const VALID_TABLES = [
+  'clientes',
+  'prestadores',
+  'servicos',
+  'agendamentos',
+  'vendas',
+  'orcamentos',
+  'guias',
+  'mensagens',
+  'colaboradores',
+  'notifications',
+  'vendas_servicos',
+  'contas_pagar',
+  'contas_receber',
+  'agenda_pagamentos',
+  'ponto_eletronico',
+  'profiles',
+  'servico_prestadores',
+  'user_audit_log'
+] as const;
+
+type ValidTable = typeof VALID_TABLES[number];
+
 export function useBackup() {
   const [status, setStatus] = useState<BackupStatus>({
     isBackingUp: false,
@@ -28,12 +52,16 @@ export function useBackup() {
     setStatus({ isBackingUp: true, progress: 0 });
 
     try {
-      const totalTables = config.tables.length;
+      const validTables = config.tables.filter(table => 
+        VALID_TABLES.includes(table as ValidTable)
+      ) as ValidTable[];
+
+      const totalTables = validTables.length;
       let completedTables = 0;
 
       const backupData: Record<string, any[]> = {};
 
-      for (const table of config.tables) {
+      for (const table of validTables) {
         setStatus(prev => ({ 
           ...prev, 
           currentTable: table,
@@ -91,7 +119,12 @@ export function useBackup() {
 
   const exportData = async (tableName: string, filters?: Record<string, any>) => {
     try {
-      let query = supabase.from(tableName).select('*');
+      if (!VALID_TABLES.includes(tableName as ValidTable)) {
+        throw new Error(`Table ${tableName} is not valid for export`);
+      }
+
+      const validTable = tableName as ValidTable;
+      let query = supabase.from(validTable).select('*');
 
       // Apply filters if provided
       if (filters) {

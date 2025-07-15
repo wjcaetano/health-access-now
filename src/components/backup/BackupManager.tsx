@@ -102,7 +102,13 @@ export default function BackupManager() {
                   <Checkbox
                     id={table.id}
                     checked={selectedTables.includes(table.id)}
-                    onCheckedChange={() => handleTableToggle(table.id)}
+                    onCheckedChange={(checked) => {
+                      if (checked === true) {
+                        setSelectedTables(prev => [...prev, table.id]);
+                      } else {
+                        setSelectedTables(prev => prev.filter(id => id !== table.id));
+                      }
+                    }}
                   />
                   <label 
                     htmlFor={table.id} 
@@ -110,7 +116,7 @@ export default function BackupManager() {
                   >
                     {table.label}
                     {table.essential && (
-                      <Shield className="h-3 w-3 text-orange-500" title="Essencial" />
+                      <Shield className="h-3 w-3 text-orange-500" />
                     )}
                   </label>
                 </div>
@@ -121,7 +127,7 @@ export default function BackupManager() {
               <Checkbox
                 id="include-files"
                 checked={includeFiles}
-                onCheckedChange={setIncludeFiles}
+                onCheckedChange={(checked) => setIncludeFiles(checked === true)}
               />
               <label htmlFor="include-files" className="text-sm">
                 Incluir arquivos anexos

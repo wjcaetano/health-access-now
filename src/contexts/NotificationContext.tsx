@@ -47,13 +47,24 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         },
         (payload) => {
           const newNotification = payload.new as any;
-          setNotifications(prev => [newNotification, ...prev]);
+          const notification: Notification = {
+            id: newNotification.id,
+            title: newNotification.title,
+            message: newNotification.message,
+            type: ['info', 'success', 'warning', 'error'].includes(newNotification.type) 
+              ? newNotification.type as 'info' | 'success' | 'warning' | 'error'
+              : 'info',
+            read: !!newNotification.read_at,
+            created_at: newNotification.created_at
+          };
+          
+          setNotifications(prev => [notification, ...prev]);
           
           // Show toast for new notification
           toast({
-            title: newNotification.title,
-            description: newNotification.message,
-            variant: newNotification.type === 'error' ? 'destructive' : 'default'
+            title: notification.title,
+            description: notification.message,
+            variant: notification.type === 'error' ? 'destructive' : 'default'
           });
         }
       )
@@ -83,7 +94,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       id: n.id,
       title: n.title,
       message: n.message,
-      type: n.type,
+      type: ['info', 'success', 'warning', 'error'].includes(n.type) 
+        ? n.type as 'info' | 'success' | 'warning' | 'error'
+        : 'info',
       read: !!n.read_at,
       created_at: n.created_at
     })));
