@@ -1,5 +1,5 @@
 
-import { useAuth as useAuthContext } from '@/contexts/AuthContext';
+// Arquivo mantido apenas para compatibilidade
+import { useAuth as useAuthFromContext } from '@/contexts/AuthContext';
 
-// Re-export the hook for backward compatibility
-export const useAuth = useAuthContext;
+export const useAuth = useAuthFromContext;
