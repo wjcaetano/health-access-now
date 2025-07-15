@@ -13,10 +13,10 @@ export interface RoyaltyData {
   valor_marketing: number;
   valor_total: number;
   data_vencimento: string;
-  data_pagamento?: string;
-  status: 'pendente' | 'pago' | 'atrasado' | 'isento';
-  observacoes?: string;
-  created_at: string;
+  data_pagamento?: string | null;
+  status: string; // Changed from union type to string
+  observacoes?: string | null;
+  created_at: string | null; // Changed to match database type
   franquia?: {
     nome_fantasia: string;
     razao_social: string;

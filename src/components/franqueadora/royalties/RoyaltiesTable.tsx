@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calendar, DollarSign, AlertTriangle, CheckCircle, Clock, Mail, Phone } from "lucide-react";
+import { Calendar, DollarSign, AlertTriangle, CheckCircle, Clock, Mail } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -23,9 +23,9 @@ interface RoyaltyData {
   valor_marketing: number;
   valor_total: number;
   data_vencimento: string;
-  data_pagamento?: string;
-  status: 'pendente' | 'pago' | 'atrasado' | 'isento';
-  observacoes?: string;
+  data_pagamento?: string | null;
+  status: string; // Changed from union type to string
+  observacoes?: string | null;
 }
 
 interface RoyaltiesTableProps {
