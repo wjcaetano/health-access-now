@@ -123,8 +123,13 @@ export function useBackup() {
         throw new Error(`Table ${tableName} is not valid for export`);
       }
 
-      const validTable = tableName as ValidTable;
-      let query = supabase.from(validTable).select('*');
+      // Use a more explicit approach to avoid type issues
+      let query;
+      try {
+        query = (supabase as any).from(tableName).select('*');
+      } catch (err) {
+        throw new Error(`Failed to create query for table ${tableName}`);
+      }
 
       // Apply filters if provided
       if (filters) {
@@ -144,7 +149,7 @@ export function useBackup() {
         const headers = Object.keys(data[0]);
         const csvContent = [
           headers.join(','),
-          ...data.map(row => 
+          ...data.map((row: any) => 
             headers.map(header => {
               const value = row[header];
               if (typeof value === 'string' && value.includes(',')) {
