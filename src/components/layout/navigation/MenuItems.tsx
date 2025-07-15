@@ -1,5 +1,6 @@
 
 import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import { 
   Calendar, 
   Users, 
@@ -155,6 +156,7 @@ export const prestadorMenu: MenuItem[] = [
 
 const MenuItems: React.FC<MenuItemsProps> = ({ onItemClick }) => {
   const { profile } = useAuth();
+  const location = useLocation();
   
   const isActive = (path: string) => location.pathname === path;
   
