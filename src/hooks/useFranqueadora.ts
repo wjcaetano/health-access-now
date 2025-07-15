@@ -53,18 +53,18 @@ export interface LeadFranqueado {
   nome: string;
   email: string;
   telefone: string;
-  cidade_interesse?: string;
-  estado_interesse?: string;
-  capital_disponivel?: number;
-  experiencia_empresarial?: string;
-  origem?: 'site' | 'facebook' | 'google' | 'indicacao' | 'feira' | 'outros';
-  status: 'novo' | 'contatado' | 'qualificado' | 'apresentacao' | 'proposta' | 'aprovado' | 'rejeitado' | 'perdido';
-  score: number;
-  data_primeiro_contato?: string;
-  responsavel_id?: string;
-  observacoes?: string;
-  created_at?: string;
-  updated_at?: string;
+  cidade_interesse?: string | null;
+  estado_interesse?: string | null;
+  capital_disponivel?: number | null;
+  experiencia_empresarial?: string | null;
+  origem?: string | null; // Changed from union type to string | null to match database
+  status: string; // Changed from union type to string to match database
+  score: number | null;
+  data_primeiro_contato?: string | null;
+  responsavel_id?: string | null;
+  observacoes?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 export interface Royalty {
