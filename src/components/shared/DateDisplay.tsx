@@ -15,7 +15,7 @@ export const DateDisplay: React.FC<DateDisplayProps> = ({
 }) => {
   return (
     <span className={className}>
-      {formatDate(date, format)}
+      {formatDate(date)}
     </span>
   );
 };

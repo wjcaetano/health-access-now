@@ -1,9 +1,9 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/contexts/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 
@@ -31,7 +31,11 @@ import MeuPerfil from "@/pages/MeuPerfil";
 import AnaliseDoSistema from "@/pages/AnaliseDoSistema";
 
 const Layout: React.FC = () => {
-  const { loading, isActive } = useAuth();
+  const { loading, isActive, profile } = useAuth();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
+  // Determine user profile type
+  const userProfile = profile?.prestador_id ? "prestador" : "agendaja";
 
   if (loading) {
     return (
@@ -66,13 +70,24 @@ const Layout: React.FC = () => {
     );
   }
 
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-50">
         <div className="grid grid-cols-[250px_1fr] h-screen">
-          <Sidebar />
+          <Sidebar 
+            collapsed={sidebarCollapsed}
+            setCollapsed={setSidebarCollapsed}
+            userProfile={userProfile}
+          />
           <div className="flex flex-col overflow-hidden">
-            <Header />
+            <Header 
+              title="Dashboard"
+              toggleSidebar={toggleSidebar}
+            />
             <main className="flex-1 overflow-y-auto p-6">
               <Routes>
                 <Route path="/" element={<Index />} />
