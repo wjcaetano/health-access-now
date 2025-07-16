@@ -44,6 +44,7 @@ export interface Franqueado {
   updated_at?: string;
 }
 
+// Fixed LeadFranqueado to match database schema exactly
 export interface LeadFranqueado {
   id: string;
   nome: string;
@@ -54,7 +55,7 @@ export interface LeadFranqueado {
   capital_disponivel?: number | null;
   experiencia_empresarial?: string | null;
   origem?: string | null;
-  status: 'novo' | 'contatado' | 'qualificado' | 'proposta' | 'negociacao' | 'aprovado' | 'perdido';
+  status: string; // Changed from union type to string to match database
   score: number | null;
   data_primeiro_contato?: string | null;
   responsavel_id?: string | null;

@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+// Use the database table type directly
 export interface LeadFranqueado {
   id: string;
   nome: string;
@@ -13,7 +14,7 @@ export interface LeadFranqueado {
   capital_disponivel?: number | null;
   experiencia_empresarial?: string | null;
   origem?: string | null;
-  status: string;
+  status: string; // Database stores as text, not enum
   score: number | null;
   data_primeiro_contato?: string | null;
   responsavel_id?: string | null;
@@ -32,7 +33,7 @@ export const useLeadsFranqueados = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as LeadFranqueado[];
     },
   });
 };

@@ -15,6 +15,21 @@ export interface MenuItem {
   roles?: string[];
 }
 
+// Define section type separately
+interface MenuSection {
+  title: string;
+  items: MenuItem[];
+  isSection: true;
+}
+
+interface StandaloneItem {
+  title: string;
+  icon: React.ElementType;
+  path: string;
+  roles: string[];
+  isStandalone: true;
+}
+
 // Export menu arrays for Sidebar.tsx
 export const agendajaMenu: MenuItem[] = [
   {
@@ -51,8 +66,8 @@ const MenuItems: React.FC<MenuItemsProps> = ({ onItemClick }) => {
   
   const isActive = (path: string) => location.pathname === path;
   
-  const getMenuSections = () => {
-    const sections = [
+  const getMenuSections = (): (StandaloneItem | MenuSection)[] => {
+    const sections: (StandaloneItem | MenuSection)[] = [
       {
         title: "Dashboard",
         icon: BarChart3,
@@ -104,32 +119,34 @@ const MenuItems: React.FC<MenuItemsProps> = ({ onItemClick }) => {
     <nav className="space-y-1">
       {menuSections.map((section, index) => {
         if (section.isStandalone) {
+          const standaloneSection = section as StandaloneItem;
           return (
             <Link
               key={index}
-              to={section.path}
+              to={standaloneSection.path}
               onClick={onItemClick}
               className={`
                 flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
-                ${isActive(section.path) 
+                ${isActive(standaloneSection.path) 
                   ? 'bg-primary text-primary-foreground' 
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }
               `}
             >
-              <section.icon className="mr-3 h-4 w-4" />
-              {section.title}
+              <standaloneSection.icon className="mr-3 h-4 w-4" />
+              {standaloneSection.title}
             </Link>
           );
         }
 
-        if ('isSection' in section && section.items) {
+        if (section.isSection) {
+          const menuSection = section as MenuSection;
           return (
             <div key={index} className="pt-4 first:pt-0">
               <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                {section.title}
+                {menuSection.title}
               </h3>
-              {section.items
+              {menuSection.items
                 .filter(item => !item.roles || item.roles.includes(profile?.nivel_acesso || ""))
                 .map((item, itemIndex) => (
                   <Link

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -39,13 +38,13 @@ interface ConversionReportsProps {
 export const ConversionReports = ({ leads }: ConversionReportsProps) => {
   const [selectedPeriod, setSelectedPeriod] = useState('30d');
 
-  // Dados do funil de conversão
+  // Dados do funil de conversão - fixed to handle string status type
   const funnelData = [
     { name: 'Novos Leads', value: leads.filter(l => l.status === 'novo').length, color: '#3b82f6' },
     { name: 'Contatados', value: leads.filter(l => l.status === 'contatado').length, color: '#8b5cf6' },
     { name: 'Qualificados', value: leads.filter(l => l.status === 'qualificado').length, color: '#eab308' },
-    { name: 'Apresentação', value: leads.filter(l => l.status === 'apresentacao').length, color: '#f97316' },
-    { name: 'Proposta', value: leads.filter(l => l.status === 'proposta').length, color: '#6366f1' },
+    { name: 'Proposta', value: leads.filter(l => l.status === 'proposta').length, color: '#f97316' },
+    { name: 'Negociação', value: leads.filter(l => l.status === 'negociacao').length, color: '#6366f1' },
     { name: 'Aprovados', value: leads.filter(l => l.status === 'aprovado').length, color: '#10b981' }
   ];
 
