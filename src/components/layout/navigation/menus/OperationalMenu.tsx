@@ -1,4 +1,3 @@
-
 import React from "react";
 import { MenuItem } from "../MenuItems";
 import { 
@@ -10,10 +9,17 @@ import {
   Package,
   MessageSquare,
   ClipboardList,
-  Briefcase
+  Briefcase,
+  BarChart3
 } from "lucide-react";
 
 export const operationalMenuItems: MenuItem[] = [
+  {
+    title: "Dashboard Unidade",
+    icon: BarChart3,
+    href: "/dashboard/unidade",
+    roles: ["admin", "gerente", "colaborador"]
+  },
   {
     title: "Vendas",
     icon: DollarSign,

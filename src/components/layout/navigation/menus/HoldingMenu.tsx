@@ -1,4 +1,3 @@
-
 import React from "react";
 import { MenuItem } from "../MenuItems";
 import { 
@@ -19,7 +18,7 @@ export const holdingMenuItems: MenuItem[] = [
   {
     title: "Visão Executiva",
     icon: TrendingUp,
-    href: "/franqueadora/dashboard",
+    href: "/dashboard/franqueadora",
     roles: ["admin"]
   },
   {

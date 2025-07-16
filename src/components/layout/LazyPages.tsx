@@ -1,4 +1,3 @@
-
 import { lazy } from 'react';
 
 // Lazy loading das páginas principais
@@ -39,3 +38,7 @@ export const LazyGestaoContratos = lazy(() => import('@/pages/franqueadora/Gesta
 export const LazyRelatoriosExecutivos = lazy(() => import('@/pages/franqueadora/RelatoriosExecutivos'));
 export const LazyMetasKPIs = lazy(() => import('@/pages/franqueadora/MetasKPIs'));
 export const LazyExpansaoFranquias = lazy(() => import('@/pages/franqueadora/ExpansaoFranquias'));
+
+// Dashboard pages
+export const LazyDashboardFranqueadoraPage = lazy(() => import('@/pages/dashboard/DashboardFranqueadoraPage'));
+export const LazyDashboardUnidadePage = lazy(() => import('@/pages/dashboard/DashboardUnidadePage'));
