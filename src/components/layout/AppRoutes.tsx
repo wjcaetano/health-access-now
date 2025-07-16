@@ -1,3 +1,4 @@
+
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
@@ -27,6 +28,11 @@ const NotFoundPage = lazy(() => import('@/pages/NotFound'));
 const RecoveryPage = lazy(() => import('@/pages/RecoveryPage'));
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
 const TenantsManagement = lazy(() => import('@/pages/admin/TenantsManagement'));
+
+// Novas páginas para qualidade, documentação e segurança
+const QualityPage = lazy(() => import('@/pages/quality/QualityPage'));
+const DocumentationPage = lazy(() => import('@/pages/documentation/DocumentationPage'));
+const SecurityPage = lazy(() => import('@/pages/security/SecurityPage'));
 
 const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <Suspense fallback={
@@ -171,6 +177,25 @@ const AppRoutes: React.FC = () => {
                 <Route path="/admin/tenants" element={
                   <TenantAwareLayout>
                     <SuspenseWrapper><TenantsManagement /></SuspenseWrapper>
+                  </TenantAwareLayout>
+                } />
+                
+                {/* Quality, Documentation e Security Routes */}
+                <Route path="/quality" element={
+                  <TenantAwareLayout>
+                    <SuspenseWrapper><QualityPage /></SuspenseWrapper>
+                  </TenantAwareLayout>
+                } />
+                
+                <Route path="/documentation" element={
+                  <TenantAwareLayout>
+                    <SuspenseWrapper><DocumentationPage /></SuspenseWrapper>
+                  </TenantAwareLayout>
+                } />
+                
+                <Route path="/security" element={
+                  <TenantAwareLayout>
+                    <SuspenseWrapper><SecurityPage /></SuspenseWrapper>
                   </TenantAwareLayout>
                 } />
                 
