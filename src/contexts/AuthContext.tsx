@@ -6,7 +6,7 @@ type UserProfile = {
   id: string;
   email: string;
   nome: string | null;
-  nivel_acesso: 'colaborador' | 'atendente' | 'gerente' | 'admin';
+  nivel_acesso: 'colaborador' | 'atendente' | 'gerente' | 'admin' | 'prestador';
   colaborador_id: string | null;
   prestador_id: string | null;
   status: 'pendente' | 'aguardando_aprovacao' | 'ativo' | 'suspenso' | 'inativo';
@@ -84,7 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: data.id,
         email: data.email,
         nome: data.nome,
-        nivel_acesso: data.nivel_acesso as 'colaborador' | 'atendente' | 'gerente' | 'admin',
+        nivel_acesso: data.nivel_acesso as 'colaborador' | 'atendente' | 'gerente' | 'admin' | 'prestador',
         colaborador_id: data.colaborador_id,
         prestador_id: data.prestador_id,
         status: data.status as 'pendente' | 'aguardando_aprovacao' | 'ativo' | 'suspenso' | 'inativo',
