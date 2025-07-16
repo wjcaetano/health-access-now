@@ -9,21 +9,27 @@ import {
 
 export const providerMenuItems: MenuItem[] = [
   {
+    title: "Dashboard",
+    icon: BarChart3,
+    href: "/sistema/dashboard",
+    roles: ["prestador"]
+  },
+  {
     title: "Portal",
     icon: BarChart3,
-    href: "/prestador/portal",
+    href: "/sistema/prestador/portal",
     roles: ["prestador"]
   },
   {
     title: "Guias",
     icon: ClipboardList,
-    href: "/prestador/guias",
+    href: "/sistema/prestador/guias",
     roles: ["prestador"]
   },
   {
     title: "Faturamento",
     icon: DollarSign,
-    href: "/prestador/faturamento",
+    href: "/sistema/prestador/faturamento",
     roles: ["prestador"]
   }
 ];

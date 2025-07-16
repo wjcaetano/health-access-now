@@ -1,3 +1,4 @@
+
 import React from "react";
 import { MenuItem } from "../MenuItems";
 import { 
@@ -15,57 +16,57 @@ import {
 
 export const operationalMenuItems: MenuItem[] = [
   {
-    title: "Dashboard Unidade",
+    title: "Dashboard",
     icon: BarChart3,
-    href: "/dashboard/unidade",
+    href: "/sistema/dashboard",
     roles: ["admin", "gerente", "colaborador"]
   },
   {
     title: "Vendas",
     icon: DollarSign,
-    href: "/vendas",
+    href: "/sistema/vendas",
     roles: ["admin", "gerente", "colaborador"]
   },
   {
     title: "Agendamentos",
     icon: Calendar,
-    href: "/agendamentos",
+    href: "/sistema/agendamentos",
     roles: ["admin", "gerente", "colaborador"]
   },
   {
     title: "Orçamentos",
     icon: FileText,
-    href: "/orcamentos",
+    href: "/sistema/orcamentos",
     roles: ["admin", "gerente", "colaborador"]
   },
   {
     title: "Clientes",
     icon: Users,
-    href: "/clientes",
+    href: "/sistema/clientes",
     roles: ["admin", "gerente", "colaborador"]
   },
   {
     title: "Prestadores",
     icon: Stethoscope,
-    href: "/prestadores",
+    href: "/sistema/prestadores",
     roles: ["admin", "gerente", "colaborador"]
   },
   {
     title: "Serviços",
     icon: Package,
-    href: "/servicos",
+    href: "/sistema/servicos",
     roles: ["admin", "gerente", "colaborador"]
   },
   {
     title: "Conversas",
     icon: MessageSquare,
-    href: "/conversas",
+    href: "/sistema/conversas",
     roles: ["admin", "gerente", "colaborador"]
   },
   {
     title: "Guias",
     icon: ClipboardList,
-    href: "/guias",
+    href: "/sistema/guias",
     roles: ["admin", "gerente", "colaborador"]
   }
 ];

@@ -23,7 +23,7 @@ export const agendajaMenu: MenuItem[] = [
   {
     title: "Dashboard",
     icon: BarChart3,
-    href: "/dashboard",
+    href: "/sistema/dashboard",
     roles: ["admin", "gerente", "colaborador"]
   },
   ...operationalMenuItems,
@@ -38,7 +38,7 @@ export const prestadorMenu: MenuItem[] = [
   {
     title: "Dashboard",
     icon: BarChart3,
-    href: "/dashboard",
+    href: "/sistema/dashboard",
     roles: ["prestador"]
   },
   ...providerMenuItems

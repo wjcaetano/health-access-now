@@ -9,45 +9,88 @@ import {
   FileText,
   TestTube,
   BookOpen,
-  Activity
+  Activity,
+  DollarSign
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 export const administrativeMenuItems = [
   {
+    title: 'Financeiro',
+    icon: DollarSign,
+    href: '/sistema/financeiro',
+    roles: ['admin', 'gerente']
+  },
+  {
+    title: 'Agenda Pagamentos',
+    icon: Activity,
+    href: '/sistema/agenda-pagamentos',
+    roles: ['admin', 'gerente']
+  },
+  {
     title: 'Gestão de Usuários',
     icon: Users,
-    href: '/gestao-usuarios',
+    href: '/sistema/usuarios',
     roles: ['admin']
   },
   {
     title: 'Colaboradores',
     icon: UserCheck,
-    href: '/colaboradores',
+    href: '/sistema/colaboradores',
     roles: ['admin', 'gerente']
+  },
+  {
+    title: 'Meu Perfil',
+    icon: UserCheck,
+    href: '/sistema/perfil',
+    roles: ['admin', 'gerente', 'colaborador']
   },
   {
     title: 'Segurança',
     icon: Shield,
-    href: '/security',
+    href: '/sistema/security',
     roles: ['admin']
   },
   {
     title: 'Qualidade',
     icon: TestTube,
-    href: '/quality',
+    href: '/sistema/quality',
     roles: ['admin']
   },
   {
     title: 'Documentação',
     icon: BookOpen,
-    href: '/documentation',
+    href: '/sistema/documentation',
     roles: ['admin', 'gerente', 'colaborador']
+  },
+  {
+    title: 'Relatórios',
+    icon: FileText,
+    href: '/sistema/relatorios',
+    roles: ['admin', 'gerente']
+  },
+  {
+    title: 'Backup',
+    icon: Shield,
+    href: '/sistema/backup',
+    roles: ['admin']
+  },
+  {
+    title: 'Análise do Sistema',
+    icon: Activity,
+    href: '/sistema/analise-sistema',
+    roles: ['admin']
+  },
+  {
+    title: 'Dashboard Avançado',
+    icon: Activity,
+    href: '/sistema/dashboard-avancado',
+    roles: ['admin', 'gerente']
   },
   {
     title: 'Configurações',
     icon: Settings,
-    href: '/configuracoes',
+    href: '/sistema/configuracoes',
     roles: ['admin']
   }
 ];
@@ -57,44 +100,93 @@ export const AdministrativeMenu: React.FC = () => {
 
   const menuItems = [
     {
+      title: 'Financeiro',
+      icon: <DollarSign className="h-4 w-4" />,
+      path: '/sistema/financeiro',
+      description: 'Gestão financeira e fluxo de caixa',
+      adminOnly: false
+    },
+    {
+      title: 'Agenda Pagamentos',
+      icon: <Activity className="h-4 w-4" />,
+      path: '/sistema/agenda-pagamentos',
+      description: 'Agenda de pagamentos e cobranças',
+      adminOnly: false
+    },
+    {
       title: 'Gestão de Usuários',
       icon: <Users className="h-4 w-4" />,
-      path: '/gestao-usuarios',
+      path: '/sistema/usuarios',
       description: 'Gerenciar usuários e permissões',
       adminOnly: true
     },
     {
       title: 'Colaboradores',
       icon: <UserCheck className="h-4 w-4" />,
-      path: '/colaboradores',
+      path: '/sistema/colaboradores',
       description: 'Gerenciar equipe e ponto eletrônico',
+      adminOnly: false
+    },
+    {
+      title: 'Meu Perfil',
+      icon: <UserCheck className="h-4 w-4" />,
+      path: '/sistema/perfil',
+      description: 'Gerenciar perfil pessoal',
       adminOnly: false
     },
     {
       title: 'Segurança',
       icon: <Shield className="h-4 w-4" />,
-      path: '/security',
+      path: '/sistema/security',
       description: 'Auditoria e logs de segurança',
       adminOnly: true
     },
     {
       title: 'Qualidade',
       icon: <TestTube className="h-4 w-4" />,
-      path: '/quality',
+      path: '/sistema/quality',
       description: 'Testes e métricas de qualidade',
       adminOnly: true
     },
     {
       title: 'Documentação',
       icon: <BookOpen className="h-4 w-4" />,
-      path: '/documentation',
+      path: '/sistema/documentation',
       description: 'Documentação técnica e style guide',
+      adminOnly: false
+    },
+    {
+      title: 'Relatórios',
+      icon: <FileText className="h-4 w-4" />,
+      path: '/sistema/relatorios',
+      description: 'Relatórios e análises',
+      adminOnly: false
+    },
+    {
+      title: 'Backup',
+      icon: <Shield className="h-4 w-4" />,
+      path: '/sistema/backup',
+      description: 'Backup e restauração',
+      adminOnly: true
+    },
+    {
+      title: 'Análise do Sistema',
+      icon: <Activity className="h-4 w-4" />,
+      path: '/sistema/analise-sistema',
+      description: 'Análise de performance',
+      adminOnly: true
+    },
+    {
+      title: 'Dashboard Avançado',
+      icon: <Activity className="h-4 w-4" />,
+      path: '/sistema/dashboard-avancado',
+      description: 'Dashboard com métricas avançadas',
       adminOnly: false
     },
     {
       title: 'Configurações',
       icon: <Settings className="h-4 w-4" />,
-      path: '/configuracoes',
+      path: '/sistema/configuracoes',
       description: 'Configurações do sistema',
       adminOnly: true
     }
