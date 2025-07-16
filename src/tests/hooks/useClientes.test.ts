@@ -65,7 +65,7 @@ describe('useClientes', () => {
   });
 
   it('should handle empty results', async () => {
-    vi.mocked(supabase.from).mockReturnValue({
+    const mockFrom = vi.fn().mockReturnValue({
       select: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
           order: vi.fn().mockResolvedValue({
@@ -74,7 +74,9 @@ describe('useClientes', () => {
           })
         })
       })
-    } as any);
+    });
+
+    vi.mocked(supabase).from = mockFrom;
 
     const { result } = renderHook(() => useClientes(), {
       wrapper: createWrapper()
