@@ -1,4 +1,3 @@
-
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
@@ -9,6 +8,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import { Toaster } from '@/components/ui/toaster';
 import { InviteAcceptance } from '@/components/auth/InviteAcceptance';
 import { TenantAwareLayout } from '@/components/layout/TenantAwareLayout';
+import { ProviderGuard } from '@/components/layout/guards/ProviderGuard';
 
 // Lazy-load pages to improve initial load time
 const IndexPage = lazy(() => import('@/pages/Index'));
@@ -119,6 +119,46 @@ const AppRoutes: React.FC = () => {
                 <Route path="/meu-perfil" element={
                   <TenantAwareLayout>
                     <SuspenseWrapper><MeuPerfilPage /></SuspenseWrapper>
+                  </TenantAwareLayout>
+                } />
+                
+                {/* Prestador Routes */}
+                <Route path="/prestador/portal" element={
+                  <TenantAwareLayout>
+                    <ProviderGuard>
+                      <SuspenseWrapper>
+                        <div>Portal do Prestador</div>
+                      </SuspenseWrapper>
+                    </ProviderGuard>
+                  </TenantAwareLayout>
+                } />
+                
+                <Route path="/prestador/guias" element={
+                  <TenantAwareLayout>
+                    <ProviderGuard>
+                      <SuspenseWrapper>
+                        <div>Guias do Prestador</div>
+                      </SuspenseWrapper>
+                    </ProviderGuard>
+                  </TenantAwareLayout>
+                } />
+                
+                <Route path="/prestador/faturamento" element={
+                  <TenantAwareLayout>
+                    <ProviderGuard>
+                      <SuspenseWrapper>
+                        <div>Faturamento do Prestador</div>
+                      </SuspenseWrapper>
+                    </ProviderGuard>
+                  </TenantAwareLayout>
+                } />
+
+                {/* Cliente Routes */}
+                <Route path="/cliente/portal" element={
+                  <TenantAwareLayout>
+                    <SuspenseWrapper>
+                      <div>Portal do Cliente</div>
+                    </SuspenseWrapper>
                   </TenantAwareLayout>
                 } />
                 

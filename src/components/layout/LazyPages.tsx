@@ -27,6 +27,14 @@ export const LazyReportsPage = lazy(() => import('@/pages/ReportsPage'));
 export const LazyBackupPage = lazy(() => import('@/pages/BackupPage'));
 export const LazySystemSettings = lazy(() => import('@/pages/SystemSettings'));
 
+// Prestador pages
+export const LazyPortalPrestador = lazy(() => import('@/pages/prestador/Portal'));
+export const LazyGuiasPrestador = lazy(() => import('@/pages/prestador/Guias'));
+export const LazyFaturamentoPrestador = lazy(() => import('@/pages/prestador/Faturamento'));
+
+// Cliente pages
+export const LazyPortalCliente = lazy(() => import('@/pages/clientes/PortalCliente'));
+
 // Franqueadora pages
 export const LazyDashboardFranqueadora = lazy(() => import('@/pages/franqueadora/DashboardFranqueadora'));
 export const LazyGestaoFranquias = lazy(() => import('@/pages/franqueadora/GestaoFranquias'));
