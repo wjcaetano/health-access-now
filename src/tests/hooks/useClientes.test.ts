@@ -66,14 +66,14 @@ describe('useClientes', () => {
 
   it('should handle empty results', async () => {
     vi.mocked(supabase.from).mockReturnValue({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          order: vi.fn(() => Promise.resolve({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          order: vi.fn().mockResolvedValue({
             data: [],
             error: null
-          }))
-        }))
-      }))
+          })
+        })
+      })
     } as any);
 
     const { result } = renderHook(() => useClientes(), {
