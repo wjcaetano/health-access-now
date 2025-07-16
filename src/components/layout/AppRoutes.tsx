@@ -1,12 +1,7 @@
 
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { NotificationProvider } from '@/contexts/NotificationContext';
-import { ThemeProvider } from '@/contexts/ThemeContext';
-import { Toaster } from '@/components/ui/toaster';
 import { InviteAcceptance } from '@/components/auth/InviteAcceptance';
 import { TenantAwareLayout } from '@/components/layout/TenantAwareLayout';
 import { ProviderGuard } from '@/components/layout/guards/ProviderGuard';
@@ -44,169 +39,149 @@ const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) 
   </Suspense>
 );
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: 1,
-    },
-  },
-});
-
 const AppRoutes: React.FC = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <NotificationProvider>
-          <AuthProvider>
-            <Router>
-              <Routes>
-                {/* Public routes */}
-                <Route path="/" element={<SuspenseWrapper><IndexPage /></SuspenseWrapper>} />
-                <Route path="/login" element={<SuspenseWrapper><LoginPage /></SuspenseWrapper>} />
-                <Route path="/recovery" element={<SuspenseWrapper><RecoveryPage /></SuspenseWrapper>} />
-                <Route path="/accept-invite" element={<SuspenseWrapper><InviteAcceptance /></SuspenseWrapper>} />
-                
-                {/* Protected routes with tenant context */}
-                <Route path="/dashboard" element={
-                  <TenantAwareLayout>
-                    <SuspenseWrapper><AdvancedDashboardPage /></SuspenseWrapper>
-                  </TenantAwareLayout>
-                } />
-                
-                <Route path="/vendas" element={
-                  <TenantAwareLayout>
-                    <SuspenseWrapper><VendasPage /></SuspenseWrapper>
-                  </TenantAwareLayout>
-                } />
-                
-                <Route path="/clientes" element={
-                  <TenantAwareLayout>
-                    <SuspenseWrapper><ClientesPage /></SuspenseWrapper>
-                  </TenantAwareLayout>
-                } />
-                
-                <Route path="/prestadores" element={
-                  <TenantAwareLayout>
-                    <SuspenseWrapper><PrestadoresPage /></SuspenseWrapper>
-                  </TenantAwareLayout>
-                } />
-                
-                <Route path="/servicos" element={
-                  <TenantAwareLayout>
-                    <SuspenseWrapper><ServicosPage /></SuspenseWrapper>
-                  </TenantAwareLayout>
-                } />
-                
-                <Route path="/agendamentos" element={
-                  <TenantAwareLayout>
-                    <SuspenseWrapper><AgendamentosPage /></SuspenseWrapper>
-                  </TenantAwareLayout>
-                } />
-                
-                <Route path="/orcamentos" element={
-                  <TenantAwareLayout>
-                    <SuspenseWrapper><OrcamentosPage /></SuspenseWrapper>
-                  </TenantAwareLayout>
-                } />
-                
-                <Route path="/colaboradores" element={
-                  <TenantAwareLayout>
-                    <SuspenseWrapper><ColaboradoresPage /></SuspenseWrapper>
-                  </TenantAwareLayout>
-                } />
-                
-                <Route path="/gestao-usuarios" element={
-                  <TenantAwareLayout>
-                    <SuspenseWrapper><GestaoUsuariosPage /></SuspenseWrapper>
-                  </TenantAwareLayout>
-                } />
-                
-                <Route path="/meu-perfil" element={
-                  <TenantAwareLayout>
-                    <SuspenseWrapper><MeuPerfilPage /></SuspenseWrapper>
-                  </TenantAwareLayout>
-                } />
-                
-                {/* Prestador Routes */}
-                <Route path="/prestador/portal" element={
-                  <TenantAwareLayout>
-                    <ProviderGuard>
-                      <SuspenseWrapper>
-                        <div>Portal do Prestador</div>
-                      </SuspenseWrapper>
-                    </ProviderGuard>
-                  </TenantAwareLayout>
-                } />
-                
-                <Route path="/prestador/guias" element={
-                  <TenantAwareLayout>
-                    <ProviderGuard>
-                      <SuspenseWrapper>
-                        <div>Guias do Prestador</div>
-                      </SuspenseWrapper>
-                    </ProviderGuard>
-                  </TenantAwareLayout>
-                } />
-                
-                <Route path="/prestador/faturamento" element={
-                  <TenantAwareLayout>
-                    <ProviderGuard>
-                      <SuspenseWrapper>
-                        <div>Faturamento do Prestador</div>
-                      </SuspenseWrapper>
-                    </ProviderGuard>
-                  </TenantAwareLayout>
-                } />
+    <Routes>
+      {/* Public routes */}
+      <Route path="/" element={<SuspenseWrapper><IndexPage /></SuspenseWrapper>} />
+      <Route path="/login" element={<SuspenseWrapper><LoginPage /></SuspenseWrapper>} />
+      <Route path="/recovery" element={<SuspenseWrapper><RecoveryPage /></SuspenseWrapper>} />
+      <Route path="/accept-invite" element={<SuspenseWrapper><InviteAcceptance /></SuspenseWrapper>} />
+      
+      {/* Protected routes with tenant context */}
+      <Route path="/dashboard" element={
+        <TenantAwareLayout>
+          <SuspenseWrapper><AdvancedDashboardPage /></SuspenseWrapper>
+        </TenantAwareLayout>
+      } />
+      
+      <Route path="/vendas" element={
+        <TenantAwareLayout>
+          <SuspenseWrapper><VendasPage /></SuspenseWrapper>
+        </TenantAwareLayout>
+      } />
+      
+      <Route path="/clientes" element={
+        <TenantAwareLayout>
+          <SuspenseWrapper><ClientesPage /></SuspenseWrapper>
+        </TenantAwareLayout>
+      } />
+      
+      <Route path="/prestadores" element={
+        <TenantAwareLayout>
+          <SuspenseWrapper><PrestadoresPage /></SuspenseWrapper>
+        </TenantAwareLayout>
+      } />
+      
+      <Route path="/servicos" element={
+        <TenantAwareLayout>
+          <SuspenseWrapper><ServicosPage /></SuspenseWrapper>
+        </TenantAwareLayout>
+      } />
+      
+      <Route path="/agendamentos" element={
+        <TenantAwareLayout>
+          <SuspenseWrapper><AgendamentosPage /></SuspenseWrapper>
+        </TenantAwareLayout>
+      } />
+      
+      <Route path="/orcamentos" element={
+        <TenantAwareLayout>
+          <SuspenseWrapper><OrcamentosPage /></SuspenseWrapper>
+        </TenantAwareLayout>
+      } />
+      
+      <Route path="/colaboradores" element={
+        <TenantAwareLayout>
+          <SuspenseWrapper><ColaboradoresPage /></SuspenseWrapper>
+        </TenantAwareLayout>
+      } />
+      
+      <Route path="/gestao-usuarios" element={
+        <TenantAwareLayout>
+          <SuspenseWrapper><GestaoUsuariosPage /></SuspenseWrapper>
+        </TenantAwareLayout>
+      } />
+      
+      <Route path="/meu-perfil" element={
+        <TenantAwareLayout>
+          <SuspenseWrapper><MeuPerfilPage /></SuspenseWrapper>
+        </TenantAwareLayout>
+      } />
+      
+      {/* Prestador Routes */}
+      <Route path="/prestador/portal" element={
+        <TenantAwareLayout>
+          <ProviderGuard>
+            <SuspenseWrapper>
+              <div>Portal do Prestador</div>
+            </SuspenseWrapper>
+          </ProviderGuard>
+        </TenantAwareLayout>
+      } />
+      
+      <Route path="/prestador/guias" element={
+        <TenantAwareLayout>
+          <ProviderGuard>
+            <SuspenseWrapper>
+              <div>Guias do Prestador</div>
+            </SuspenseWrapper>
+          </ProviderGuard>
+        </TenantAwareLayout>
+      } />
+      
+      <Route path="/prestador/faturamento" element={
+        <TenantAwareLayout>
+          <ProviderGuard>
+            <SuspenseWrapper>
+              <div>Faturamento do Prestador</div>
+            </SuspenseWrapper>
+          </ProviderGuard>
+        </TenantAwareLayout>
+      } />
 
-                {/* Cliente Routes */}
-                <Route path="/cliente/portal" element={
-                  <TenantAwareLayout>
-                    <SuspenseWrapper>
-                      <div>Portal do Cliente</div>
-                    </SuspenseWrapper>
-                  </TenantAwareLayout>
-                } />
-                
-                {/* Admin Routes */}
-                <Route path="/admin" element={
-                  <TenantAwareLayout>
-                    <SuspenseWrapper><AdminDashboardPage /></SuspenseWrapper>
-                  </TenantAwareLayout>
-                } />
-                <Route path="/admin/tenants" element={
-                  <TenantAwareLayout>
-                    <SuspenseWrapper><TenantsManagement /></SuspenseWrapper>
-                  </TenantAwareLayout>
-                } />
-                
-                {/* Quality, Documentation e Security Routes */}
-                <Route path="/quality" element={
-                  <TenantAwareLayout>
-                    <SuspenseWrapper><QualityPage /></SuspenseWrapper>
-                  </TenantAwareLayout>
-                } />
-                
-                <Route path="/documentation" element={
-                  <TenantAwareLayout>
-                    <SuspenseWrapper><DocumentationPage /></SuspenseWrapper>
-                  </TenantAwareLayout>
-                } />
-                
-                <Route path="/security" element={
-                  <TenantAwareLayout>
-                    <SuspenseWrapper><SecurityPage /></SuspenseWrapper>
-                  </TenantAwareLayout>
-                } />
-                
-                <Route path="*" element={<SuspenseWrapper><NotFoundPage /></SuspenseWrapper>} />
-              </Routes>
-              <Toaster />
-            </Router>
-          </AuthProvider>
-        </NotificationProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+      {/* Cliente Routes */}
+      <Route path="/cliente/portal" element={
+        <TenantAwareLayout>
+          <SuspenseWrapper>
+            <div>Portal do Cliente</div>
+          </SuspenseWrapper>
+        </TenantAwareLayout>
+      } />
+      
+      {/* Admin Routes */}
+      <Route path="/admin" element={
+        <TenantAwareLayout>
+          <SuspenseWrapper><AdminDashboardPage /></SuspenseWrapper>
+        </TenantAwareLayout>
+      } />
+      <Route path="/admin/tenants" element={
+        <TenantAwareLayout>
+          <SuspenseWrapper><TenantsManagement /></SuspenseWrapper>
+        </TenantAwareLayout>
+      } />
+      
+      {/* Quality, Documentation e Security Routes */}
+      <Route path="/quality" element={
+        <TenantAwareLayout>
+          <SuspenseWrapper><QualityPage /></SuspenseWrapper>
+        </TenantAwareLayout>
+      } />
+      
+      <Route path="/documentation" element={
+        <TenantAwareLayout>
+          <SuspenseWrapper><DocumentationPage /></SuspenseWrapper>
+        </TenantAwareLayout>
+      } />
+      
+      <Route path="/security" element={
+        <TenantAwareLayout>
+          <SuspenseWrapper><SecurityPage /></SuspenseWrapper>
+        </TenantAwareLayout>
+      } />
+      
+      <Route path="*" element={<SuspenseWrapper><NotFoundPage /></SuspenseWrapper>} />
+    </Routes>
   );
 };
 

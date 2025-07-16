@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
-import AppRoutes from "./AppRoutes";
+import { Outlet } from "react-router-dom";
 
 interface DesktopLayoutProps {
   userProfile: string;
@@ -31,7 +31,7 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ userProfile }) => 
               toggleSidebar={toggleSidebar}
             />
             <main className="flex-1 overflow-y-auto p-6">
-              <AppRoutes />
+              <Outlet />
             </main>
           </div>
         </div>

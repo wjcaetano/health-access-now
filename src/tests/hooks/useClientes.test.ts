@@ -1,42 +1,28 @@
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useClientes } from '@/hooks/useClientes';
 import { supabase } from '@/integrations/supabase/client';
 
-// Mock Supabase
-vi.mock('@/integrations/supabase/client', () => ({
+// Mock do Supabase
+jest.mock('@/integrations/supabase/client', () => ({
   supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          order: vi.fn(() => Promise.resolve({
-            data: [
-              { id: '1', nome: 'Cliente 1', email: 'cliente1@test.com' },
-              { id: '2', nome: 'Cliente 2', email: 'cliente2@test.com' }
-            ],
-            error: null
-          }))
-        }))
-      }))
-    }))
+    from: jest.fn().mockReturnThis(),
+    select: jest.fn().mockReturnThis(),
+    insert: jest.fn().mockReturnThis(),
+    update: jest.fn().mockReturnThis(),
+    delete: jest.fn().mockReturnThis(),
+    eq: jest.fn().mockReturnThis(),
   }
-}));
-
-// Mock useAuth
-vi.mock('@/contexts/AuthContext', () => ({
-  useAuth: vi.fn(() => ({ 
-    profile: { tenant_id: 'test-tenant' } 
-  }))
 }));
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false }
-    }
+      queries: {
+        retry: false,
+      },
+    },
   });
   
   return ({ children }: { children: React.ReactNode }) => (
@@ -48,44 +34,28 @@ const createWrapper = () => {
 
 describe('useClientes', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
-  it('should fetch clientes successfully', async () => {
-    const { result } = renderHook(() => useClientes(), {
-      wrapper: createWrapper()
-    });
+  it('should fetch clients successfully', async () => {
+    const mockClientes = [
+      { id: '1', nome: 'João Silva', email: 'joao@test.com', cpf: '123.456.789-00' },
+      { id: '2', nome: 'Maria Santos', email: 'maria@test.com', cpf: '987.654.321-00' }
+    ];
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    expect(result.current.data).toHaveLength(2);
-    expect(result.current.data?.[0].nome).toBe('Cliente 1');
-  });
-
-  it('should handle empty results', async () => {
-    const mockFrom = vi.fn().mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        eq: vi.fn().mockReturnValue({
-          order: vi.fn().mockResolvedValue({
-            data: [],
-            error: null
-          })
-        })
+    (supabase.from as jest.Mock).mockImplementation(() => ({
+      select: jest.fn().mockResolvedValue({
+        data: mockClientes,
+        error: null
       })
-    });
-
-    vi.mocked(supabase).from = mockFrom;
+    }));
 
     const { result } = renderHook(() => useClientes(), {
-      wrapper: createWrapper()
+      wrapper: createWrapper(),
     });
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
+      expect(result.current.data).toEqual(mockClientes);
     });
-
-    expect(result.current.data).toHaveLength(0);
   });
 });

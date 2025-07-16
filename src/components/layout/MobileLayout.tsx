@@ -1,10 +1,9 @@
 
 import React, { useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
-import AppRoutes from "./AppRoutes";
+import { Outlet } from "react-router-dom";
 
 interface MobileLayoutProps {
   userProfile: string;
@@ -31,7 +30,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({ userProfile }) => {
         />
         <main className="flex-1 overflow-x-hidden overflow-y-auto">
           <div className="p-3 pb-20">
-            <AppRoutes />
+            <Outlet />
           </div>
         </main>
       </div>
