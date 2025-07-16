@@ -18,19 +18,24 @@ export const useDashboardFranqueadora = () => {
         .from("franquias")
         .select(`
           *,
-          royalties:royalties(*),
-          vendas_agregadas:view_franquias_resumo(*)
+          royalties:royalties(*)
         `);
 
       if (franquiasError) throw franquiasError;
+
+      // Buscar dados da view separadamente
+      const { data: franquiasResumo, error: resumoError } = await supabase
+        .from("view_franquias_resumo")
+        .select("*");
+
+      if (resumoError) throw resumoError;
 
       // Calcular métricas consolidadas
       const totalFranquias = franquias?.length || 0;
       const franquiasAtivas = franquias?.filter(f => f.status === 'ativa').length || 0;
       
-      const faturamentoTotal = franquias?.reduce((total, franquia) => {
-        const vendas = franquia.vendas_agregadas?.faturamento_total || 0;
-        return total + Number(vendas);
+      const faturamentoTotal = franquiasResumo?.reduce((total, resumo) => {
+        return total + Number(resumo.faturamento_total || 0);
       }, 0) || 0;
 
       const royaltiesPendentes = franquias?.reduce((total, franquia) => {
@@ -44,7 +49,8 @@ export const useDashboardFranqueadora = () => {
         faturamentoTotal,
         royaltiesPendentes,
         performanceGeral: franquiasAtivas > 0 ? (franquiasAtivas / totalFranquias) * 100 : 0,
-        franquias: franquias || []
+        franquias: franquias || [],
+        franquiasResumo: franquiasResumo || []
       };
     },
     enabled: !!holdingData && holdingData.tipo === 'holding',
