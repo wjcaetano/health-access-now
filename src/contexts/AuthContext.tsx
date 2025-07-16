@@ -1,58 +1,12 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+
+import React, { createContext, useEffect, useState, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { AuthContextType, UserProfile } from './auth/types';
+import * as authOps from './auth/authOperations';
+import { fetchUserProfile } from './auth/profileService';
 
-type UserProfile = {
-  id: string;
-  email: string;
-  nome: string | null;
-  nivel_acesso: 'colaborador' | 'atendente' | 'gerente' | 'admin' | 'prestador';
-  colaborador_id: string | null;
-  prestador_id: string | null;
-  status: 'pendente' | 'aguardando_aprovacao' | 'ativo' | 'suspenso' | 'inativo';
-  foto_url: string | null;
-};
-
-type AuthContextType = {
-  user: User | null;
-  session: Session | null;
-  profile: UserProfile | null;
-  loading: boolean;
-  initialized: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, nome: string, nivel_acesso?: string) => Promise<{ error: any }>;
-  signOut: () => Promise<void>;
-  updateProfile: (updates: Partial<UserProfile>) => Promise<{ error: any }>;
-  updatePassword: (newPassword: string) => Promise<{ error: any }>;
-  sendPasswordReset: (email: string) => Promise<{ error: any }>;
-  isAdmin: boolean;
-  isManager: boolean;
-  isPrestador: boolean;
-  isActive: boolean;
-  requiresPasswordChange: boolean;
-};
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Função para limpar completamente o estado de autenticação
-const cleanupAuthState = () => {
-  localStorage.removeItem("agendaja_authenticated");
-  localStorage.removeItem("agendaja_user_type");
-  
-  Object.keys(localStorage).forEach((key) => {
-    if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-      localStorage.removeItem(key);
-    }
-  });
-  
-  if (typeof sessionStorage !== 'undefined') {
-    Object.keys(sessionStorage).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-        sessionStorage.removeItem(key);
-      }
-    });
-  }
-};
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -64,38 +18,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Verificar se é senha provisória
   const requiresPasswordChange = user?.user_metadata?.senha_provisoria === true;
 
-  const fetchUserProfile = useCallback(async (userId: string) => {
-    if (!userId) return;
-    
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      
-      if (error) {
-        console.error('Erro ao buscar perfil:', error);
-        setProfile(null);
-        return;
-      }
-      
-      const typedProfile: UserProfile = {
-        id: data.id,
-        email: data.email,
-        nome: data.nome,
-        nivel_acesso: data.nivel_acesso as 'colaborador' | 'atendente' | 'gerente' | 'admin' | 'prestador',
-        colaborador_id: data.colaborador_id,
-        prestador_id: data.prestador_id,
-        status: data.status as 'pendente' | 'aguardando_aprovacao' | 'ativo' | 'suspenso' | 'inativo',
-        foto_url: data.foto_url,
-      };
-      
-      setProfile(typedProfile);
-    } catch (error) {
-      console.error('Erro ao buscar perfil:', error);
-      setProfile(null);
-    }
+  const loadUserProfile = useCallback(async (userId: string) => {
+    const userProfile = await fetchUserProfile(userId);
+    setProfile(userProfile);
   }, []);
 
   useEffect(() => {
@@ -123,7 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               // Defer profile fetching to prevent deadlocks
               setTimeout(() => {
                 if (mounted) {
-                  fetchUserProfile(session.user.id);
+                  loadUserProfile(session.user.id);
                 }
               }, 100);
             } else {
@@ -149,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser(session?.user ?? null);
           
           if (session?.user) {
-            fetchUserProfile(session.user.id);
+            loadUserProfile(session.user.id);
           }
           
           setLoading(false);
@@ -173,137 +98,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       mounted = false;
     };
-  }, [fetchUserProfile, initialized]);
+  }, [loadUserProfile, initialized]);
 
-  const signIn = async (email: string, password: string) => {
-    try {
-      cleanupAuthState();
-      
-      try {
-        await supabase.auth.signOut({ scope: 'global' });
-      } catch (err) {
-        console.log('Logout prévio falhou, continuando...');
-      }
-      
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      return { error };
-    } catch (error) {
-      return { error };
+  const handleUpdateProfile = async (updates: Partial<UserProfile>) => {
+    const result = await authOps.updateProfile(user?.id || '', updates);
+    if (!result.error && user) {
+      await loadUserProfile(user.id);
     }
+    return result;
   };
 
-  const signUp = async (email: string, password: string, nome: string, nivel_acesso = 'colaborador') => {
-    try {
-      const redirectUrl = `${window.location.origin}/`;
-      
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            nome,
-            nivel_acesso
-          }
-        }
-      });
-      
-      return { error };
-    } catch (error) {
-      return { error };
-    }
-  };
-
-  const sendPasswordReset = async (email: string) => {
-    try {
-      const redirectUrl = `${window.location.origin}/recovery`;
-      
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: redirectUrl,
-      });
-      
-      return { error };
-    } catch (error) {
-      return { error };
-    }
-  };
-
-  const updateProfile = async (updates: Partial<UserProfile>) => {
-    try {
-      if (!user) return { error: 'Usuário não autenticado' };
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('id', user.id);
-
-      if (error) throw error;
-
-      await fetchUserProfile(user.id);
-      
-      return { error: null };
-    } catch (error) {
-      return { error };
-    }
-  };
-
-  const updatePassword = async (newPassword: string) => {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-        data: {
+  const handleUpdatePassword = async (newPassword: string) => {
+    const result = await authOps.updatePassword(newPassword);
+    if (!result.error && user) {
+      setUser({
+        ...user,
+        user_metadata: {
+          ...user.user_metadata,
           senha_provisoria: false,
           senha_alterada_em: new Date().toISOString()
         }
       });
-      
-      if (error) throw error;
-      
-      if (user) {
-        setUser({
-          ...user,
-          user_metadata: {
-            ...user.user_metadata,
-            senha_provisoria: false,
-            senha_alterada_em: new Date().toISOString()
-          }
-        });
-      }
-      
-      return { error: null };
-    } catch (error) {
-      return { error };
     }
-  };
-
-  const signOut = async () => {
-    try {
-      console.log('Iniciando logout...');
-      
-      setUser(null);
-      setSession(null);
-      setProfile(null);
-      
-      cleanupAuthState();
-      
-      await supabase.auth.signOut({ scope: 'global' });
-      
-      console.log('Logout concluído, redirecionando...');
-      window.location.href = '/';
-    } catch (error) {
-      console.error('Erro no logout:', error);
-      
-      setUser(null);
-      setSession(null);
-      setProfile(null);
-      cleanupAuthState();
-      
-      window.location.href = '/';
-    }
+    return result;
   };
 
   const isAdmin = profile?.nivel_acesso === 'admin';
@@ -317,12 +134,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     profile,
     loading,
     initialized,
-    signIn,
-    signUp,
-    signOut,
-    updateProfile,
-    updatePassword,
-    sendPasswordReset,
+    signIn: authOps.signIn,
+    signUp: authOps.signUp,
+    signOut: authOps.signOut,
+    updateProfile: handleUpdateProfile,
+    updatePassword: handleUpdatePassword,
+    sendPasswordReset: authOps.sendPasswordReset,
     isAdmin,
     isManager,
     isPrestador,
