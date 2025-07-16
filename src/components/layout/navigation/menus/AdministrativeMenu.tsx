@@ -13,6 +13,45 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
+export const administrativeMenuItems = [
+  {
+    title: 'Gestão de Usuários',
+    icon: Users,
+    href: '/gestao-usuarios',
+    roles: ['admin']
+  },
+  {
+    title: 'Colaboradores',
+    icon: UserCheck,
+    href: '/colaboradores',
+    roles: ['admin', 'gerente']
+  },
+  {
+    title: 'Segurança',
+    icon: Shield,
+    href: '/security',
+    roles: ['admin']
+  },
+  {
+    title: 'Qualidade',
+    icon: TestTube,
+    href: '/quality',
+    roles: ['admin']
+  },
+  {
+    title: 'Documentação',
+    icon: BookOpen,
+    href: '/documentation',
+    roles: ['admin', 'gerente', 'colaborador']
+  },
+  {
+    title: 'Configurações',
+    icon: Settings,
+    href: '/configuracoes',
+    roles: ['admin']
+  }
+];
+
 export const AdministrativeMenu: React.FC = () => {
   const { isAdmin } = useAuth();
 
