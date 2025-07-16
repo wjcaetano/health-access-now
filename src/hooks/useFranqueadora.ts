@@ -5,6 +5,9 @@ export * from "./franqueadora/useLeadsFranqueados";
 export * from "./franqueadora/useRoyaltiesFranqueadora";
 export * from "./franqueadora/useMetricasFranqueadora";
 
+// Re-export types
+export type { Franquia, Franqueado, LeadFranqueado, Royalty, MetricasFranqueadora } from "../types/franqueadora";
+
 // Keep backward compatibility
 export { useFranquias, useFranquiasResumo, useCreateFranquia } from "./franqueadora/useFranquias";
 export { useFranqueados } from "./franqueadora/useFranqueados";

@@ -13,8 +13,33 @@ export interface MenuItem {
   icon: React.ElementType;
   href: string;
   roles?: string[];
-  isSection?: boolean;
 }
+
+// Export menu arrays for Sidebar.tsx
+export const agendajaMenu: MenuItem[] = [
+  {
+    title: "Dashboard",
+    icon: BarChart3,
+    href: "/dashboard",
+    roles: ["admin", "gerente", "colaborador"]
+  },
+  ...operationalMenuItems,
+  ...administrativeMenuItems
+];
+
+export const gerenteMenu: MenuItem[] = [
+  ...holdingMenuItems
+];
+
+export const prestadorMenu: MenuItem[] = [
+  {
+    title: "Dashboard",
+    icon: BarChart3,
+    href: "/dashboard",
+    roles: ["prestador"]
+  },
+  ...providerMenuItems
+];
 
 interface MenuItemsProps {
   onItemClick?: () => void;
@@ -98,7 +123,7 @@ const MenuItems: React.FC<MenuItemsProps> = ({ onItemClick }) => {
           );
         }
 
-        if (section.isSection && section.items) {
+        if ('isSection' in section && section.items) {
           return (
             <div key={index} className="pt-4 first:pt-0">
               <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
