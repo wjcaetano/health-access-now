@@ -86,17 +86,25 @@ const HeaderVendas: React.FC<HeaderVendasProps> = ({ onAbrirLogin }) => {
                 <NavigationMenuTrigger>Serviços</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                     <ListItem href="/servicos/consultas-medicas" title="Consultas Médicas">
-                       Encontre especialistas para cuidar da sua saúde.
+                     <ListItem title="Consultas Médicas">
+                       <Link to="/servicos/consultas-medicas" className="no-underline">
+                         Encontre especialistas para cuidar da sua saúde.
+                       </Link>
                      </ListItem>
-                     <ListItem href="/servicos/exames-laboratoriais" title="Exames Laboratoriais">
-                       Check-ups e análises com rapidez e precisão.
+                     <ListItem title="Exames Laboratoriais">
+                       <Link to="/servicos/exames-laboratoriais" className="no-underline">
+                         Check-ups e análises com rapidez e precisão.
+                       </Link>
                      </ListItem>
-                     <ListItem href="/servicos/exames-de-imagem" title="Exames de Imagem">
-                       Tecnologia de ponta para diagnósticos precisos.
+                     <ListItem title="Exames de Imagem">
+                       <Link to="/servicos/exames-de-imagem" className="no-underline">
+                         Tecnologia de ponta para diagnósticos precisos.
+                       </Link>
                      </ListItem>
-                     <ListItem href="/servicos/outros-exames" title="Outros Exames">
-                       Veja a lista completa de outros procedimentos.
+                     <ListItem title="Outros Exames">
+                       <Link to="/servicos/outros-exames" className="no-underline">
+                         Veja a lista completa de outros procedimentos.
+                       </Link>
                      </ListItem>
                   </ul>
                 </NavigationMenuContent>

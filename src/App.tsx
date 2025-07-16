@@ -91,6 +91,12 @@ function App() {
                 <Route path="/portal-parceiro" element={<PortalParceiro />} />
                 <Route path="/seja-franqueado" element={<SejaFranqueado />} />
                 
+                {/* Rotas Públicas de Serviços */}
+                <Route path="/servicos/consultas-medicas" element={<ConsultasMedicas />} />
+                <Route path="/servicos/exames-laboratoriais" element={<ExamesLaboratoriais />} />
+                <Route path="/servicos/exames-de-imagem" element={<ExamesDeImagem />} />
+                <Route path="/servicos/outros-exames" element={<OutrosExames />} />
+                
                 {/* Rotas Protegidas - Sistema Administrativo */}
                 <Route path="/sistema" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
                   <Route index element={<Navigate to="/sistema/dashboard" replace />} />
@@ -129,12 +135,6 @@ function App() {
                   <Route path="prestador/portal" element={<PortalPrestador />} />
                   <Route path="prestador/guias" element={<GuiasPrestador />} />
                   <Route path="prestador/faturamento" element={<FaturamentoPrestador />} />
-                  
-                  {/* Rotas de Serviços */}
-                  <Route path="servicos/consultas-medicas" element={<ConsultasMedicas />} />
-                  <Route path="servicos/exames-laboratoriais" element={<ExamesLaboratoriais />} />
-                  <Route path="servicos/exames-imagem" element={<ExamesDeImagem />} />
-                  <Route path="servicos/outros-exames" element={<OutrosExames />} />
                   
                   {/* Rotas Administrativas */}
                   <Route path="financeiro" element={<Financeiro />} />
