@@ -8,6 +8,7 @@ export type UserProfile = {
   nivel_acesso: 'colaborador' | 'atendente' | 'gerente' | 'admin' | 'prestador';
   colaborador_id: string | null;
   prestador_id: string | null;
+  tenant_id: string | null;
   status: 'pendente' | 'aguardando_aprovacao' | 'ativo' | 'suspenso' | 'inativo';
   foto_url: string | null;
 };
@@ -29,4 +30,5 @@ export type AuthContextType = {
   isPrestador: boolean;
   isActive: boolean;
   requiresPasswordChange: boolean;
+  hasMultiTenantAccess: boolean;
 };

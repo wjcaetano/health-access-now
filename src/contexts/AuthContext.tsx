@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -126,6 +127,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isManager = profile?.nivel_acesso === 'gerente' || isAdmin;
   const isPrestador = !!profile?.prestador_id;
   const isActive = profile?.status === 'ativo';
+  const hasMultiTenantAccess = isAdmin || profile?.nivel_acesso === 'gerente';
 
   const value = {
     user,
@@ -144,6 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isPrestador,
     isActive,
     requiresPasswordChange,
+    hasMultiTenantAccess,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

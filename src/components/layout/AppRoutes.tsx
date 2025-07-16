@@ -1,51 +1,35 @@
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { NotificationProvider } from '@/contexts/NotificationContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { Toaster } from '@/components/ui/toaster';
+import { InviteAcceptance } from '@/components/auth/InviteAcceptance';
+import { TenantAwareLayout } from '@/components/layout/TenantAwareLayout';
 
-import React, { Suspense } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import LoadingSpinner from "@/components/shared/LoadingSpinner";
-import {
-  LazyIndex,
-  LazyClientes,
-  LazyNovoCliente,
-  LazyPrestadores,
-  LazyNovoPrestador,
-  LazyServicos,
-  LazyNovoServico,
-  LazyOrcamentos,
-  LazyVisualizarOrcamento,
-  LazyVendas,
-  LazyVendaFinalizada,
-  LazyAgendamentos,
-  LazyNovoAgendamento,
-  LazyColaboradores,
-  LazyFinanceiro,
-  LazyAgendaPagamentos,
-  LazyGuias,
-  LazyConversas,
-  LazyGestaoUsuarios,
-  LazyMeuPerfil,
-  LazyAnaliseDoSistema,
-  LazyAdvancedDashboardPage,
-  LazyReportsPage,
-  LazyBackupPage,
-  LazySystemSettings,
-  LazyDashboardFranqueadora,
-  LazyGestaoFranquias,
-  LazyLeadsFranqueados,
-  LazyCRMFranqueados,
-  LazyFinanceiroMatriz,
-  LazyGestaoRoyalties,
-  LazyGestaoContratos,
-  LazyRelatoriosExecutivos,
-  LazyMetasKPIs,
-  LazyExpansaoFranquias
-} from "./LazyPages";
-import { RouteGuard } from "./guards/RouteGuard";
-import { AdminGuard } from "./guards/AdminGuard";
-import { ManagerGuard } from "./guards/ManagerGuard";
+// Lazy-load pages to improve initial load time
+const IndexPage = lazy(() => import('@/pages/IndexPage'));
+const LoginPage = lazy(() => import('@/pages/LoginPage'));
+const AdvancedDashboardPage = lazy(() => import('@/pages/AdvancedDashboardPage'));
+const VendasPage = lazy(() => import('@/pages/VendasPage'));
+const ClientesPage = lazy(() => import('@/pages/ClientesPage'));
+const PrestadoresPage = lazy(() => import('@/pages/PrestadoresPage'));
+const ServicosPage = lazy(() => import('@/pages/ServicosPage'));
+const AgendamentosPage = lazy(() => import('@/pages/AgendamentosPage'));
+const OrcamentosPage = lazy(() => import('@/pages/OrcamentosPage'));
+const ColaboradoresPage = lazy(() => import('@/pages/ColaboradoresPage'));
+const GestaoUsuariosPage = lazy(() => import('@/pages/GestaoUsuariosPage'));
+const MeuPerfilPage = lazy(() => import('@/pages/MeuPerfilPage'));
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
+const RecoveryPage = lazy(() => import('@/pages/RecoveryPage'));
+const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
+const TenantsManagement = lazy(() => import('@/pages/admin/TenantsManagement'));
 
 const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <Suspense fallback={
-    <div className="flex items-center justify-center min-h-[400px]">
+    <div className="flex items-center justify-center min-h-screen">
       <LoadingSpinner size="lg" />
     </div>
   }>
@@ -53,289 +37,111 @@ const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) 
   </Suspense>
 );
 
-export const AppRoutes: React.FC = () => {
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 1,
+    },
+  },
+});
+
+const AppRoutes: React.FC = () => {
   return (
-    <Routes>
-      <Route path="/" element={
-        <SuspenseWrapper>
-          <LazyIndex />
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/clientes" element={
-        <SuspenseWrapper>
-          <RouteGuard>
-            <LazyClientes />
-          </RouteGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/clientes/novo" element={
-        <SuspenseWrapper>
-          <RouteGuard>
-            <LazyNovoCliente />
-          </RouteGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/prestadores" element={
-        <SuspenseWrapper>
-          <RouteGuard>
-            <LazyPrestadores />
-          </RouteGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/prestadores/novo" element={
-        <SuspenseWrapper>
-          <RouteGuard>
-            <LazyNovoPrestador />
-          </RouteGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/servicos" element={
-        <SuspenseWrapper>
-          <RouteGuard>
-            <LazyServicos />
-          </RouteGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/servicos/novo" element={
-        <SuspenseWrapper>
-          <RouteGuard>
-            <LazyNovoServico />
-          </RouteGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/orcamentos" element={
-        <SuspenseWrapper>
-          <RouteGuard>
-            <LazyOrcamentos />
-          </RouteGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/orcamentos/:id" element={
-        <SuspenseWrapper>
-          <RouteGuard>
-            <LazyVisualizarOrcamento />
-          </RouteGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/vendas" element={
-        <SuspenseWrapper>
-          <RouteGuard>
-            <LazyVendas />
-          </RouteGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/vendas/finalizada" element={
-        <SuspenseWrapper>
-          <RouteGuard>
-            <LazyVendaFinalizada />
-          </RouteGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/agendamentos" element={
-        <SuspenseWrapper>
-          <RouteGuard>
-            <LazyAgendamentos />
-          </RouteGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/agendamentos/novo" element={
-        <SuspenseWrapper>
-          <RouteGuard>
-            <LazyNovoAgendamento />
-          </RouteGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/colaboradores" element={
-        <SuspenseWrapper>
-          <ManagerGuard>
-            <LazyColaboradores />
-          </ManagerGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/financeiro" element={
-        <SuspenseWrapper>
-          <ManagerGuard>
-            <LazyFinanceiro />
-          </ManagerGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/agenda-pagamentos" element={
-        <SuspenseWrapper>
-          <ManagerGuard>
-            <LazyAgendaPagamentos />
-          </ManagerGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/guias" element={
-        <SuspenseWrapper>
-          <RouteGuard>
-            <LazyGuias />
-          </RouteGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/conversas" element={
-        <SuspenseWrapper>
-          <RouteGuard>
-            <LazyConversas />
-          </RouteGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/gestao-usuarios" element={
-        <SuspenseWrapper>
-          <AdminGuard>
-            <LazyGestaoUsuarios />
-          </AdminGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/meu-perfil" element={
-        <SuspenseWrapper>
-          <RouteGuard>
-            <LazyMeuPerfil />
-          </RouteGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/analise-sistema" element={
-        <SuspenseWrapper>
-          <AdminGuard>
-            <LazyAnaliseDoSistema />
-          </AdminGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/dashboard-avancado" element={
-        <SuspenseWrapper>
-          <ManagerGuard>
-            <LazyAdvancedDashboardPage />
-          </ManagerGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/relatorios" element={
-        <SuspenseWrapper>
-          <ManagerGuard>
-            <LazyReportsPage />
-          </ManagerGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/backup" element={
-        <SuspenseWrapper>
-          <AdminGuard>
-            <LazyBackupPage />
-          </AdminGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/configuracoes-sistema" element={
-        <SuspenseWrapper>
-          <AdminGuard>
-            <LazySystemSettings />
-          </AdminGuard>
-        </SuspenseWrapper>
-      } />
-      
-      {/* Franqueadora Routes - Admin only */}
-      <Route path="/franqueadora/dashboard" element={
-        <SuspenseWrapper>
-          <AdminGuard>
-            <LazyDashboardFranqueadora />
-          </AdminGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/franqueadora/franquias" element={
-        <SuspenseWrapper>
-          <AdminGuard>
-            <LazyGestaoFranquias />
-          </AdminGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/franqueadora/leads" element={
-        <SuspenseWrapper>
-          <AdminGuard>
-            <LazyLeadsFranqueados />
-          </AdminGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/franqueadora/franqueados" element={
-        <SuspenseWrapper>
-          <AdminGuard>
-            <LazyCRMFranqueados />
-          </AdminGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/franqueadora/financeiro" element={
-        <SuspenseWrapper>
-          <AdminGuard>
-            <LazyFinanceiroMatriz />
-          </AdminGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/franqueadora/royalties" element={
-        <SuspenseWrapper>
-          <AdminGuard>
-            <LazyGestaoRoyalties />
-          </AdminGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/franqueadora/contratos" element={
-        <SuspenseWrapper>
-          <AdminGuard>
-            <LazyGestaoContratos />
-          </AdminGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/franqueadora/relatorios" element={
-        <SuspenseWrapper>
-          <AdminGuard>
-            <LazyRelatoriosExecutivos />
-          </AdminGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/franqueadora/metas" element={
-        <SuspenseWrapper>
-          <AdminGuard>
-            <LazyMetasKPIs />
-          </AdminGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="/franqueadora/expansao" element={
-        <SuspenseWrapper>
-          <AdminGuard>
-            <LazyExpansaoFranquias />
-          </AdminGuard>
-        </SuspenseWrapper>
-      } />
-      
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
-    </Routes>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <NotificationProvider>
+          <AuthProvider>
+            <Router>
+              <Routes>
+                {/* Public routes */}
+                <Route path="/" element={<SuspenseWrapper><IndexPage /></SuspenseWrapper>} />
+                <Route path="/login" element={<SuspenseWrapper><LoginPage /></SuspenseWrapper>} />
+                <Route path="/recovery" element={<SuspenseWrapper><RecoveryPage /></SuspenseWrapper>} />
+                <Route path="/accept-invite" element={<SuspenseWrapper><InviteAcceptance /></SuspenseWrapper>} />
+                
+                {/* Protected routes with tenant context */}
+                <Route path="/dashboard" element={
+                  <TenantAwareLayout>
+                    <SuspenseWrapper><AdvancedDashboardPage /></SuspenseWrapper>
+                  </TenantAwareLayout>
+                } />
+                
+                <Route path="/vendas" element={
+                  <TenantAwareLayout>
+                    <SuspenseWrapper><VendasPage /></SuspenseWrapper>
+                  </TenantAwareLayout>
+                } />
+                
+                <Route path="/clientes" element={
+                  <TenantAwareLayout>
+                    <SuspenseWrapper><ClientesPage /></SuspenseWrapper>
+                  </TenantAwareLayout>
+                } />
+                
+                <Route path="/prestadores" element={
+                  <TenantAwareLayout>
+                    <SuspenseWrapper><PrestadoresPage /></SuspenseWrapper>
+                  </TenantAwareLayout>
+                } />
+                
+                <Route path="/servicos" element={
+                  <TenantAwareLayout>
+                    <SuspenseWrapper><ServicosPage /></SuspenseWrapper>
+                  </TenantAwareLayout>
+                } />
+                
+                <Route path="/agendamentos" element={
+                  <TenantAwareLayout>
+                    <SuspenseWrapper><AgendamentosPage /></SuspenseWrapper>
+                  </TenantAwareLayout>
+                } />
+                
+                <Route path="/orcamentos" element={
+                  <TenantAwareLayout>
+                    <SuspenseWrapper><OrcamentosPage /></SuspenseWrapper>
+                  </TenantAwareLayout>
+                } />
+                
+                <Route path="/colaboradores" element={
+                  <TenantAwareLayout>
+                    <SuspenseWrapper><ColaboradoresPage /></SuspenseWrapper>
+                  </TenantAwareLayout>
+                } />
+                
+                <Route path="/gestao-usuarios" element={
+                  <TenantAwareLayout>
+                    <SuspenseWrapper><GestaoUsuariosPage /></SuspenseWrapper>
+                  </TenantAwareLayout>
+                } />
+                
+                <Route path="/meu-perfil" element={
+                  <TenantAwareLayout>
+                    <SuspenseWrapper><MeuPerfilPage /></SuspenseWrapper>
+                  </TenantAwareLayout>
+                } />
+                
+                {/* Admin Routes */}
+                <Route path="/admin" element={
+                  <TenantAwareLayout>
+                    <SuspenseWrapper><AdminDashboardPage /></SuspenseWrapper>
+                  </TenantAwareLayout>
+                } />
+                <Route path="/admin/tenants" element={
+                  <TenantAwareLayout>
+                    <SuspenseWrapper><TenantsManagement /></SuspenseWrapper>
+                  </TenantAwareLayout>
+                } />
+                
+                <Route path="*" element={<SuspenseWrapper><NotFoundPage /></SuspenseWrapper>} />
+              </Routes>
+              <Toaster />
+            </Router>
+          </AuthProvider>
+        </NotificationProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 };
+
+export default AppRoutes;
