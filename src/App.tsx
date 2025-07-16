@@ -83,15 +83,17 @@ function App() {
           <NotificationProvider>
             <Router>
               <Routes>
-                {/* Rotas Públicas */}
+                {/* Rota Principal - Página Pública da Empresa */}
+                <Route path="/" element={<PaginaDeVendas />} />
+                
+                {/* Outras Rotas Públicas */}
                 <Route path="/login" element={<Login />} />
-                <Route path="/vendas-publico" element={<PaginaDeVendas />} />
                 <Route path="/portal-parceiro" element={<PortalParceiro />} />
                 <Route path="/seja-franqueado" element={<SejaFranqueado />} />
                 
-                {/* Rotas Protegidas */}
-                <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-                  <Route index element={<Navigate to="/dashboard" replace />} />
+                {/* Rotas Protegidas - Sistema Administrativo */}
+                <Route path="/sistema" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                  <Route index element={<Navigate to="/sistema/dashboard" replace />} />
                   <Route path="dashboard" element={<Index />} />
                   
                   {/* Rotas da Franqueadora */}

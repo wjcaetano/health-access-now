@@ -26,7 +26,7 @@ export default function Login() {
   // Redirect if already logged in
   React.useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      navigate('/sistema/dashboard');
     }
   }, [user, navigate]);
 
@@ -77,7 +77,7 @@ export default function Login() {
             title: "Login realizado com sucesso!",
             description: "Bem-vindo ao Sistema AGENDAJA"
           });
-          navigate('/dashboard');
+          navigate('/sistema/dashboard');
         }
       }
     } catch (error) {
