@@ -85,10 +85,11 @@ export function useProviderOperations() {
       const { data, error } = await supabase
         .from("prestadores")
         .update({ 
-          configuracoes: { 
-            ...availability,
-            updated_at: new Date().toISOString()
-          }
+          // Remove configuracoes since it doesn't exist in the table schema
+          banco: availability.banco,
+          agencia: availability.agencia,
+          conta: availability.conta,
+          tipo_conta: availability.tipo_conta
         })
         .eq("id", profile?.prestador_id)
         .eq("tenant_id", currentTenant?.id)

@@ -47,19 +47,16 @@ export class CrossTenantService {
     return data;
   }
 
-  // Sistema de webhooks para sincronização
+  // Sistema de webhooks para sincronização - using edge functions instead of direct table access
   static async registerWebhook(tenantId: string, url: string, events: string[]) {
-    const { data, error } = await supabase
-      .from('tenant_webhooks')
-      .insert([{
-        tenant_id: tenantId,
+    const { data, error } = await supabase.functions.invoke('webhook-manager', {
+      body: {
+        action: 'register',
+        tenantId,
         url,
-        events,
-        active: true,
-        created_at: new Date().toISOString()
-      }])
-      .select()
-      .single();
+        events
+      }
+    });
 
     if (error) throw error;
     return data;

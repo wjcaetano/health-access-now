@@ -104,25 +104,25 @@ export class TenantApiService {
     return query.order("created_at", { ascending: false });
   }
 
-  // Métricas agregadas por tenant
+  // Métricas agregadas por tenant - Fixed type issues
   async getMetricas(periodo?: { inicio: string; fim: string }) {
-    const promises = [
+    const [clientesResult, vendasResult, prestadoresResult, servicosResult] = await Promise.all([
       this.getClientes(),
       this.getVendas(),
       this.getPrestadores({ ativo: true }),
       this.getServicos({ ativo: true })
-    ];
+    ]);
 
-    const [clientes, vendas, prestadores, servicos] = await Promise.all(promises);
+    const vendas = vendasResult.data || [];
 
     return {
-      totalClientes: clientes.data?.length || 0,
-      totalVendas: vendas.data?.length || 0,
-      faturamentoTotal: vendas.data?.reduce((sum, v) => sum + Number(v.valor_total), 0) || 0,
-      prestadoresAtivos: prestadores.data?.length || 0,
-      servicosAtivos: servicos.data?.length || 0,
-      ticketMedio: vendas.data?.length ? 
-        (vendas.data.reduce((sum, v) => sum + Number(v.valor_total), 0) / vendas.data.length) : 0
+      totalClientes: clientesResult.data?.length || 0,
+      totalVendas: vendas.length,
+      faturamentoTotal: vendas.reduce((sum, v) => sum + Number(v.valor_total), 0),
+      prestadoresAtivos: prestadoresResult.data?.length || 0,
+      servicosAtivos: servicosResult.data?.length || 0,
+      ticketMedio: vendas.length ? 
+        (vendas.reduce((sum, v) => sum + Number(v.valor_total), 0) / vendas.length) : 0
     };
   }
 }
