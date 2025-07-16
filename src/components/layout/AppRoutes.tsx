@@ -1,85 +1,339 @@
-import React from "react";
+
+import React, { Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import {
+  LazyIndex,
+  LazyClientes,
+  LazyNovoCliente,
+  LazyPrestadores,
+  LazyNovoPrestador,
+  LazyServicos,
+  LazyNovoServico,
+  LazyOrcamentos,
+  LazyVisualizarOrcamento,
+  LazyVendas,
+  LazyVendaFinalizada,
+  LazyAgendamentos,
+  LazyNovoAgendamento,
+  LazyColaboradores,
+  LazyFinanceiro,
+  LazyAgendaPagamentos,
+  LazyGuias,
+  LazyConversas,
+  LazyGestaoUsuarios,
+  LazyMeuPerfil,
+  LazyAnaliseDoSistema,
+  LazyAdvancedDashboardPage,
+  LazyReportsPage,
+  LazyBackupPage,
+  LazySystemSettings,
+  LazyDashboardFranqueadora,
+  LazyGestaoFranquias,
+  LazyLeadsFranqueados,
+  LazyCRMFranqueados,
+  LazyFinanceiroMatriz,
+  LazyGestaoRoyalties,
+  LazyGestaoContratos,
+  LazyRelatoriosExecutivos,
+  LazyMetasKPIs,
+  LazyExpansaoFranquias
+} from "./LazyPages";
+import { RouteGuard } from "./guards/RouteGuard";
+import { AdminGuard } from "./guards/AdminGuard";
+import { ManagerGuard } from "./guards/ManagerGuard";
 
-// ... keep existing code (all imports)
-import Index from "@/pages/Index";
-import Clientes from "@/pages/Clientes";
-import NovoCliente from "@/pages/NovoCliente";
-import Prestadores from "@/pages/Prestadores";
-import NovoPrestador from "@/pages/NovoPrestador";
-import Servicos from "@/pages/Servicos";
-import NovoServico from "@/pages/NovoServico";
-import Orcamentos from "@/pages/Orcamentos";
-import VisualizarOrcamento from "@/pages/VisualizarOrcamento";
-import Vendas from "@/pages/Vendas";
-import VendaFinalizada from "@/pages/VendaFinalizada";
-import Agendamentos from "@/pages/Agendamentos";
-import NovoAgendamento from "@/pages/NovoAgendamento";
-import Colaboradores from "@/pages/Colaboradores";
-import Financeiro from "@/pages/Financeiro";
-import AgendaPagamentos from "@/pages/AgendaPagamentos";
-import Guias from "@/pages/Guias";
-import Conversas from "@/pages/Conversas";
-import GestaoUsuarios from "@/pages/GestaoUsuarios";
-import MeuPerfil from "@/pages/MeuPerfil";
-import AnaliseDoSistema from "@/pages/AnaliseDoSistema";
-import AdvancedDashboardPage from "@/pages/AdvancedDashboard";
-import ReportsPage from "@/pages/ReportsPage";
-import BackupPage from "@/pages/BackupPage";
-import SystemSettings from "@/pages/SystemSettings";
-
-// Franqueadora pages
-import DashboardFranqueadora from "@/pages/franqueadora/DashboardFranqueadora";
-import GestaoFranquias from "@/pages/franqueadora/GestaoFranquias";
-import LeadsFranqueados from "@/pages/franqueadora/LeadsFranqueados";
-import CRMFranqueados from "@/pages/franqueadora/CRMFranqueados";
-import FinanceiroMatriz from "@/pages/franqueadora/FinanceiroMatriz";
-import GestaoRoyalties from "@/pages/franqueadora/GestaoRoyalties";
-import GestaoContratos from "@/pages/franqueadora/GestaoContratos";
-import RelatoriosExecutivos from "@/pages/franqueadora/RelatoriosExecutivos";
-import MetasKPIs from "@/pages/franqueadora/MetasKPIs";
-import ExpansaoFranquias from "@/pages/franqueadora/ExpansaoFranquias";
+const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <Suspense fallback={
+    <div className="flex items-center justify-center min-h-[400px]">
+      <LoadingSpinner size="lg" />
+    </div>
+  }>
+    {children}
+  </Suspense>
+);
 
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/clientes" element={<Clientes />} />
-      <Route path="/clientes/novo" element={<NovoCliente />} />
-      <Route path="/prestadores" element={<Prestadores />} />
-      <Route path="/prestadores/novo" element={<NovoPrestador />} />
-      <Route path="/servicos" element={<Servicos />} />
-      <Route path="/servicos/novo" element={<NovoServico />} />
-      <Route path="/orcamentos" element={<Orcamentos />} />
-      <Route path="/orcamentos/:id" element={<VisualizarOrcamento />} />
-      <Route path="/vendas" element={<Vendas />} />
-      <Route path="/vendas/finalizada" element={<VendaFinalizada />} />
-      <Route path="/agendamentos" element={<Agendamentos />} />
-      <Route path="/agendamentos/novo" element={<NovoAgendamento />} />
-      <Route path="/colaboradores" element={<Colaboradores />} />
-      <Route path="/financeiro" element={<Financeiro />} />
-      <Route path="/agenda-pagamentos" element={<AgendaPagamentos />} />
-      <Route path="/guias" element={<Guias />} />
-      <Route path="/conversas" element={<Conversas />} />
-      <Route path="/gestao-usuarios" element={<GestaoUsuarios />} />
-      <Route path="/meu-perfil" element={<MeuPerfil />} />
-      <Route path="/analise-sistema" element={<AnaliseDoSistema />} />
-      <Route path="/dashboard-avancado" element={<AdvancedDashboardPage />} />
-      <Route path="/relatorios" element={<ReportsPage />} />
-      <Route path="/backup" element={<BackupPage />} />
-      <Route path="/configuracoes-sistema" element={<SystemSettings />} />
+      <Route path="/" element={
+        <SuspenseWrapper>
+          <LazyIndex />
+        </SuspenseWrapper>
+      } />
       
-      {/* Franqueadora Routes */}
-      <Route path="/franqueadora/dashboard" element={<DashboardFranqueadora />} />
-      <Route path="/franqueadora/franquias" element={<GestaoFranquias />} />
-      <Route path="/franqueadora/leads" element={<LeadsFranqueados />} />
-      <Route path="/franqueadora/franqueados" element={<CRMFranqueados />} />
-      <Route path="/franqueadora/financeiro" element={<FinanceiroMatriz />} />
-      <Route path="/franqueadora/royalties" element={<GestaoRoyalties />} />
-      <Route path="/franqueadora/contratos" element={<GestaoContratos />} />
-      <Route path="/franqueadora/relatorios" element={<RelatoriosExecutivos />} />
-      <Route path="/franqueadora/metas" element={<MetasKPIs />} />
-      <Route path="/franqueadora/expansao" element={<ExpansaoFranquias />} />
+      <Route path="/clientes" element={
+        <SuspenseWrapper>
+          <RouteGuard>
+            <LazyClientes />
+          </RouteGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/clientes/novo" element={
+        <SuspenseWrapper>
+          <RouteGuard>
+            <LazyNovoCliente />
+          </RouteGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/prestadores" element={
+        <SuspenseWrapper>
+          <RouteGuard>
+            <LazyPrestadores />
+          </RouteGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/prestadores/novo" element={
+        <SuspenseWrapper>
+          <RouteGuard>
+            <LazyNovoPrestador />
+          </RouteGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/servicos" element={
+        <SuspenseWrapper>
+          <RouteGuard>
+            <LazyServicos />
+          </RouteGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/servicos/novo" element={
+        <SuspenseWrapper>
+          <RouteGuard>
+            <LazyNovoServico />
+          </RouteGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/orcamentos" element={
+        <SuspenseWrapper>
+          <RouteGuard>
+            <LazyOrcamentos />
+          </RouteGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/orcamentos/:id" element={
+        <SuspenseWrapper>
+          <RouteGuard>
+            <LazyVisualizarOrcamento />
+          </RouteGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/vendas" element={
+        <SuspenseWrapper>
+          <RouteGuard>
+            <LazyVendas />
+          </RouteGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/vendas/finalizada" element={
+        <SuspenseWrapper>
+          <RouteGuard>
+            <LazyVendaFinalizada />
+          </RouteGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/agendamentos" element={
+        <SuspenseWrapper>
+          <RouteGuard>
+            <LazyAgendamentos />
+          </RouteGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/agendamentos/novo" element={
+        <SuspenseWrapper>
+          <RouteGuard>
+            <LazyNovoAgendamento />
+          </RouteGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/colaboradores" element={
+        <SuspenseWrapper>
+          <ManagerGuard>
+            <LazyColaboradores />
+          </ManagerGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/financeiro" element={
+        <SuspenseWrapper>
+          <ManagerGuard>
+            <LazyFinanceiro />
+          </ManagerGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/agenda-pagamentos" element={
+        <SuspenseWrapper>
+          <ManagerGuard>
+            <LazyAgendaPagamentos />
+          </ManagerGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/guias" element={
+        <SuspenseWrapper>
+          <RouteGuard>
+            <LazyGuias />
+          </RouteGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/conversas" element={
+        <SuspenseWrapper>
+          <RouteGuard>
+            <LazyConversas />
+          </RouteGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/gestao-usuarios" element={
+        <SuspenseWrapper>
+          <AdminGuard>
+            <LazyGestaoUsuarios />
+          </AdminGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/meu-perfil" element={
+        <SuspenseWrapper>
+          <RouteGuard>
+            <LazyMeuPerfil />
+          </RouteGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/analise-sistema" element={
+        <SuspenseWrapper>
+          <AdminGuard>
+            <LazyAnaliseDoSistema />
+          </AdminGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/dashboard-avancado" element={
+        <SuspenseWrapper>
+          <ManagerGuard>
+            <LazyAdvancedDashboardPage />
+          </ManagerGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/relatorios" element={
+        <SuspenseWrapper>
+          <ManagerGuard>
+            <LazyReportsPage />
+          </ManagerGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/backup" element={
+        <SuspenseWrapper>
+          <AdminGuard>
+            <LazyBackupPage />
+          </AdminGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/configuracoes-sistema" element={
+        <SuspenseWrapper>
+          <AdminGuard>
+            <LazySystemSettings />
+          </AdminGuard>
+        </SuspenseWrapper>
+      } />
+      
+      {/* Franqueadora Routes - Admin only */}
+      <Route path="/franqueadora/dashboard" element={
+        <SuspenseWrapper>
+          <AdminGuard>
+            <LazyDashboardFranqueadora />
+          </AdminGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/franqueadora/franquias" element={
+        <SuspenseWrapper>
+          <AdminGuard>
+            <LazyGestaoFranquias />
+          </AdminGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/franqueadora/leads" element={
+        <SuspenseWrapper>
+          <AdminGuard>
+            <LazyLeadsFranqueados />
+          </AdminGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/franqueadora/franqueados" element={
+        <SuspenseWrapper>
+          <AdminGuard>
+            <LazyCRMFranqueados />
+          </AdminGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/franqueadora/financeiro" element={
+        <SuspenseWrapper>
+          <AdminGuard>
+            <LazyFinanceiroMatriz />
+          </AdminGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/franqueadora/royalties" element={
+        <SuspenseWrapper>
+          <AdminGuard>
+            <LazyGestaoRoyalties />
+          </AdminGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/franqueadora/contratos" element={
+        <SuspenseWrapper>
+          <AdminGuard>
+            <LazyGestaoContratos />
+          </AdminGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/franqueadora/relatorios" element={
+        <SuspenseWrapper>
+          <AdminGuard>
+            <LazyRelatoriosExecutivos />
+          </AdminGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/franqueadora/metas" element={
+        <SuspenseWrapper>
+          <AdminGuard>
+            <LazyMetasKPIs />
+          </AdminGuard>
+        </SuspenseWrapper>
+      } />
+      
+      <Route path="/franqueadora/expansao" element={
+        <SuspenseWrapper>
+          <AdminGuard>
+            <LazyExpansaoFranquias />
+          </AdminGuard>
+        </SuspenseWrapper>
+      } />
       
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
