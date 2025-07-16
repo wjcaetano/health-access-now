@@ -9,6 +9,12 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, CheckCircle } from 'lucide-react';
 
+interface InviteResponse {
+  success?: boolean;
+  error?: string;
+  user_id?: string;
+}
+
 export const InviteAcceptance: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -71,10 +77,11 @@ export const InviteAcceptance: React.FC = () => {
       { token, password },
       {
         onSuccess: (result) => {
-          if (result.error) {
+          const response = result as InviteResponse;
+          if (response.error) {
             toast({
               title: "Erro",
-              description: result.error,
+              description: response.error,
               variant: "destructive",
             });
           } else {

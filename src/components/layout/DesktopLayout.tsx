@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
-import { AppRoutes } from "./AppRoutes";
+import AppRoutes from "./AppRoutes";
 
 interface DesktopLayoutProps {
   userProfile: string;

@@ -4,7 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
-import { AppRoutes } from "./AppRoutes";
+import AppRoutes from "./AppRoutes";
 
 interface MobileLayoutProps {
   userProfile: string;

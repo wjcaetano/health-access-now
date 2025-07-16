@@ -1,3 +1,4 @@
+
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
@@ -10,19 +11,19 @@ import { InviteAcceptance } from '@/components/auth/InviteAcceptance';
 import { TenantAwareLayout } from '@/components/layout/TenantAwareLayout';
 
 // Lazy-load pages to improve initial load time
-const IndexPage = lazy(() => import('@/pages/IndexPage'));
-const LoginPage = lazy(() => import('@/pages/LoginPage'));
-const AdvancedDashboardPage = lazy(() => import('@/pages/AdvancedDashboardPage'));
-const VendasPage = lazy(() => import('@/pages/VendasPage'));
-const ClientesPage = lazy(() => import('@/pages/ClientesPage'));
-const PrestadoresPage = lazy(() => import('@/pages/PrestadoresPage'));
-const ServicosPage = lazy(() => import('@/pages/ServicosPage'));
-const AgendamentosPage = lazy(() => import('@/pages/AgendamentosPage'));
-const OrcamentosPage = lazy(() => import('@/pages/OrcamentosPage'));
-const ColaboradoresPage = lazy(() => import('@/pages/ColaboradoresPage'));
-const GestaoUsuariosPage = lazy(() => import('@/pages/GestaoUsuariosPage'));
-const MeuPerfilPage = lazy(() => import('@/pages/MeuPerfilPage'));
-const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
+const IndexPage = lazy(() => import('@/pages/Index'));
+const LoginPage = lazy(() => import('@/pages/auth/Login'));
+const AdvancedDashboardPage = lazy(() => import('@/pages/AdvancedDashboard'));
+const VendasPage = lazy(() => import('@/pages/Vendas'));
+const ClientesPage = lazy(() => import('@/pages/Clientes'));
+const PrestadoresPage = lazy(() => import('@/pages/Prestadores'));
+const ServicosPage = lazy(() => import('@/pages/Servicos'));
+const AgendamentosPage = lazy(() => import('@/pages/Agendamentos'));
+const OrcamentosPage = lazy(() => import('@/pages/Orcamentos'));
+const ColaboradoresPage = lazy(() => import('@/pages/Colaboradores'));
+const GestaoUsuariosPage = lazy(() => import('@/pages/GestaoUsuarios'));
+const MeuPerfilPage = lazy(() => import('@/pages/MeuPerfil'));
+const NotFoundPage = lazy(() => import('@/pages/NotFound'));
 const RecoveryPage = lazy(() => import('@/pages/RecoveryPage'));
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
 const TenantsManagement = lazy(() => import('@/pages/admin/TenantsManagement'));
