@@ -43,12 +43,14 @@ describe('useClientes', () => {
       { id: '2', nome: 'Maria Santos', email: 'maria@test.com', cpf: '987.654.321-00' }
     ];
 
-    (supabase.from as jest.Mock).mockImplementation(() => ({
+    const mockFrom = jest.fn().mockReturnValue({
       select: jest.fn().mockResolvedValue({
         data: mockClientes,
         error: null
       })
-    }));
+    });
+
+    (supabase.from as jest.Mock) = mockFrom;
 
     const { result } = renderHook(() => useClientes(), {
       wrapper: createWrapper(),
