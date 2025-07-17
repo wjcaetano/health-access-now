@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,7 +28,7 @@ const CRMFranqueados = () => {
   const updateLead = useUpdateLead();
   
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [selectedLead, setSelectedLead] = useState<string | null>(null);
 
   const filteredLeads = leads?.filter(lead => {
@@ -39,7 +38,7 @@ const CRMFranqueados = () => {
       lead.telefone.includes(searchTerm) ||
       lead.cidade_interesse?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStatus = !statusFilter || lead.status === statusFilter;
+    const matchesStatus = statusFilter === "todos" || lead.status === statusFilter;
     
     return matchesSearch && matchesStatus;
   }) || [];
@@ -180,7 +179,7 @@ const CRMFranqueados = () => {
                 <SelectValue placeholder="Filtrar por status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os status</SelectItem>
+                <SelectItem value="todos">Todos os status</SelectItem>
                 <SelectItem value="novo">Novo</SelectItem>
                 <SelectItem value="contatado">Contatado</SelectItem>
                 <SelectItem value="qualificado">Qualificado</SelectItem>
