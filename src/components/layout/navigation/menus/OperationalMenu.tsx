@@ -37,7 +37,7 @@ export const operationalMenuItems: MenuItem[] = [
     title: "Orçamentos",
     icon: FileText,
     href: "/sistema/orcamentos",
-    roles: ["admin", "gerente", "colaborador"]
+    roles: ["admin", "gerente", "colaborador"]  
   },
   {
     title: "Clientes",
