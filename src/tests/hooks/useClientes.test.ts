@@ -37,11 +37,13 @@ describe('useClientes', () => {
       { id: '2', nome: 'Maria Santos', email: 'maria@test.com', cpf: '987.654.321-00' }
     ];
 
+    const mockSelect = jest.fn().mockResolvedValue({
+      data: mockClientes,
+      error: null
+    });
+
     const mockFrom = jest.fn().mockReturnValue({
-      select: jest.fn().mockResolvedValue({
-        data: mockClientes,
-        error: null
-      })
+      select: mockSelect
     });
 
     (supabase.from as jest.Mock).mockImplementation(mockFrom);
@@ -61,11 +63,13 @@ describe('useClientes', () => {
   it('should handle error when fetching clientes', async () => {
     const mockError = { message: 'Database error' };
 
+    const mockSelect = jest.fn().mockResolvedValue({
+      data: null,
+      error: mockError
+    });
+
     const mockFrom = jest.fn().mockReturnValue({
-      select: jest.fn().mockResolvedValue({
-        data: null,
-        error: mockError
-      })
+      select: mockSelect
     });
 
     (supabase.from as jest.Mock).mockImplementation(mockFrom);
