@@ -20,7 +20,7 @@ const LeadsFranqueados = () => {
   const updateLead = useUpdateLead();
   
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [isNewLeadOpen, setIsNewLeadOpen] = useState(false);
   const [editingLead, setEditingLead] = useState<LeadFranqueado | null>(null);
   const [newLead, setNewLead] = useState<Partial<LeadFranqueado>>({
@@ -36,7 +36,7 @@ const LeadsFranqueados = () => {
       lead.telefone.includes(searchTerm) ||
       lead.cidade_interesse?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStatus = !statusFilter || lead.status === statusFilter;
+    const matchesStatus = statusFilter === "todos" || lead.status === statusFilter;
     
     return matchesSearch && matchesStatus;
   });
@@ -163,7 +163,7 @@ const LeadsFranqueados = () => {
                 <div>
                   <Label htmlFor="origem">Origem do Lead</Label>
                   <Select 
-                    value={newLead.origem} 
+                    value={newLead.origem || "site"} 
                     onValueChange={(value) => setNewLead(prev => ({ ...prev, origem: value as any }))}
                   >
                     <SelectTrigger>
@@ -313,7 +313,7 @@ const LeadsFranqueados = () => {
             <SelectValue placeholder="Filtrar por status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Todos os status</SelectItem>
+            <SelectItem value="todos">Todos os status</SelectItem>
             <SelectItem value="novo">Novo</SelectItem>
             <SelectItem value="contatado">Contatado</SelectItem>
             <SelectItem value="qualificado">Qualificado</SelectItem>
@@ -346,10 +346,10 @@ const LeadsFranqueados = () => {
               
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-sm text-muted-foreground">Score:</span>
-                <span className={`font-bold ${getScoreColor(lead.score)}`}>
-                  {lead.score}/100
+                <span className={`font-bold ${getScoreColor(lead.score || 0)}`}>
+                  {lead.score || 0}/100
                 </span>
-                <Progress value={lead.score} className="flex-1 h-2" />
+                <Progress value={lead.score || 0} className="flex-1 h-2" />
               </div>
             </CardHeader>
             
@@ -375,7 +375,7 @@ const LeadsFranqueados = () => {
                 )}
 
                 <div className="text-xs text-muted-foreground">
-                  Origem: {lead.origem} | Criado em {formatDate(lead.created_at)}
+                  Origem: {lead.origem} | Criado em {formatDate(lead.created_at || '')}
                 </div>
 
                 {lead.observacoes && (
@@ -416,7 +416,7 @@ const LeadsFranqueados = () => {
           <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-medium mb-2">Nenhum lead encontrado</h3>
           <p className="text-muted-foreground">
-            {searchTerm || statusFilter ? "Tente ajustar os filtros" : "Comece adicionando seu primeiro lead"}
+            {searchTerm || statusFilter !== "todos" ? "Tente ajustar os filtros" : "Comece adicionando seu primeiro lead"}
           </p>
         </div>
       )}
