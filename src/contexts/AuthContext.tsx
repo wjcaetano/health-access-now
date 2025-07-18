@@ -123,11 +123,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return result;
   };
 
+  // Verificações de perfil e permissões
   const isAdmin = profile?.nivel_acesso === 'admin';
   const isManager = profile?.nivel_acesso === 'gerente' || isAdmin;
   const isPrestador = !!profile?.prestador_id;
   const isActive = profile?.status === 'ativo';
   const hasMultiTenantAccess = isAdmin || profile?.nivel_acesso === 'gerente';
+  
+  // Verificações específicas para cada portal
+  const isUnidadeUser = ['atendente', 'gerente', 'admin'].includes(profile?.nivel_acesso || '');
+  const isFranqueadoraUser = isAdmin && profile?.nivel_acesso === 'admin';
 
   const value = {
     user,
@@ -147,6 +152,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isActive,
     requiresPasswordChange,
     hasMultiTenantAccess,
+    isUnidadeUser,
+    isFranqueadoraUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

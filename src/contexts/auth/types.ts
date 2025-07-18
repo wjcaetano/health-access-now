@@ -1,27 +1,29 @@
 
 import { User, Session } from '@supabase/supabase-js';
 
-export type UserProfile = {
+export interface UserProfile {
   id: string;
   email: string;
-  nome: string | null;
-  nivel_acesso: 'colaborador' | 'atendente' | 'gerente' | 'admin' | 'prestador';
-  colaborador_id: string | null;
-  prestador_id: string | null;
-  tenant_id: string | null;
+  nome?: string;
+  nivel_acesso: 'atendente' | 'gerente' | 'admin' | 'prestador';
   status: 'pendente' | 'aguardando_aprovacao' | 'ativo' | 'suspenso' | 'inativo';
-  foto_url: string | null;
-};
+  tenant_id?: string;
+  colaborador_id?: string;
+  prestador_id?: string;
+  foto_url?: string;
+  created_at?: string;
+  updated_at?: string;
+}
 
-export type AuthContextType = {
+export interface AuthContextType {
   user: User | null;
   session: Session | null;
   profile: UserProfile | null;
   loading: boolean;
   initialized: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, nome: string, nivel_acesso?: string) => Promise<{ error: any }>;
-  signOut: () => Promise<void>;
+  signUp: (email: string, password: string, userData?: any) => Promise<{ error: any }>;
+  signOut: () => Promise<{ error: any }>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<{ error: any }>;
   updatePassword: (newPassword: string) => Promise<{ error: any }>;
   sendPasswordReset: (email: string) => Promise<{ error: any }>;
@@ -31,4 +33,6 @@ export type AuthContextType = {
   isActive: boolean;
   requiresPasswordChange: boolean;
   hasMultiTenantAccess: boolean;
-};
+  isUnidadeUser: boolean;
+  isFranqueadoraUser: boolean;
+}
