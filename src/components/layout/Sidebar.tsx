@@ -7,7 +7,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/AuthContext";
 import { SidebarContent } from "./navigation/SidebarContent";
 import { MobileSidebar } from "./navigation/MobileSidebar";
-import { agendajaMenu, gerenteMenu, prestadorMenu } from "./navigation/MenuItems";
+import { unidadeMenuItems } from "./navigation/menus/UnidadeMenu";
+import { prestadorMenuItems } from "./navigation/menus/PrestadorMenuSimplified";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -17,12 +18,16 @@ interface SidebarProps {
 
 export default function Sidebar({ collapsed, setCollapsed, userProfile }: SidebarProps) {
   const isMobile = useIsMobile();
-  const { isManager } = useAuth();
+  const { profile } = useAuth();
   
   // Determinar qual menu mostrar baseado no perfil do usuário
-  const menuItems = userProfile === "prestador" ? prestadorMenu : agendajaMenu;
-  const showGerenteMenu = userProfile === "agendaja" && isManager;
-  const gerenteMenuItems = showGerenteMenu ? gerenteMenu : [];
+  const menuItems = userProfile === "prestador" ? prestadorMenuItems : unidadeMenuItems;
+  
+  // Verificar se é gerente ou admin para mostrar opções administrativas
+  const isManager = profile?.nivel_acesso === 'gerente' || profile?.nivel_acesso === 'admin';
+  const adminMenuItems = isManager ? unidadeMenuItems.filter(item => 
+    item.roles?.includes('gerente') || item.roles?.includes('admin')
+  ) : [];
 
   // Mobile sidebar
   if (isMobile) {
@@ -31,7 +36,7 @@ export default function Sidebar({ collapsed, setCollapsed, userProfile }: Sideba
         isOpen={!collapsed}
         onClose={() => setCollapsed(true)}
         menuItems={menuItems}
-        gerenteMenuItems={gerenteMenuItems}
+        gerenteMenuItems={adminMenuItems}
         userProfile={userProfile}
       />
     );
@@ -81,7 +86,7 @@ export default function Sidebar({ collapsed, setCollapsed, userProfile }: Sideba
       
       <SidebarContent 
         menuItems={menuItems} 
-        gerenteMenuItems={gerenteMenuItems} 
+        gerenteMenuItems={adminMenuItems} 
         collapsed={collapsed}
         userProfile={userProfile}
       />
