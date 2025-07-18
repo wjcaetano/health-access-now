@@ -25,9 +25,9 @@ const PaginaDeVendas = ({ mostrarLogin }: PaginaDeVendasProps) => {
     if (isAuthenticated) {
         const userType = localStorage.getItem("agendaja_user_type");
         if (userType === 'prestador') {
-            navigate('/sistema/prestador/portal');
+            navigate('/prestador/portal');
         } else {
-            navigate('/sistema/dashboard');
+            navigate('/unidade/dashboard');
         }
     }
   }, [navigate]);

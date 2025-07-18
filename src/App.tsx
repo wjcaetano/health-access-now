@@ -49,7 +49,7 @@ function App() {
           <NotificationProvider>
             <Router>
               <Routes>
-                {/* Página Principal */}
+                {/* Página Principal - PaginaDeVendas como homepage */}
                 <Route path="/" element={<PaginaDeVendas />} />
                 
                 {/* Páginas Públicas */}
@@ -84,8 +84,10 @@ function App() {
                   </ProtectedRoute>
                 } />
                 
-                {/* Redirecionamento baseado no perfil */}
+                {/* Redirecionamentos legados */}
                 <Route path="/sistema" element={<Navigate to="/unidade" replace />} />
+                <Route path="/sistema/*" element={<Navigate to="/unidade" replace />} />
+                <Route path="/portal" element={<Navigate to="/" replace />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>
