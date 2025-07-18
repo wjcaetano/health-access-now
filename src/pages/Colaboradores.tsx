@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 import CadastroCompleto from "@/components/colaboradores/CadastroCompleto";
 import ListaColaboradores from "@/components/colaboradores/ListaColaboradores";
 import { UserPlus, Users } from "lucide-react";
