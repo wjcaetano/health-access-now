@@ -4,12 +4,12 @@ export {
   useGuiasPorStatus, 
   useGuiasProximasVencimento, 
   useGuiasPorPedido 
-} from "./guias/useGuiaQueries";
+} from "@/hooks/guias/useGuiaQueries";
 
 export { 
   useUpdateGuiaStatus, 
   useEstornarGuia 
-} from "./guias/useGuiaStatus";
+} from "@/hooks/guias/useGuiaStatus";
 
 // Keep existing hooks that weren't moved
 export { useCancelamentoPedido, useBuscarGuiasRelacionadas } from "@/hooks/useCancelamentoPedido";

@@ -11,7 +11,7 @@ import Clientes from "@/pages/Clientes";
 import Agendamentos from "@/pages/Agendamentos";
 import Orcamentos from "@/pages/Orcamentos";
 import Servicos from "@/pages/Servicos";
-import Prestadores from "@/pages/Prestadores"; // Apenas prestadores da região
+import Prestadores from "@/pages/Prestadores";
 import Financeiro from "@/pages/Financeiro";
 import Colaboradores from "@/pages/Colaboradores";
 import MeuPerfil from "@/pages/MeuPerfil";

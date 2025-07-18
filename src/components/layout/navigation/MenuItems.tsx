@@ -1,6 +1,5 @@
 
 import React from "react";
-import { BarChart3 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { unidadeMenuItems } from "./menus/UnidadeMenu";
 import { prestadorMenuItems } from "./menus/PrestadorMenuSimplified";
