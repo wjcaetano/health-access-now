@@ -3,12 +3,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { prestadoresService, Prestador, NovoPrestador } from "@/services/prestadoresService";
 import { useToast } from "@/hooks/use-toast";
 
+const QUERY_KEY = ["prestadores"];
+
 export function usePrestadores() {
   return useQuery({
-    queryKey: ["prestadores"],
+    queryKey: QUERY_KEY,
     queryFn: prestadoresService.fetchPrestadores,
-    staleTime: 5 * 60 * 1000, // 5 minutos
-    gcTime: 10 * 60 * 1000, // 10 minutos
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 }
 
@@ -19,9 +21,7 @@ export function useCreatePrestador() {
   return useMutation({
     mutationFn: prestadoresService.createPrestador,
     onSuccess: (newPrestador) => {
-      queryClient.setQueryData<Prestador[]>(["prestadores"], (old) => 
-        old ? [newPrestador, ...old] : [newPrestador]
-      );
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       
       toast({
         title: "Prestador cadastrado",
@@ -46,9 +46,7 @@ export function useUpdatePrestador() {
     mutationFn: ({ id, updates }: { id: string; updates: Partial<Prestador> }) =>
       prestadoresService.updatePrestador(id, updates),
     onSuccess: (updatedPrestador) => {
-      queryClient.setQueryData<Prestador[]>(["prestadores"], (old) =>
-        old ? old.map(prest => prest.id === updatedPrestador.id ? updatedPrestador : prest) : []
-      );
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       
       toast({
         title: "Prestador atualizado",
@@ -71,14 +69,12 @@ export function useDeletePrestador() {
   
   return useMutation({
     mutationFn: prestadoresService.deletePrestador,
-    onSuccess: (_, deletedId) => {
-      queryClient.setQueryData<Prestador[]>(["prestadores"], (old) =>
-        old ? old.filter(prest => prest.id !== deletedId) : []
-      );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       
       toast({
         title: "Prestador removido",
-        description: "Prestador foi removido com sucesso.",
+        description: "Prestador foi desativado com sucesso.",
       });
     },
     onError: (error: Error) => {

@@ -32,6 +32,11 @@ const queryClient = new QueryClient({
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
+    },
+    mutations: {
+      retry: 1,
     },
   },
 });
@@ -44,7 +49,7 @@ function App() {
           <NotificationProvider>
             <Router>
               <Routes>
-                {/* Rota Principal - Página Pública */}
+                {/* Página Principal */}
                 <Route path="/" element={<PaginaDeVendas />} />
                 
                 {/* Páginas Públicas */}
@@ -58,28 +63,28 @@ function App() {
                 <Route path="/servicos/exames-de-imagem" element={<ExamesDeImagem />} />
                 <Route path="/servicos/outros-exames" element={<OutrosExames />} />
                 
-                {/* Portal da Unidade/Franquia - Atendentes, Gerentes, Admins Locais */}
+                {/* Portal da Unidade/Franquia */}
                 <Route path="/unidade/*" element={
                   <ProtectedRoute>
                     <UnidadePortal />
                   </ProtectedRoute>
                 } />
                 
-                {/* Portal do Prestador - Apenas Prestadores */}
+                {/* Portal do Prestador */}
                 <Route path="/prestador/*" element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredLevel="prestador">
                     <PrestadorPortal />
                   </ProtectedRoute>
                 } />
                 
-                {/* Portal da Franqueadora - Apenas Admins da Matriz */}
+                {/* Portal da Franqueadora */}
                 <Route path="/franqueadora/*" element={
                   <ProtectedRoute requireAdmin>
                     <FranqueadoraPortal />
                   </ProtectedRoute>
                 } />
                 
-                {/* Redirecionamento baseado no perfil do usuário */}
+                {/* Redirecionamento baseado no perfil */}
                 <Route path="/sistema" element={<Navigate to="/unidade" replace />} />
                 
                 <Route path="*" element={<NotFound />} />

@@ -2,14 +2,8 @@
 import React from "react";
 import { BarChart3 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { holdingMenuItems } from "./menus/HoldingMenu";
-import { operationalMenuItems } from "./menus/OperationalMenu";
-import { administrativeMenuItems } from "./menus/AdministrativeMenu";
-import { providerMenuItems } from "./menus/ProviderMenu";
-import { OperationalMenuSection } from "./sections/OperationalMenuSection";
-import { AdministrativeMenuSection } from "./sections/AdministrativeMenuSection";
-import { HoldingMenuSection } from "./sections/HoldingMenuSection";
-import { ProviderMenuSection } from "./sections/ProviderMenuSection";
+import { unidadeMenuItems } from "./menus/UnidadeMenu";
+import { prestadorMenuItems } from "./menus/PrestadorMenuSimplified";
 
 export interface MenuItem {
   title: string;
@@ -18,32 +12,6 @@ export interface MenuItem {
   roles?: string[];
 }
 
-// Export menu arrays for Sidebar.tsx
-export const agendajaMenu: MenuItem[] = [
-  {
-    title: "Dashboard",
-    icon: BarChart3,
-    href: "/sistema/dashboard",
-    roles: ["admin", "gerente", "colaborador"]
-  },
-  ...operationalMenuItems,
-  ...administrativeMenuItems
-];
-
-export const gerenteMenu: MenuItem[] = [
-  ...holdingMenuItems
-];
-
-export const prestadorMenu: MenuItem[] = [
-  {
-    title: "Dashboard",
-    icon: BarChart3,
-    href: "/sistema/dashboard",
-    roles: ["prestador"]
-  },
-  ...providerMenuItems
-];
-
 interface MenuItemsProps {
   onItemClick?: () => void;
 }
@@ -51,56 +19,33 @@ interface MenuItemsProps {
 const MenuItems: React.FC<MenuItemsProps> = React.memo(({ onItemClick }) => {
   const { profile } = useAuth();
   
-  const renderMenuSections = () => {
-    const sections = [];
-
-    // Add sections based on user level
-    if (profile?.nivel_acesso === "admin") {
-      sections.push(
-        <HoldingMenuSection 
-          key="holding" 
-          items={holdingMenuItems} 
-          onItemClick={onItemClick} 
-        />
-      );
-    }
-
-    if (["admin", "gerente", "colaborador"].includes(profile?.nivel_acesso || "")) {
-      sections.push(
-        <OperationalMenuSection 
-          key="operational" 
-          items={operationalMenuItems} 
-          onItemClick={onItemClick} 
-        />
-      );
-    }
-
-    if (["admin", "gerente"].includes(profile?.nivel_acesso || "")) {
-      sections.push(
-        <AdministrativeMenuSection 
-          key="administrative" 
-          items={administrativeMenuItems} 
-          onItemClick={onItemClick} 
-        />
-      );
-    }
-
+  const getMenuItems = () => {
     if (profile?.nivel_acesso === "prestador") {
-      sections.push(
-        <ProviderMenuSection 
-          key="provider" 
-          items={providerMenuItems} 
-          onItemClick={onItemClick} 
-        />
-      );
+      return prestadorMenuItems;
     }
-
-    return sections;
+    
+    if (["admin", "gerente", "atendente"].includes(profile?.nivel_acesso || "")) {
+      return unidadeMenuItems;
+    }
+    
+    return [];
   };
+
+  const menuItems = getMenuItems();
 
   return (
     <nav className="space-y-1">
-      {renderMenuSections()}
+      {menuItems.map((item) => (
+        <div key={item.title} className="px-3 py-2">
+          <button
+            onClick={onItemClick}
+            className="w-full flex items-center text-left px-3 py-2 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            <item.icon className="mr-3 h-4 w-4" />
+            {item.title}
+          </button>
+        </div>
+      ))}
     </nav>
   );
 });

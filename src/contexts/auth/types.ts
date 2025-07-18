@@ -32,7 +32,6 @@ export interface AuthContextType {
   isPrestador: boolean;
   isActive: boolean;
   requiresPasswordChange: boolean;
-  hasMultiTenantAccess: boolean;
   isUnidadeUser: boolean;
   isFranqueadoraUser: boolean;
 }

@@ -15,12 +15,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
 
-  // Verificar se é senha provisória
   const requiresPasswordChange = user?.user_metadata?.senha_provisoria === true;
 
   const loadUserProfile = useCallback(async (userId: string) => {
-    const userProfile = await fetchUserProfile(userId);
-    setProfile(userProfile);
+    try {
+      const userProfile = await fetchUserProfile(userId);
+      setProfile(userProfile);
+    } catch (error) {
+      console.error('Error loading user profile:', error);
+      setProfile(null);
+    }
   }, []);
 
   useEffect(() => {
@@ -28,7 +32,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const initializeAuth = async () => {
       try {
-        // Setup auth state listener first
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
           async (event, session) => {
             if (!mounted) return;
@@ -39,13 +42,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setUser(session?.user ?? null);
             
             if (session?.user) {
-              // Verificar se precisa trocar senha
-              const senhaProvisoria = session.user.user_metadata?.senha_provisoria;
-              if (senhaProvisoria) {
-                console.log('Usuário com senha provisória detectado');
-              }
-              
-              // Defer profile fetching to prevent deadlocks
               setTimeout(() => {
                 if (mounted) {
                   loadUserProfile(session.user.id);
@@ -62,7 +58,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         );
 
-        // Check for existing session
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -123,14 +118,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return result;
   };
 
-  // Verificações de perfil e permissões
+  // Computed properties
   const isAdmin = profile?.nivel_acesso === 'admin';
   const isManager = profile?.nivel_acesso === 'gerente' || isAdmin;
   const isPrestador = !!profile?.prestador_id;
   const isActive = profile?.status === 'ativo';
-  const hasMultiTenantAccess = isAdmin || profile?.nivel_acesso === 'gerente';
-  
-  // Verificações específicas para cada portal
   const isUnidadeUser = ['atendente', 'gerente', 'admin'].includes(profile?.nivel_acesso || '');
   const isFranqueadoraUser = isAdmin && profile?.nivel_acesso === 'admin';
 
@@ -151,7 +143,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isPrestador,
     isActive,
     requiresPasswordChange,
-    hasMultiTenantAccess,
     isUnidadeUser,
     isFranqueadoraUser,
   };

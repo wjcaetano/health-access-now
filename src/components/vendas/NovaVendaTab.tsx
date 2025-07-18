@@ -3,6 +3,8 @@ import React from "react";
 import { useVendaLogic } from "@/hooks/useVendaLogic";
 import { useOrcamentosPorCliente, useCancelarOrcamento } from "@/hooks/useOrcamentos";
 import { useToast } from "@/hooks/use-toast";
+
+// Componentes organizados
 import BuscaCliente from "./BuscaCliente";
 import ClienteNaoEncontrado from "./ClienteNaoEncontrado";
 import ClienteEncontrado from "./ClienteEncontrado";
@@ -42,8 +44,6 @@ const NovaVendaTab: React.FC = () => {
   const { toast } = useToast();
 
   const handleCancelarOrcamento = (orcamentoId: string) => {
-    console.log('Tentativa de cancelar orçamento:', orcamentoId);
-    
     if (!orcamentoId) {
       toast({
         title: "Erro",
@@ -55,7 +55,6 @@ const NovaVendaTab: React.FC = () => {
 
     cancelarOrcamento(orcamentoId, {
       onSuccess: () => {
-        console.log('Orçamento cancelado com sucesso');
         toast({
           title: "Orçamento cancelado",
           description: "O orçamento foi cancelado com sucesso."
@@ -87,7 +86,7 @@ const NovaVendaTab: React.FC = () => {
   }
 
   return (
-    <>
+    <div className="space-y-6">
       <BuscaCliente
         termoBusca={termoBusca}
         setTermoBusca={setTermoBusca}
@@ -112,7 +111,7 @@ const NovaVendaTab: React.FC = () => {
       )}
 
       {estadoAtual === 'cadastro_servicos' && (
-        <div className="space-y-6">
+        <>
           <ClienteSelecionado
             cliente={clienteSelecionado}
             onCancelar={cancelarOperacao}
@@ -141,9 +140,9 @@ const NovaVendaTab: React.FC = () => {
             onCancelar={cancelarOperacao}
             servicosSelecionados={servicosSelecionados.length}
           />
-        </div>
+        </>
       )}
-    </>
+    </div>
   );
 };
 

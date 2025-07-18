@@ -11,19 +11,15 @@ const ProfileRedirect: React.FC = () => {
   useEffect(() => {
     if (loading || !user || !profile) return;
 
-    // Redirecionar baseado no perfil do usuário
-    if (isPrestador) {
-      navigate('/prestador/portal', { replace: true });
-    } else if (isAdmin && profile.nivel_acesso === 'admin') {
-      // Admin pode escolher entre franqueadora ou unidade
-      // Por padrão, vai para unidade
-      navigate('/unidade/dashboard', { replace: true });
-    } else if (isUnidadeUser) {
-      navigate('/unidade/dashboard', { replace: true });
-    } else {
-      // Fallback para login se não se encaixar em nenhum perfil
-      navigate('/login', { replace: true });
-    }
+    // Determinar redirecionamento baseado no perfil
+    const getRedirectPath = () => {
+      if (isPrestador) return '/prestador/portal';
+      if (isAdmin && profile.nivel_acesso === 'admin') return '/unidade/dashboard';
+      if (isUnidadeUser) return '/unidade/dashboard';
+      return '/login';
+    };
+
+    navigate(getRedirectPath(), { replace: true });
   }, [user, profile, loading, navigate, isPrestador, isAdmin, isUnidadeUser]);
 
   if (loading) {

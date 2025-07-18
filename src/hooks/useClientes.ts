@@ -3,35 +3,54 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { clientesService, Cliente, NovoCliente } from "@/services/clientesService";
 import { useToast } from "@/hooks/use-toast";
 
-// Hook otimizado para buscar clientes
+const QUERY_KEY = ["clientes"];
+
 export function useClientes() {
   return useQuery({
-    queryKey: ["clientes"],
+    queryKey: QUERY_KEY,
     queryFn: clientesService.fetchClientes,
-    staleTime: 5 * 60 * 1000, // 5 minutos
-    gcTime: 10 * 60 * 1000, // 10 minutos
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 }
 
-// Hook para criar cliente com feedback automático
 export function useCreateCliente() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   
   return useMutation({
     mutationFn: clientesService.createCliente,
-    onSuccess: (newCliente) => {
-      // Atualiza o cache otimisticamente
-      queryClient.setQueryData<Cliente[]>(["clientes"], (old) => 
-        old ? [newCliente, ...old] : [newCliente]
+    onMutate: async (newCliente) => {
+      // Optimistic update
+      await queryClient.cancelQueries({ queryKey: QUERY_KEY });
+      const previousClientes = queryClient.getQueryData<Cliente[]>(QUERY_KEY);
+      
+      const optimisticCliente = {
+        ...newCliente,
+        id: `temp-${Date.now()}`,
+        data_cadastro: new Date().toISOString(),
+      } as Cliente;
+      
+      queryClient.setQueryData<Cliente[]>(QUERY_KEY, (old) => 
+        old ? [optimisticCliente, ...old] : [optimisticCliente]
       );
+      
+      return { previousClientes };
+    },
+    onSuccess: (newCliente) => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       
       toast({
         title: "Cliente cadastrado",
         description: `${newCliente.nome} foi cadastrado com sucesso.`,
       });
     },
-    onError: (error: Error) => {
+    onError: (error: Error, _newCliente, context) => {
+      // Rollback optimistic update
+      if (context?.previousClientes) {
+        queryClient.setQueryData(QUERY_KEY, context.previousClientes);
+      }
+      
       toast({
         title: "Erro ao cadastrar cliente",
         description: error.message || "Ocorreu um erro inesperado.",
@@ -41,7 +60,6 @@ export function useCreateCliente() {
   });
 }
 
-// Hook para atualizar cliente
 export function useUpdateCliente() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -50,8 +68,7 @@ export function useUpdateCliente() {
     mutationFn: ({ id, updates }: { id: string; updates: Partial<Cliente> }) =>
       clientesService.updateCliente(id, updates),
     onSuccess: (updatedCliente) => {
-      // Atualiza o cache
-      queryClient.setQueryData<Cliente[]>(["clientes"], (old) =>
+      queryClient.setQueryData<Cliente[]>(QUERY_KEY, (old) =>
         old ? old.map(client => client.id === updatedCliente.id ? updatedCliente : client) : []
       );
       
@@ -70,7 +87,6 @@ export function useUpdateCliente() {
   });
 }
 
-// Hook para deletar cliente
 export function useDeleteCliente() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -78,8 +94,7 @@ export function useDeleteCliente() {
   return useMutation({
     mutationFn: clientesService.deleteCliente,
     onSuccess: (_, deletedId) => {
-      // Remove do cache
-      queryClient.setQueryData<Cliente[]>(["clientes"], (old) =>
+      queryClient.setQueryData<Cliente[]>(QUERY_KEY, (old) =>
         old ? old.filter(client => client.id !== deletedId) : []
       );
       

@@ -1,56 +1,47 @@
 
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAdmin?: boolean;
-  requireManager?: boolean;
+  requiredLevel?: 'atendente' | 'gerente' | 'admin' | 'prestador';
+  fallbackPath?: string;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
+export function ProtectedRoute({ 
   children, 
-  requireAdmin = false,
-  requireManager = false 
-}) => {
-  const { user, loading, initialized, isAdmin, isManager, isActive } = useAuth();
+  requireAdmin = false, 
+  requiredLevel,
+  fallbackPath = '/login' 
+}: ProtectedRouteProps) {
+  const { user, profile, loading, initialized, isActive } = useAuth();
+  const location = useLocation();
 
   if (!initialized || loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner size="lg" />
       </div>
     );
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
+  if (!user || !isActive) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (!isActive) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Conta Inativa
-          </h2>
-          <p className="text-gray-600">
-            Sua conta não está ativa. Entre em contato com o administrador.
-          </p>
-        </div>
-      </div>
-    );
+  // Check admin requirement
+  if (requireAdmin && profile?.nivel_acesso !== 'admin') {
+    return <Navigate to="/unidade/dashboard" replace />;
   }
 
-  if (requireAdmin && !isAdmin) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  if (requireManager && !isManager) {
-    return <Navigate to="/dashboard" replace />;
+  // Check specific level requirement
+  if (requiredLevel && profile?.nivel_acesso !== requiredLevel) {
+    const redirectPath = profile?.nivel_acesso === 'prestador' ? '/prestador/portal' : '/unidade/dashboard';
+    return <Navigate to={redirectPath} replace />;
   }
 
   return <>{children}</>;
-};
+}
