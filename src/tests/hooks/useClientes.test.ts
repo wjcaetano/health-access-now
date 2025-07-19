@@ -44,5 +44,16 @@ describe('useClientes', () => {
     });
 
     expect(result.current).toBeDefined();
+    expect(result.current.data).toBeUndefined();
+    expect(result.current.isLoading).toBeDefined();
+    expect(result.current.error).toBeNull();
+  });
+
+  it('should handle loading state', () => {
+    const { result } = renderHook(() => useClientes(), {
+      wrapper: createWrapper(),
+    });
+
+    expect(typeof result.current.isLoading).toBe('boolean');
   });
 });

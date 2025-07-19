@@ -10,14 +10,14 @@ const VendasContainer: React.FC = () => {
 
   return (
     <div className={`space-y-4 ${getContainerPadding()} min-h-0 overflow-hidden`}>
-      <div className="space-y-2">
+      <header className="space-y-2">
         <h2 className={`font-bold text-gray-900 ${isMobile ? 'text-xl' : 'text-3xl'}`}>
           Vendas
         </h2>
         <p className={`text-gray-500 ${isMobile ? 'text-sm' : 'text-base'}`}>
           Gerencie vendas, orçamentos e histórico de transações
         </p>
-      </div>
+      </header>
 
       <Tabs defaultValue="nova-venda" className="w-full">
         <TabsList className={`grid w-full grid-cols-2 ${isMobile ? 'h-9 text-xs' : 'h-10'}`}>

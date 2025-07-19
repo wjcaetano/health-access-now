@@ -4,6 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { GuiasService } from "@/services/guiasService";
 import { useEstornarGuia } from "@/hooks/guias/useGuiaStatus";
 
+const QUERY_KEYS = {
+  vendas: ["vendas"],
+  guias: ["guias"]
+};
+
 export function useCancelarVenda() {
   const queryClient = useQueryClient();
   
@@ -11,21 +16,16 @@ export function useCancelarVenda() {
     mutationFn: async (vendaId: string) => {
       console.log('Cancelando venda:', vendaId);
       
+      // Buscar e cancelar guias relacionadas
       const { data: guiasRelacionadas, error: guiasError } = await supabase
         .from("guias")
         .select("id, status")
         .eq("agendamento_id", vendaId);
       
-      if (guiasError) {
-        console.error('Erro ao buscar guias da venda:', guiasError);
-        throw guiasError;
-      }
+      if (guiasError) throw guiasError;
 
       let guiasCanceladas = 0;
-
-      if (guiasRelacionadas && guiasRelacionadas.length > 0) {
-        console.log('Cancelando guias relacionadas:', guiasRelacionadas);
-        
+      if (guiasRelacionadas?.length > 0) {
         for (const guia of guiasRelacionadas) {
           if (['emitida', 'realizada', 'faturada'].includes(guia.status)) {
             try {
@@ -38,6 +38,7 @@ export function useCancelarVenda() {
         }
       }
 
+      // Cancelar a venda
       const { data, error } = await supabase
         .from("vendas")
         .update({ status: 'cancelada' })
@@ -45,17 +46,17 @@ export function useCancelarVenda() {
         .select()
         .single();
       
-      if (error) {
-        console.error('Erro ao cancelar venda:', error);
-        throw error;
-      }
+      if (error) throw error;
       
-      console.log(`Venda cancelada com sucesso. ${guiasCanceladas} guias foram canceladas.`);
-      return { venda: data, guiasCanceladas, totalGuias: guiasRelacionadas?.length || 0 };
+      return { 
+        venda: data, 
+        guiasCanceladas, 
+        totalGuias: guiasRelacionadas?.length || 0 
+      };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["vendas"] });
-      queryClient.invalidateQueries({ queryKey: ["guias"] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.vendas });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.guias });
     },
   });
 }
@@ -68,19 +69,15 @@ export function useEstornarVenda() {
     mutationFn: async (vendaId: string) => {
       console.log('Estornando venda:', vendaId);
       
+      // Buscar e estornar guias relacionadas
       const { data: guiasRelacionadas, error: guiasError } = await supabase
         .from("guias")
         .select("id, status")
         .eq("agendamento_id", vendaId);
       
-      if (guiasError) {
-        console.error('Erro ao buscar guias da venda:', guiasError);
-        throw guiasError;
-      }
+      if (guiasError) throw guiasError;
 
-      if (guiasRelacionadas && guiasRelacionadas.length > 0) {
-        console.log('Estornando guias relacionadas:', guiasRelacionadas);
-        
+      if (guiasRelacionadas?.length > 0) {
         for (const guia of guiasRelacionadas) {
           if (guia.status === 'paga') {
             try {
@@ -92,6 +89,7 @@ export function useEstornarVenda() {
         }
       }
 
+      // Estornar a venda
       const { data, error } = await supabase
         .from("vendas")
         .update({ status: 'estornada' })
@@ -99,17 +97,12 @@ export function useEstornarVenda() {
         .select()
         .single();
       
-      if (error) {
-        console.error('Erro ao estornar venda:', error);
-        throw error;
-      }
-      
-      console.log('Venda estornada com sucesso:', data);
+      if (error) throw error;
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["vendas"] });
-      queryClient.invalidateQueries({ queryKey: ["guias"] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.vendas });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.guias });
     },
   });
 }

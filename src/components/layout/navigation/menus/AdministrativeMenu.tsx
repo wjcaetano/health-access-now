@@ -7,192 +7,71 @@ import {
   Shield, 
   Settings, 
   FileText,
-  TestTube,
-  BookOpen,
   Activity,
-  DollarSign
+  DollarSign,
+  BookOpen
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
-export const administrativeMenuItems = [
+interface MenuItem {
+  title: string;
+  icon: React.ReactNode;
+  path: string;
+  description: string;
+  adminOnly: boolean;
+}
+
+const administrativeMenuItems: MenuItem[] = [
   {
     title: 'Financeiro',
-    icon: DollarSign,
-    href: '/sistema/financeiro',
-    roles: ['admin', 'gerente']
-  },
-  {
-    title: 'Agenda Pagamentos',
-    icon: Activity,
-    href: '/sistema/agenda-pagamentos',
-    roles: ['admin', 'gerente']
-  },
-  {
-    title: 'Gestão de Usuários',
-    icon: Users,
-    href: '/sistema/usuarios',
-    roles: ['admin']
+    icon: <DollarSign className="h-4 w-4" />,
+    path: '/unidade/financeiro',
+    description: 'Gestão financeira e fluxo de caixa',
+    adminOnly: false
   },
   {
     title: 'Colaboradores',
-    icon: UserCheck,
-    href: '/sistema/colaboradores',
-    roles: ['admin', 'gerente']
+    icon: <UserCheck className="h-4 w-4" />,
+    path: '/unidade/colaboradores',
+    description: 'Gerenciar equipe e ponto eletrônico',
+    adminOnly: false
   },
   {
     title: 'Meu Perfil',
-    icon: UserCheck,
-    href: '/sistema/perfil',
-    roles: ['admin', 'gerente', 'colaborador']
-  },
-  {
-    title: 'Segurança',
-    icon: Shield,
-    href: '/sistema/security',
-    roles: ['admin']
-  },
-  {
-    title: 'Qualidade',
-    icon: TestTube,
-    href: '/sistema/quality',
-    roles: ['admin']
-  },
-  {
-    title: 'Documentação',
-    icon: BookOpen,
-    href: '/sistema/documentation',
-    roles: ['admin', 'gerente', 'colaborador']
+    icon: <UserCheck className="h-4 w-4" />,
+    path: '/unidade/perfil',
+    description: 'Gerenciar perfil pessoal',
+    adminOnly: false
   },
   {
     title: 'Relatórios',
-    icon: FileText,
-    href: '/sistema/relatorios',
-    roles: ['admin', 'gerente']
+    icon: <FileText className="h-4 w-4" />,
+    path: '/unidade/relatorios',
+    description: 'Relatórios e análises',
+    adminOnly: false
   },
   {
-    title: 'Backup',
-    icon: Shield,
-    href: '/sistema/backup',
-    roles: ['admin']
-  },
-  {
-    title: 'Análise do Sistema',
-    icon: Activity,
-    href: '/sistema/analise-sistema',
-    roles: ['admin']
-  },
-  {
-    title: 'Dashboard Avançado',
-    icon: Activity,
-    href: '/sistema/dashboard-avancado',
-    roles: ['admin', 'gerente']
+    title: 'Gestão de Usuários',
+    icon: <Users className="h-4 w-4" />,
+    path: '/unidade/usuarios',
+    description: 'Gerenciar usuários e permissões',
+    adminOnly: true
   },
   {
     title: 'Configurações',
-    icon: Settings,
-    href: '/sistema/configuracoes',
-    roles: ['admin']
+    icon: <Settings className="h-4 w-4" />,
+    path: '/unidade/configuracoes',
+    description: 'Configurações do sistema',
+    adminOnly: true
   }
 ];
 
 export const AdministrativeMenu: React.FC = () => {
-  const { isAdmin } = useAuth();
-
-  const menuItems = [
-    {
-      title: 'Financeiro',
-      icon: <DollarSign className="h-4 w-4" />,
-      path: '/sistema/financeiro',
-      description: 'Gestão financeira e fluxo de caixa',
-      adminOnly: false
-    },
-    {
-      title: 'Agenda Pagamentos',
-      icon: <Activity className="h-4 w-4" />,
-      path: '/sistema/agenda-pagamentos',
-      description: 'Agenda de pagamentos e cobranças',
-      adminOnly: false
-    },
-    {
-      title: 'Gestão de Usuários',
-      icon: <Users className="h-4 w-4" />,
-      path: '/sistema/usuarios',
-      description: 'Gerenciar usuários e permissões',
-      adminOnly: true
-    },
-    {
-      title: 'Colaboradores',
-      icon: <UserCheck className="h-4 w-4" />,
-      path: '/sistema/colaboradores',
-      description: 'Gerenciar equipe e ponto eletrônico',
-      adminOnly: false
-    },
-    {
-      title: 'Meu Perfil',
-      icon: <UserCheck className="h-4 w-4" />,
-      path: '/sistema/perfil',
-      description: 'Gerenciar perfil pessoal',
-      adminOnly: false
-    },
-    {
-      title: 'Segurança',
-      icon: <Shield className="h-4 w-4" />,
-      path: '/sistema/security',
-      description: 'Auditoria e logs de segurança',
-      adminOnly: true
-    },
-    {
-      title: 'Qualidade',
-      icon: <TestTube className="h-4 w-4" />,
-      path: '/sistema/quality',
-      description: 'Testes e métricas de qualidade',
-      adminOnly: true
-    },
-    {
-      title: 'Documentação',
-      icon: <BookOpen className="h-4 w-4" />,
-      path: '/sistema/documentation',
-      description: 'Documentação técnica e style guide',
-      adminOnly: false
-    },
-    {
-      title: 'Relatórios',
-      icon: <FileText className="h-4 w-4" />,
-      path: '/sistema/relatorios',
-      description: 'Relatórios e análises',
-      adminOnly: false
-    },
-    {
-      title: 'Backup',
-      icon: <Shield className="h-4 w-4" />,
-      path: '/sistema/backup',
-      description: 'Backup e restauração',
-      adminOnly: true
-    },
-    {
-      title: 'Análise do Sistema',
-      icon: <Activity className="h-4 w-4" />,
-      path: '/sistema/analise-sistema',
-      description: 'Análise de performance',
-      adminOnly: true
-    },
-    {
-      title: 'Dashboard Avançado',
-      icon: <Activity className="h-4 w-4" />,
-      path: '/sistema/dashboard-avancado',
-      description: 'Dashboard com métricas avançadas',
-      adminOnly: false
-    },
-    {
-      title: 'Configurações',
-      icon: <Settings className="h-4 w-4" />,
-      path: '/sistema/configuracoes',
-      description: 'Configurações do sistema',
-      adminOnly: true
-    }
-  ];
-
-  const visibleItems = menuItems.filter(item => !item.adminOnly || isAdmin);
+  const { profile, isAdmin } = useAuth();
+  
+  const visibleItems = administrativeMenuItems.filter(item => 
+    !item.adminOnly || isAdmin
+  );
 
   return (
     <div className="space-y-2">
@@ -223,3 +102,11 @@ export const AdministrativeMenu: React.FC = () => {
     </div>
   );
 };
+
+// Exportar apenas os itens necessários para compatibilidade
+export const administrativeMenuItems = administrativeMenuItems.map(item => ({
+  title: item.title,
+  icon: item.icon,
+  href: item.path,
+  roles: item.adminOnly ? ['admin'] : ['admin', 'gerente', 'colaborador']
+}));

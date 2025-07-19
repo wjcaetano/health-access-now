@@ -27,13 +27,14 @@ import ExamesLaboratoriais from "@/pages/servicos/ExamesLaboratoriais";
 import ExamesDeImagem from "@/pages/servicos/ExamesDeImagem";
 import OutrosExames from "@/pages/servicos/OutrosExames";
 
+// Configuração otimizada do QueryClient
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes
+      staleTime: 5 * 60 * 1000, // 5 minutos
+      gcTime: 10 * 60 * 1000, // 10 minutos
     },
     mutations: {
       retry: 1,
@@ -49,48 +50,51 @@ function App() {
           <NotificationProvider>
             <Router>
               <Routes>
-                {/* Página Principal - PaginaDeVendas como homepage */}
+                {/* Página Principal */}
                 <Route path="/" element={<PaginaDeVendas />} />
                 
-                {/* Páginas Públicas */}
+                {/* Autenticação */}
                 <Route path="/login" element={<Login />} />
+                
+                {/* Páginas Públicas */}
                 <Route path="/portal-parceiro" element={<PortalParceiro />} />
                 <Route path="/seja-franqueado" element={<SejaFranqueado />} />
                 
-                {/* Páginas de Serviços Públicas */}
+                {/* Serviços Públicos */}
                 <Route path="/servicos/consultas-medicas" element={<ConsultasMedicas />} />
                 <Route path="/servicos/exames-laboratoriais" element={<ExamesLaboratoriais />} />
                 <Route path="/servicos/exames-de-imagem" element={<ExamesDeImagem />} />
                 <Route path="/servicos/outros-exames" element={<OutrosExames />} />
                 
-                {/* Portal da Unidade/Franquia */}
+                {/* Portais Protegidos */}
                 <Route path="/unidade/*" element={
                   <ProtectedRoute>
                     <UnidadePortal />
                   </ProtectedRoute>
                 } />
                 
-                {/* Portal do Prestador */}
                 <Route path="/prestador/*" element={
                   <ProtectedRoute requiredLevel="prestador">
                     <PrestadorPortal />
                   </ProtectedRoute>
                 } />
                 
-                {/* Portal da Franqueadora */}
                 <Route path="/franqueadora/*" element={
                   <ProtectedRoute requireAdmin>
                     <FranqueadoraPortal />
                   </ProtectedRoute>
                 } />
                 
-                {/* Redirecionamentos legados para compatibilidade */}
+                {/* Redirecionamentos para compatibilidade */}
                 <Route path="/sistema/*" element={<Navigate to="/unidade" replace />} />
                 <Route path="/portal" element={<Navigate to="/" replace />} />
                 <Route path="/dashboard" element={<Navigate to="/unidade/dashboard" replace />} />
                 
+                {/* Página 404 */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              
+              {/* Toasters */}
               <Toaster />
               <SonnerToaster />
             </Router>
