@@ -7,7 +7,11 @@ import { DesktopLayout } from "./DesktopLayout";
 import { LoadingLayout } from "./LoadingLayout";
 import { InactiveUserLayout } from "./InactiveUserLayout";
 
-const AppLayout: React.FC = () => {
+interface AppLayoutProps {
+  children?: React.ReactNode;
+}
+
+const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const { loading, isActive, profile } = useAuth();
   const isMobile = useIsMobile();
   
@@ -26,9 +30,13 @@ const AppLayout: React.FC = () => {
 
   // Renderizar layout apropriado
   return isMobile ? (
-    <MobileLayout userProfile={userProfile} />
+    <MobileLayout userProfile={userProfile}>
+      {children}
+    </MobileLayout>
   ) : (
-    <DesktopLayout userProfile={userProfile} />
+    <DesktopLayout userProfile={userProfile}>
+      {children}
+    </DesktopLayout>
   );
 };
 

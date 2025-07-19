@@ -7,10 +7,11 @@ import { Outlet } from "react-router-dom";
 
 interface MobileLayoutProps {
   userProfile: string;
+  children?: React.ReactNode;
 }
 
-export const MobileLayout: React.FC<MobileLayoutProps> = ({ userProfile }) => {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+export const MobileLayout: React.FC<MobileLayoutProps> = ({ userProfile, children }) => {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -30,7 +31,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({ userProfile }) => {
         />
         <main className="flex-1 overflow-x-hidden overflow-y-auto">
           <div className="p-3 pb-20">
-            <Outlet />
+            {children || <Outlet />}
           </div>
         </main>
       </div>

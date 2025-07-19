@@ -7,9 +7,10 @@ import { Outlet } from "react-router-dom";
 
 interface DesktopLayoutProps {
   userProfile: string;
+  children?: React.ReactNode;
 }
 
-export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ userProfile }) => {
+export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ userProfile, children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const toggleSidebar = () => {
@@ -19,7 +20,7 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ userProfile }) => 
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-50">
-        <div className="grid grid-cols-[250px_1fr] h-screen">
+        <div className={`grid h-screen ${sidebarCollapsed ? 'grid-cols-[80px_1fr]' : 'grid-cols-[288px_1fr]'} transition-all duration-300`}>
           <Sidebar 
             collapsed={sidebarCollapsed}
             setCollapsed={setSidebarCollapsed}
@@ -31,7 +32,7 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ userProfile }) => 
               toggleSidebar={toggleSidebar}
             />
             <main className="flex-1 overflow-y-auto p-6">
-              <Outlet />
+              {children || <Outlet />}
             </main>
           </div>
         </div>

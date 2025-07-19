@@ -1,7 +1,7 @@
 
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { TenantAwareLayout } from "./TenantAwareLayout";
+import AppLayout from "./AppLayout";
 import { LoadingLayout } from "./LoadingLayout";
 import { InactiveUserLayout } from "./InactiveUserLayout";
 
@@ -20,11 +20,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return <InactiveUserLayout />;
   }
 
-  return (
-    <TenantAwareLayout>
-      {children}
-    </TenantAwareLayout>
-  );
+  return <AppLayout />;
 };
 
 export default Layout;
