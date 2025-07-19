@@ -84,10 +84,10 @@ function App() {
                   </ProtectedRoute>
                 } />
                 
-                {/* Redirecionamentos legados */}
-                <Route path="/sistema" element={<Navigate to="/unidade" replace />} />
+                {/* Redirecionamentos legados para compatibilidade */}
                 <Route path="/sistema/*" element={<Navigate to="/unidade" replace />} />
                 <Route path="/portal" element={<Navigate to="/" replace />} />
+                <Route path="/dashboard" element={<Navigate to="/unidade/dashboard" replace />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>

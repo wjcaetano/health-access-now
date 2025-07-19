@@ -62,4 +62,5 @@ const PaginaDeVendas = ({ mostrarLogin }: PaginaDeVendasProps) => {
     </div>
   );
 };
+
 export default PaginaDeVendas;
