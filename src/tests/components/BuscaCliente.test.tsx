@@ -1,5 +1,6 @@
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/dom';
 import { describe, it, expect, vi } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import BuscaCliente from '@/components/vendas/BuscaCliente';
@@ -70,7 +71,7 @@ describe('BuscaCliente', () => {
     const input = screen.getByPlaceholderText(/digite o cpf ou nome/i);
     const button = screen.getByText(/buscar/i);
     
-    expect(input.disabled).toBe(true);
-    expect(button.disabled).toBe(true);
+    expect(input).toHaveProperty('disabled', true);
+    expect(button).toHaveProperty('disabled', true);
   });
 });
