@@ -6,62 +6,61 @@ import { useAppState } from '@/hooks/useAppState';
 describe('useAppState', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Limpar localStorage
-    localStorage.clear();
   });
 
   it('should initialize with default state', () => {
-    const { result } = renderHook(() => useAppState('test', { value: 0 }));
+    const { result } = renderHook(() => useAppState());
 
-    expect(result.current.state).toEqual({ value: 0 });
-    expect(typeof result.current.setState).toBe('function');
-    expect(typeof result.current.resetState).toBe('function');
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.error).toBeNull();
+    expect(result.current.currentView).toBe('dashboard');
+    expect(result.current.sidebarOpen).toBe(false);
   });
 
-  it('should update state correctly', () => {
-    const { result } = renderHook(() => useAppState('test', { value: 0 }));
+  it('should update loading state', () => {
+    const { result } = renderHook(() => useAppState());
 
     act(() => {
-      result.current.setState({ value: 1 });
+      result.current.setLoading(true);
     });
 
-    expect(result.current.state).toEqual({ value: 1 });
+    expect(result.current.isLoading).toBe(true);
   });
 
-  it('should reset state to initial value', () => {
-    const { result } = renderHook(() => useAppState('test', { value: 0 }));
+  it('should update error state', () => {
+    const { result } = renderHook(() => useAppState());
+    const testError = 'Test error message';
 
     act(() => {
-      result.current.setState({ value: 1 });
+      result.current.setError(testError);
     });
 
-    expect(result.current.state).toEqual({ value: 1 });
-
-    act(() => {
-      result.current.resetState();
-    });
-
-    expect(result.current.state).toEqual({ value: 0 });
+    expect(result.current.error).toBe(testError);
   });
 
-  it('should persist state in localStorage', () => {
-    const { result } = renderHook(() => useAppState('test-persist', { value: 0 }));
+  it('should update current view', () => {
+    const { result } = renderHook(() => useAppState());
 
     act(() => {
-      result.current.setState({ value: 42 });
+      result.current.setCurrentView('vendas');
     });
 
-    // Verificar se foi salvo no localStorage
-    const stored = localStorage.getItem('appState_test-persist');
-    expect(JSON.parse(stored || '{}')).toEqual({ value: 42 });
+    expect(result.current.currentView).toBe('vendas');
   });
 
-  it('should load state from localStorage on initialization', () => {
-    // Pré-popular localStorage
-    localStorage.setItem('appState_test-load', JSON.stringify({ value: 99 }));
+  it('should toggle sidebar', () => {
+    const { result } = renderHook(() => useAppState());
 
-    const { result } = renderHook(() => useAppState('test-load', { value: 0 }));
+    act(() => {
+      result.current.toggleSidebar();
+    });
 
-    expect(result.current.state).toEqual({ value: 99 });
+    expect(result.current.sidebarOpen).toBe(true);
+
+    act(() => {
+      result.current.toggleSidebar();
+    });
+
+    expect(result.current.sidebarOpen).toBe(false);
   });
 });

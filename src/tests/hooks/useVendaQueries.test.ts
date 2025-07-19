@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useVendasRecentes, useVendasPorPeriodo } from '@/hooks/vendas/useVendaQueries';
+import { useVendas, useVendasPorCliente } from '@/hooks/vendas/useVendaQueries';
 import React from 'react';
 
 // Mock Supabase
@@ -32,11 +32,9 @@ const createWrapper = () => {
     },
   });
 
-  return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
-  );
+  return function Wrapper({ children }: { children: React.ReactNode }) {
+    return React.createElement(QueryClientProvider, { client: queryClient }, children);
+  };
 };
 
 describe('useVendaQueries', () => {
@@ -44,9 +42,9 @@ describe('useVendaQueries', () => {
     vi.clearAllMocks();
   });
 
-  describe('useVendasRecentes', () => {
-    it('should return vendas recentes query', () => {
-      const { result } = renderHook(() => useVendasRecentes(), {
+  describe('useVendas', () => {
+    it('should return vendas query', () => {
+      const { result } = renderHook(() => useVendas(), {
         wrapper: createWrapper(),
       });
 
@@ -57,12 +55,11 @@ describe('useVendaQueries', () => {
     });
   });
 
-  describe('useVendasPorPeriodo', () => {
-    it('should return vendas por periodo query', () => {
-      const startDate = new Date('2024-01-01');
-      const endDate = new Date('2024-12-31');
+  describe('useVendasPorCliente', () => {
+    it('should return vendas por cliente query', () => {
+      const clienteId = 'test-cliente-id';
       
-      const { result } = renderHook(() => useVendasPorPeriodo(startDate, endDate), {
+      const { result } = renderHook(() => useVendasPorCliente(clienteId), {
         wrapper: createWrapper(),
       });
 
@@ -72,8 +69,8 @@ describe('useVendaQueries', () => {
       expect(result.current.error).toBeNull();
     });
 
-    it('should handle disabled state when dates are invalid', () => {
-      const { result } = renderHook(() => useVendasPorPeriodo(null, null), {
+    it('should handle disabled state when clienteId is empty', () => {
+      const { result } = renderHook(() => useVendasPorCliente(''), {
         wrapper: createWrapper(),
       });
 

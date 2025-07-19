@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useCriarVenda, useCancelarVenda } from '@/hooks/vendas/useVendaActions';
+import { useCancelarVenda, useEstornarVenda } from '@/hooks/vendas/useVendaActions';
 import React from 'react';
 
 // Mock Supabase
@@ -24,6 +24,13 @@ vi.mock('@/hooks/use-toast', () => ({
   })),
 }));
 
+// Mock dos hooks de guias
+vi.mock('@/hooks/guias/useGuiaStatus', () => ({
+  useEstornarGuia: vi.fn(() => ({
+    mutate: vi.fn(),
+  })),
+}));
+
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -32,11 +39,9 @@ const createWrapper = () => {
     },
   });
 
-  return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
-  );
+  return function Wrapper({ children }: { children: React.ReactNode }) {
+    return React.createElement(QueryClientProvider, { client: queryClient }, children);
+  };
 };
 
 describe('useVendaActions', () => {
@@ -44,9 +49,9 @@ describe('useVendaActions', () => {
     vi.clearAllMocks();
   });
 
-  describe('useCriarVenda', () => {
-    it('should return criar venda mutation', () => {
-      const { result } = renderHook(() => useCriarVenda(), {
+  describe('useCancelarVenda', () => {
+    it('should return cancelar venda mutation', () => {
+      const { result } = renderHook(() => useCancelarVenda(), {
         wrapper: createWrapper(),
       });
 
@@ -57,9 +62,9 @@ describe('useVendaActions', () => {
     });
   });
 
-  describe('useCancelarVenda', () => {
-    it('should return cancelar venda mutation', () => {
-      const { result } = renderHook(() => useCancelarVenda(), {
+  describe('useEstornarVenda', () => {
+    it('should return estornar venda mutation', () => {
+      const { result } = renderHook(() => useEstornarVenda(), {
         wrapper: createWrapper(),
       });
 
