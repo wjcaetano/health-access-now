@@ -21,7 +21,7 @@ interface MenuItem {
   adminOnly: boolean;
 }
 
-const administrativeMenuItems: MenuItem[] = [
+const menuItems: MenuItem[] = [
   {
     title: 'Financeiro',
     icon: <DollarSign className="h-4 w-4" />,
@@ -69,7 +69,7 @@ const administrativeMenuItems: MenuItem[] = [
 export const AdministrativeMenu: React.FC = () => {
   const { profile, isAdmin } = useAuth();
   
-  const visibleItems = administrativeMenuItems.filter(item => 
+  const visibleItems = menuItems.filter(item => 
     !item.adminOnly || isAdmin
   );
 
@@ -103,8 +103,8 @@ export const AdministrativeMenu: React.FC = () => {
   );
 };
 
-// Exportar apenas os itens necessários para compatibilidade
-export const administrativeMenuItems = administrativeMenuItems.map(item => ({
+// Export for backward compatibility
+export const administrativeMenuItems = menuItems.map(item => ({
   title: item.title,
   icon: item.icon,
   href: item.path,

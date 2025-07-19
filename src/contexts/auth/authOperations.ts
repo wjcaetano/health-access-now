@@ -105,11 +105,15 @@ export const signOut = async () => {
     
     console.log('Logout concluído, redirecionando...');
     window.location.href = '/';
+    
+    return { error: null };
   } catch (error) {
     console.error('Erro no logout:', error);
     
     cleanupAuthState();
     
     window.location.href = '/';
+    
+    return { error };
   }
 };
