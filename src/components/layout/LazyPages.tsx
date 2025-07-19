@@ -1,3 +1,4 @@
+
 import { lazy } from 'react';
 
 // Lazy loading das páginas principais
@@ -50,3 +51,8 @@ export const LazyExpansaoFranquias = lazy(() => import('@/pages/franqueadora/Exp
 // Dashboard pages
 export const LazyDashboardFranqueadoraPage = lazy(() => import('@/pages/dashboard/DashboardFranqueadoraPage'));
 export const LazyDashboardUnidadePage = lazy(() => import('@/pages/dashboard/DashboardUnidadePage'));
+
+// Portais com Lazy Loading
+export const LazyUnidadePortal = lazy(() => import('@/components/portals/UnidadePortal'));
+export const LazyPrestadorPortal = lazy(() => import('@/components/portals/PrestadorPortal'));
+export const LazyFranqueadoraPortal = lazy(() => import('@/components/portals/FranqueadoraPortal'));
