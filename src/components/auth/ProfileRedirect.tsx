@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
@@ -7,9 +7,11 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 const ProfileRedirect: React.FC = () => {
   const { user, profile, loading, isPrestador, isAdmin, isUnidadeUser } = useAuth();
   const navigate = useNavigate();
+  const hasRedirected = useRef(false);
 
   useEffect(() => {
-    if (loading || !user || !profile) return;
+    // Evita múltiplos redirecionamentos
+    if (hasRedirected.current || loading || !user || !profile) return;
 
     // Determinar redirecionamento baseado no perfil
     const getRedirectPath = () => {
@@ -19,7 +21,16 @@ const ProfileRedirect: React.FC = () => {
       return '/login';
     };
 
-    navigate(getRedirectPath(), { replace: true });
+    const redirectPath = getRedirectPath();
+    
+    // Marcar que já redirecionou para evitar loops
+    hasRedirected.current = true;
+    
+    // Pequeno delay para evitar problemas de timing
+    setTimeout(() => {
+      navigate(redirectPath, { replace: true });
+    }, 100);
+
   }, [user, profile, loading, navigate, isPrestador, isAdmin, isUnidadeUser]);
 
   if (loading) {

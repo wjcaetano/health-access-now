@@ -94,8 +94,8 @@ function App() {
                     </ProtectedRoute>
                   } />
                   
-                  {/* Redirecionamentos para compatibilidade */}
-                  <Route path="/sistema/*" element={<Navigate to="/unidade" replace />} />
+                  {/* Redirecionamentos para compatibilidade - com verificação condicional */}
+                  <Route path="/sistema/*" element={<Navigate to="/unidade/dashboard" replace />} />
                   <Route path="/portal" element={<Navigate to="/" replace />} />
                   <Route path="/dashboard" element={<Navigate to="/unidade/dashboard" replace />} />
                   
