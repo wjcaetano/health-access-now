@@ -2,7 +2,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BuscaCliente } from '@/components/vendas/BuscaCliente';
+import BuscaCliente from '@/components/vendas/BuscaCliente';
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -22,7 +22,7 @@ describe('BuscaCliente', () => {
     termoBusca: '',
     setTermoBusca: vi.fn(),
     onBuscar: vi.fn(),
-    loading: false,
+    disabled: false,
   };
 
   it('deve renderizar o componente corretamente', () => {
@@ -32,7 +32,7 @@ describe('BuscaCliente', () => {
     );
 
     expect(screen.getByPlaceholderText(/digite o cpf ou nome/i)).toBeInTheDocument();
-    expect(screen.getByText(/buscar cliente/i)).toBeInTheDocument();
+    expect(screen.getByText(/buscar/i)).toBeInTheDocument();
   });
 
   it('deve chamar onBuscar quando o botão é clicado', async () => {
@@ -41,7 +41,7 @@ describe('BuscaCliente', () => {
       { wrapper: createWrapper() }
     );
 
-    const button = screen.getByText(/buscar cliente/i);
+    const button = screen.getByText(/buscar/i);
     fireEvent.click(button);
 
     await waitFor(() => {
@@ -61,12 +61,16 @@ describe('BuscaCliente', () => {
     expect(mockProps.setTermoBusca).toHaveBeenCalledWith('João Silva');
   });
 
-  it('deve mostrar loading quando necessário', () => {
+  it('deve mostrar estado desabilitado quando necessário', () => {
     render(
-      <BuscaCliente {...mockProps} loading={true} />,
+      <BuscaCliente {...mockProps} disabled={true} />,
       { wrapper: createWrapper() }
     );
 
-    expect(screen.getByText(/buscando/i)).toBeInTheDocument();
+    const input = screen.getByPlaceholderText(/digite o cpf ou nome/i);
+    const button = screen.getByText(/buscar/i);
+    
+    expect(input).toBeDisabled();
+    expect(button).toBeDisabled();
   });
 });

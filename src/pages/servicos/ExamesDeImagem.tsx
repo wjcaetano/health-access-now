@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import HeaderVendas from "@/components/vendas/HeaderVendas";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";

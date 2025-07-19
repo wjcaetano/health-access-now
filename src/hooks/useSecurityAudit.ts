@@ -75,14 +75,14 @@ export function useSecurityAudit() {
       if (error) throw error;
 
       // Transform audit log to security events format
-      const transformedEvents = (data || []).map(log => ({
+      const transformedEvents: SecurityEvent[] = (data || []).map(log => ({
         id: log.id,
         user_id: log.user_id,
         event_type: 'data_access' as const,
         resource: log.action,
         ip_address: log.ip_address || 'unknown',
         user_agent: log.user_agent || 'unknown',
-        metadata: log.details || {},
+        metadata: typeof log.details === 'object' && log.details !== null ? log.details as Record<string, any> : {},
         created_at: log.created_at,
       }));
 

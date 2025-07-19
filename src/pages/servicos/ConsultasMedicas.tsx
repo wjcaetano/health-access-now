@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import HeaderVendas from "@/components/vendas/HeaderVendas";
 import { Stethoscope } from "lucide-react";
@@ -7,7 +6,7 @@ import SelecaoUnidadeModal from "@/components/vendas/SelecaoUnidadeModal";
 
 const especialidades = [
     "Alergia e Imunologia",
-    "Cardiologia",
+    "Cardiologia", 
     "Dermatologia",
     "Endocrinologia e Metabologia",
     "Endoscopia",
