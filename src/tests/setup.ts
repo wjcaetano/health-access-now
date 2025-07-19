@@ -34,6 +34,7 @@ vi.mock('react-router-dom', () => ({
   BrowserRouter: ({ children }: { children: React.ReactNode }) => children,
   Routes: ({ children }: { children: React.ReactNode }) => children,
   Route: ({ children }: { children: React.ReactNode }) => children,
+  Navigate: ({ children }: { children?: React.ReactNode }) => children || null,
 }));
 
 // Mock do useToast

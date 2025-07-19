@@ -1,9 +1,30 @@
 
 import React from "react";
-import AppLayout from "./AppLayout";
+import { useAuth } from "@/contexts/AuthContext";
+import TenantAwareLayout from "./TenantAwareLayout";
+import LoadingLayout from "./LoadingLayout";
+import InactiveUserLayout from "./InactiveUserLayout";
 
-const Layout: React.FC = () => {
-  return <AppLayout />;
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { loading, isActive } = useAuth();
+
+  if (loading) {
+    return <LoadingLayout />;
+  }
+
+  if (!isActive) {
+    return <InactiveUserLayout />;
+  }
+
+  return (
+    <TenantAwareLayout>
+      {children}
+    </TenantAwareLayout>
+  );
 };
 
 export default Layout;

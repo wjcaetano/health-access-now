@@ -13,8 +13,8 @@ describe('useAppState', () => {
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.error).toBeNull();
-    expect(result.current.currentView).toBe('dashboard');
-    expect(result.current.sidebarOpen).toBe(false);
+    expect(result.current.currentModule).toBe('dashboard');
+    expect(result.current.sidebarCollapsed).toBe(false);
   });
 
   it('should update loading state', () => {
@@ -38,29 +38,29 @@ describe('useAppState', () => {
     expect(result.current.error).toBe(testError);
   });
 
-  it('should update current view', () => {
+  it('should update current module', () => {
     const { result } = renderHook(() => useAppState());
 
     act(() => {
-      result.current.setCurrentView('vendas');
+      result.current.setCurrentModule('vendas');
     });
 
-    expect(result.current.currentView).toBe('vendas');
+    expect(result.current.currentModule).toBe('vendas');
   });
 
-  it('should toggle sidebar', () => {
+  it('should toggle sidebar collapsed state', () => {
     const { result } = renderHook(() => useAppState());
 
     act(() => {
-      result.current.toggleSidebar();
+      result.current.setSidebarCollapsed(true);
     });
 
-    expect(result.current.sidebarOpen).toBe(true);
+    expect(result.current.sidebarCollapsed).toBe(true);
 
     act(() => {
-      result.current.toggleSidebar();
+      result.current.setSidebarCollapsed(false);
     });
 
-    expect(result.current.sidebarOpen).toBe(false);
+    expect(result.current.sidebarCollapsed).toBe(false);
   });
 });

@@ -31,8 +31,8 @@ describe('BuscaCliente', () => {
       { wrapper: createWrapper() }
     );
 
-    expect(screen.getByPlaceholderText(/digite o cpf ou nome/i)).toBeInTheDocument();
-    expect(screen.getByText(/buscar/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/digite o cpf ou nome/i)).toBeDefined();
+    expect(screen.getByText(/buscar/i)).toBeDefined();
   });
 
   it('deve chamar onBuscar quando o botão é clicado', async () => {
@@ -70,7 +70,7 @@ describe('BuscaCliente', () => {
     const input = screen.getByPlaceholderText(/digite o cpf ou nome/i);
     const button = screen.getByText(/buscar/i);
     
-    expect(input).toBeDisabled();
-    expect(button).toBeDisabled();
+    expect(input.disabled).toBe(true);
+    expect(button.disabled).toBe(true);
   });
 });
