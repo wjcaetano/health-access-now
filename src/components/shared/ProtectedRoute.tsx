@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
@@ -19,12 +19,6 @@ export function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { user, profile, loading, initialized, isActive } = useAuth();
   const location = useLocation();
-  const hasRedirected = useRef(false);
-
-  // Reset redirect flag when location changes
-  useEffect(() => {
-    hasRedirected.current = false;
-  }, [location.pathname]);
 
   if (!initialized || loading) {
     return (
@@ -35,30 +29,18 @@ export function ProtectedRoute({
   }
 
   if (!user || !isActive) {
-    if (!hasRedirected.current) {
-      hasRedirected.current = true;
-      return <Navigate to="/login" state={{ from: location }} replace />;
-    }
-    return null;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Check admin requirement
   if (requireAdmin && profile?.nivel_acesso !== 'admin') {
-    if (!hasRedirected.current) {
-      hasRedirected.current = true;
-      return <Navigate to="/unidade/dashboard" replace />;
-    }
-    return null;
+    return <Navigate to="/unidade/dashboard" replace />;
   }
 
   // Check specific level requirement
   if (requiredLevel && profile?.nivel_acesso !== requiredLevel) {
-    if (!hasRedirected.current) {
-      hasRedirected.current = true;
-      const redirectPath = profile?.nivel_acesso === 'prestador' ? '/prestador/portal' : '/unidade/dashboard';
-      return <Navigate to={redirectPath} replace />;
-    }
-    return null;
+    const redirectPath = profile?.nivel_acesso === 'prestador' ? '/prestador/portal' : '/unidade/dashboard';
+    return <Navigate to={redirectPath} replace />;
   }
 
   return <>{children}</>;

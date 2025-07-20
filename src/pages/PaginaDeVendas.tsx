@@ -11,6 +11,7 @@ import Depoimentos from "@/components/vendas/Depoimentos";
 import CallToAction from "@/components/vendas/CallToAction";
 import Login from "./auth/Login";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface PaginaDeVendasProps {
   mostrarLogin?: boolean;
@@ -18,19 +19,21 @@ interface PaginaDeVendasProps {
 
 const PaginaDeVendas = ({ mostrarLogin }: PaginaDeVendasProps) => {
   const navigate = useNavigate();
+  const { user, profile, isPrestador, isUnidadeUser, isAdmin } = useAuth();
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem("agendaja_authenticated") === "true";
-    if (isAuthenticated) {
-        const userType = localStorage.getItem("agendaja_user_type");
-        if (userType === 'prestador') {
-            navigate('/prestador/portal');
-        } else {
-            navigate('/unidade/dashboard');
-        }
+    if (user && profile) {
+      // Redirecionar baseado no tipo de usuário
+      if (isPrestador) {
+        navigate('/prestador/portal');
+      } else if (isAdmin) {
+        navigate('/franqueadora/dashboard');
+      } else if (isUnidadeUser) {
+        navigate('/unidade/dashboard');
+      }
     }
-  }, [navigate]);
+  }, [user, profile, navigate, isPrestador, isUnidadeUser, isAdmin]);
 
   // função que será passada para o Header para abrir o modal
   const handleAbrirLogin = () => {

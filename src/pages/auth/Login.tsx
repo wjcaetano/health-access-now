@@ -21,14 +21,20 @@ export default function Login() {
   
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp, user, profile, isPrestador, isAdmin, isUnidadeUser } = useAuth();
 
   // Redirect if already logged in
   React.useEffect(() => {
-    if (user) {
-      navigate('/sistema/dashboard');
+    if (user && profile) {
+      if (isPrestador) {
+        navigate('/prestador/portal');
+      } else if (isAdmin) {
+        navigate('/franqueadora/dashboard');
+      } else if (isUnidadeUser) {
+        navigate('/unidade/dashboard');
+      }
     }
-  }, [user, navigate]);
+  }, [user, profile, navigate, isPrestador, isAdmin, isUnidadeUser]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,7 +83,7 @@ export default function Login() {
             title: "Login realizado com sucesso!",
             description: "Bem-vindo ao Sistema AGENDAJA"
           });
-          navigate('/sistema/dashboard');
+          // O redirecionamento será feito pelo useEffect
         }
       }
     } catch (error) {

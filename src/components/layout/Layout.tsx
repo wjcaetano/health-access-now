@@ -20,7 +20,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return <InactiveUserLayout />;
   }
 
-  return <AppLayout />;
+  return <AppLayout>{children}</AppLayout>;
 };
 
 export default Layout;
