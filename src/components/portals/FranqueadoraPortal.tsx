@@ -22,10 +22,10 @@ import {
 } from "@/components/layout/LazyPages";
 
 const FranqueadoraPortal: React.FC = () => {
-  const { profile, isActive, isAdmin } = useAuth();
+  const { profile, isActive } = useAuth();
 
   // Apenas admins da franqueadora têm acesso
-  if (!isActive || !isAdmin || profile?.nivel_acesso !== 'admin') {
+  if (!isActive || profile?.nivel_acesso !== 'admin') {
     return <Navigate to="/login" replace />;
   }
 

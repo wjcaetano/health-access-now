@@ -24,10 +24,8 @@ import {
 const UnidadePortal: React.FC = () => {
   const { profile, isActive } = useAuth();
 
-  // Verificar se é um usuário da unidade/franquia
-  const isUnidadeUser = ['atendente', 'gerente', 'admin'].includes(profile?.nivel_acesso || '');
-
-  if (!isActive || !isUnidadeUser) {
+  // Verificar se é um usuário da unidade
+  if (!isActive || !['atendente', 'gerente'].includes(profile?.nivel_acesso || '')) {
     return <Navigate to="/login" replace />;
   }
 

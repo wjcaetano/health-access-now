@@ -15,9 +15,9 @@ import {
 } from "@/components/layout/LazyPages";
 
 const PrestadorPortal: React.FC = () => {
-  const { profile, isActive, isPrestador } = useAuth();
+  const { profile, isActive } = useAuth();
 
-  if (!isActive || !isPrestador) {
+  if (!isActive || profile?.nivel_acesso !== 'prestador') {
     return <Navigate to="/login" replace />;
   }
 

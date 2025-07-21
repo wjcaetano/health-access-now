@@ -120,11 +120,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Computed properties
   const isAdmin = profile?.nivel_acesso === 'admin';
-  const isManager = profile?.nivel_acesso === 'gerente' || isAdmin;
-  const isPrestador = !!profile?.prestador_id;
+  const isManager = profile?.nivel_acesso === 'gerente';
+  const isPrestador = profile?.nivel_acesso === 'prestador';
   const isActive = profile?.status === 'ativo';
-  const isUnidadeUser = ['atendente', 'gerente', 'admin'].includes(profile?.nivel_acesso || '');
-  const isFranqueadoraUser = isAdmin && profile?.nivel_acesso === 'admin';
+  const isUnidadeUser = ['atendente', 'gerente'].includes(profile?.nivel_acesso || '');
+  const isFranqueadoraUser = profile?.nivel_acesso === 'admin';
 
   const value = {
     user,
