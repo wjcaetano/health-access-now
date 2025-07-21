@@ -71,7 +71,7 @@ function App() {
                   <Route path="/servicos/exames-de-imagem" element={<ExamesDeImagem />} />
                   <Route path="/servicos/outros-exames" element={<OutrosExames />} />
                   
-                  {/* Portais Protegidos com Lazy Loading */}
+                  {/* Portal da Unidade - para gerentes, atendentes e admins de unidade */}
                   <Route path="/unidade/*" element={
                     <ProtectedRoute>
                       <SuspenseWrapper minHeight="100vh">
@@ -80,6 +80,7 @@ function App() {
                     </ProtectedRoute>
                   } />
                   
+                  {/* Portal do Prestador - apenas para prestadores */}
                   <Route path="/prestador/*" element={
                     <ProtectedRoute requiredLevel="prestador">
                       <SuspenseWrapper minHeight="100vh">
@@ -88,6 +89,7 @@ function App() {
                     </ProtectedRoute>
                   } />
                   
+                  {/* Portal da Franqueadora - apenas para admins da franqueadora */}
                   <Route path="/franqueadora/*" element={
                     <ProtectedRoute requireAdmin>
                       <SuspenseWrapper minHeight="100vh">

@@ -17,8 +17,10 @@ export function ProtectedRoute({
   requiredLevel,
   fallbackPath = '/login' 
 }: ProtectedRouteProps) {
-  const { user, profile, loading, initialized, isActive } = useAuth();
+  const { user, profile, loading, initialized } = useAuth();
   const location = useLocation();
+
+  console.log('ProtectedRoute - User:', user?.id, 'Profile:', profile, 'Loading:', loading, 'Initialized:', initialized);
 
   if (!initialized || loading) {
     return (
@@ -28,19 +30,38 @@ export function ProtectedRoute({
     );
   }
 
-  if (!user || !isActive) {
+  if (!user) {
+    console.log('No user, redirecting to login');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  if (!profile) {
+    console.log('No profile, redirecting to login');
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (profile.status !== 'ativo') {
+    console.log('User not active, redirecting to login');
+    return <Navigate to="/login" replace />;
+  }
+
   // Check admin requirement
-  if (requireAdmin && profile?.nivel_acesso !== 'admin') {
+  if (requireAdmin && profile.nivel_acesso !== 'admin') {
+    console.log('Admin required but user is not admin, redirecting');
     return <Navigate to="/unidade/dashboard" replace />;
   }
 
   // Check specific level requirement
-  if (requiredLevel && profile?.nivel_acesso !== requiredLevel) {
-    const redirectPath = profile?.nivel_acesso === 'prestador' ? '/prestador/portal' : '/unidade/dashboard';
-    return <Navigate to={redirectPath} replace />;
+  if (requiredLevel && profile.nivel_acesso !== requiredLevel) {
+    console.log('Required level not met, redirecting based on user level');
+    switch (profile.nivel_acesso) {
+      case 'prestador':
+        return <Navigate to="/prestador/portal" replace />;
+      case 'admin':
+        return <Navigate to="/franqueadora/dashboard" replace />;
+      default:
+        return <Navigate to="/unidade/dashboard" replace />;
+    }
   }
 
   return <>{children}</>;

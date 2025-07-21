@@ -5,26 +5,45 @@ import { useAuth } from '@/contexts/AuthContext';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
 const ProfileRedirect: React.FC = () => {
-  const { user, profile, loading, isPrestador, isAdmin, isUnidadeUser } = useAuth();
+  const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
   const hasRedirected = useRef(false);
 
   useEffect(() => {
     if (loading || !user || !profile || hasRedirected.current) return;
 
+    console.log('ProfileRedirect - User:', user.id, 'Profile:', profile);
+    
     hasRedirected.current = true;
     
-    // Determinar redirecionamento baseado no perfil
-    if (isPrestador) {
-      navigate('/prestador/portal', { replace: true });
-    } else if (isAdmin && profile.nivel_acesso === 'admin') {
-      navigate('/franqueadora/dashboard', { replace: true });
-    } else if (isUnidadeUser) {
-      navigate('/unidade/dashboard', { replace: true });
-    } else {
+    // Verificar se o usuário está ativo
+    if (profile.status !== 'ativo') {
+      console.log('User not active, redirecting to login');
       navigate('/login', { replace: true });
+      return;
     }
-  }, [user, profile, loading, navigate, isPrestador, isAdmin, isUnidadeUser]);
+
+    // Redirecionamento baseado no nivel_acesso do perfil
+    switch (profile.nivel_acesso) {
+      case 'prestador':
+        console.log('Redirecting to prestador portal');
+        navigate('/prestador/portal', { replace: true });
+        break;
+      case 'admin':
+        console.log('Redirecting to franqueadora dashboard');
+        navigate('/franqueadora/dashboard', { replace: true });
+        break;
+      case 'gerente':
+      case 'atendente':
+        console.log('Redirecting to unidade dashboard');
+        navigate('/unidade/dashboard', { replace: true });
+        break;
+      default:
+        console.log('Unknown access level, redirecting to login');
+        navigate('/login', { replace: true });
+        break;
+    }
+  }, [user, profile, loading, navigate]);
 
   if (loading) {
     return (

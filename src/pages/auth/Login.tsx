@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,7 +21,28 @@ export default function Login() {
   
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, user, profile, loading } = useAuth();
+
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (!loading && user && profile && profile.status === 'ativo') {
+      console.log('User already logged in, redirecting based on profile');
+      switch (profile.nivel_acesso) {
+        case 'prestador':
+          navigate('/prestador/portal', { replace: true });
+          break;
+        case 'admin':
+          navigate('/franqueadora/dashboard', { replace: true });
+          break;
+        case 'gerente':
+        case 'atendente':
+          navigate('/unidade/dashboard', { replace: true });
+          break;
+        default:
+          break;
+      }
+    }
+  }, [user, profile, loading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,8 +91,7 @@ export default function Login() {
             title: "Login realizado com sucesso!",
             description: "Redirecionando..."
           });
-          // Redirecionar para uma página que fará o redirecionamento baseado no perfil
-          navigate('/auth/redirect', { replace: true });
+          // O redirecionamento será feito pelo useEffect acima
         }
       }
     } catch (error) {
