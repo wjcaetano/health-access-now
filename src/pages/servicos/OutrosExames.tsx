@@ -1,14 +1,22 @@
 import { Button } from "@/components/ui/button";
 import HeaderVendas from "@/components/vendas/HeaderVendas";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import SelecaoUnidadeModal from "@/components/vendas/SelecaoUnidadeModal";
+import Login from "@/pages/auth/Login";
+import { useState } from "react";
 
 const exames = ["Eletrocardiograma (ECG)", "Teste Ergométrico", "Endoscopia", "Colonoscopia", "MAPA 24h", "Holter 24h"];
 
 const OutrosExames = () => {
+    const [showLoginModal, setShowLoginModal] = useState(false);
+
+    const handleAbrirLogin = () => {
+        setShowLoginModal(true);
+    };
+
     return (
         <div className="bg-white min-h-screen">
-            <HeaderVendas />
+            <HeaderVendas onAbrirLogin={handleAbrirLogin} />
             <main className="container mx-auto px-4 py-12">
                 <h1 className="text-4xl font-bold text-agendaja-primary mb-4">Outros Exames</h1>
                 <p className="text-lg text-gray-600 mb-8">Conheça outros procedimentos e exames disponíveis para um cuidado completo com a sua saúde.</p>
@@ -29,6 +37,13 @@ const OutrosExames = () => {
                     <SelecaoUnidadeModal tipoServico="Exame" />
                 </Dialog>
             </main>
+            <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
+                <DialogContent className="max-w-md p-0 bg-transparent shadow-none border-none">
+                    <div className="bg-white rounded-lg shadow-lg p-0">
+                        <Login />
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

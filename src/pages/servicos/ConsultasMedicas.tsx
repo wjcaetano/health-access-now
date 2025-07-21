@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import HeaderVendas from "@/components/vendas/HeaderVendas";
 import { Stethoscope } from "lucide-react";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import SelecaoUnidadeModal from "@/components/vendas/SelecaoUnidadeModal";
+import Login from "@/pages/auth/Login";
+import { useState } from "react";
 
 const especialidades = [
     "Alergia e Imunologia",
@@ -31,9 +33,15 @@ const especialidades = [
 ];
 
 const ConsultasMedicas = () => {
+    const [showLoginModal, setShowLoginModal] = useState(false);
+
+    const handleAbrirLogin = () => {
+        setShowLoginModal(true);
+    };
+
     return (
         <div className="bg-white min-h-screen">
-            <HeaderVendas />
+            <HeaderVendas onAbrirLogin={handleAbrirLogin} />
             <main className="container mx-auto px-4 py-12">
                 <h1 className="text-4xl font-bold text-agendaja-primary mb-4">Consultas Médicas</h1>
                 <p className="text-lg text-gray-600 mb-8">Oferecemos uma ampla gama de especialidades médicas para cuidar da sua saúde de forma completa e acessível. Agende sua consulta com profissionais qualificados.</p>
@@ -57,6 +65,13 @@ const ConsultasMedicas = () => {
                     <SelecaoUnidadeModal tipoServico="Consulta Médica" />
                 </Dialog>
             </main>
+            <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
+                <DialogContent className="max-w-md p-0 bg-transparent shadow-none border-none">
+                    <div className="bg-white rounded-lg shadow-lg p-0">
+                        <Login />
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

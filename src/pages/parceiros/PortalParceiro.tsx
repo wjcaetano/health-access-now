@@ -1,9 +1,10 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import HeaderVendas from "@/components/vendas/HeaderVendas";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import Login from "@/pages/auth/Login";
 import { useState } from "react";
 import { 
   TrendingUp, 
@@ -108,6 +109,11 @@ const depoimentos = [
 const PortalParceiro = () => {
     const { toast } = useToast();
     const [submitted, setSubmitted] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
+
+    const handleAbrirLogin = () => {
+        setShowLoginModal(true);
+    };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -120,7 +126,7 @@ const PortalParceiro = () => {
 
     return (
         <div className="bg-white min-h-screen">
-            <HeaderVendas />
+            <HeaderVendas onAbrirLogin={handleAbrirLogin} />
             
             {/* Hero Section */}
             <section className="pt-20 pb-16 bg-gradient-to-br from-agendaja-primary via-agendaja-secondary to-agendaja-primary">
@@ -432,6 +438,14 @@ const PortalParceiro = () => {
                 )}
               </div>
             </section>
+
+            <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
+                <DialogContent className="max-w-md p-0 bg-transparent shadow-none border-none">
+                    <div className="bg-white rounded-lg shadow-lg p-0">
+                        <Login />
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
