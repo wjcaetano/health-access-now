@@ -1,6 +1,5 @@
 
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 import HeaderVendas from "@/components/vendas/HeaderVendas";
 import Hero from "@/components/vendas/Hero";
@@ -11,29 +10,13 @@ import Depoimentos from "@/components/vendas/Depoimentos";
 import CallToAction from "@/components/vendas/CallToAction";
 import Login from "./auth/Login";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useAuth } from "@/contexts/AuthContext";
 
 interface PaginaDeVendasProps {
   mostrarLogin?: boolean;
 }
 
 const PaginaDeVendas = ({ mostrarLogin }: PaginaDeVendasProps) => {
-  const navigate = useNavigate();
-  const { user, profile, isPrestador, isUnidadeUser, isAdmin } = useAuth();
   const [showLoginModal, setShowLoginModal] = useState(false);
-
-  useEffect(() => {
-    if (user && profile) {
-      // Redirecionar baseado no tipo de usuário
-      if (isPrestador) {
-        navigate('/prestador/portal');
-      } else if (isAdmin) {
-        navigate('/franqueadora/dashboard');
-      } else if (isUnidadeUser) {
-        navigate('/unidade/dashboard');
-      }
-    }
-  }, [user, profile, navigate, isPrestador, isUnidadeUser, isAdmin]);
 
   // função que será passada para o Header para abrir o modal
   const handleAbrirLogin = () => {

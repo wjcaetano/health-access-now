@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
@@ -7,23 +7,23 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 const ProfileRedirect: React.FC = () => {
   const { user, profile, loading, isPrestador, isAdmin, isUnidadeUser } = useAuth();
   const navigate = useNavigate();
+  const hasRedirected = useRef(false);
 
   useEffect(() => {
-    if (loading || !user || !profile) return;
+    if (loading || !user || !profile || hasRedirected.current) return;
 
+    hasRedirected.current = true;
+    
     // Determinar redirecionamento baseado no perfil
-    let redirectPath = '/login';
-    
     if (isPrestador) {
-      redirectPath = '/prestador/portal';
+      navigate('/prestador/portal', { replace: true });
     } else if (isAdmin && profile.nivel_acesso === 'admin') {
-      redirectPath = '/franqueadora/dashboard';
+      navigate('/franqueadora/dashboard', { replace: true });
     } else if (isUnidadeUser) {
-      redirectPath = '/unidade/dashboard';
+      navigate('/unidade/dashboard', { replace: true });
+    } else {
+      navigate('/login', { replace: true });
     }
-    
-    // Redirecionar apenas uma vez
-    navigate(redirectPath, { replace: true });
   }, [user, profile, loading, navigate, isPrestador, isAdmin, isUnidadeUser]);
 
   if (loading) {

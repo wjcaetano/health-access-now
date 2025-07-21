@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
+import ProfileRedirect from "@/components/auth/ProfileRedirect";
 import Login from "@/pages/auth/Login";
 import NotFound from "@/pages/NotFound";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
@@ -58,6 +59,7 @@ function App() {
                   
                   {/* Autenticação */}
                   <Route path="/login" element={<Login />} />
+                  <Route path="/auth/redirect" element={<ProfileRedirect />} />
                   
                   {/* Páginas Públicas */}
                   <Route path="/portal-parceiro" element={<PortalParceiro />} />
@@ -94,7 +96,7 @@ function App() {
                     </ProtectedRoute>
                   } />
                   
-                  {/* Redirecionamentos para compatibilidade - com verificação condicional */}
+                  {/* Redirecionamentos para compatibilidade */}
                   <Route path="/sistema/*" element={<Navigate to="/unidade/dashboard" replace />} />
                   <Route path="/portal" element={<Navigate to="/" replace />} />
                   <Route path="/dashboard" element={<Navigate to="/unidade/dashboard" replace />} />
