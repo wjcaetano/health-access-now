@@ -18,18 +18,23 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [hasRedirected, setHasRedirected] = useState(false);
   
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { signIn, signUp, user, profile, loading } = useAuth();
+  const { signIn, signUp, user, profile, loading, initialized } = useAuth();
 
   // Redirect if user is already logged in
   useEffect(() => {
-    if (!loading && user && profile && profile.status === 'ativo') {
+    // Aguardar inicialização completa e evitar loops
+    if (!initialized || loading || hasRedirected) return;
+    
+    if (user && profile && profile.status === 'ativo') {
       console.log('User already logged in, redirecting based on profile:', profile.nivel_acesso);
+      setHasRedirected(true);
       navigate('/auth/redirect', { replace: true });
     }
-  }, [user, profile, loading, navigate]);
+  }, [user, profile, loading, initialized, navigate, hasRedirected]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,6 +84,7 @@ export default function Login() {
             description: "Redirecionando..."
           });
           // Redirecionar para a página de redirecionamento que fará o roteamento correto
+          setHasRedirected(true);
           navigate('/auth/redirect', { replace: true });
         }
       }

@@ -8,6 +8,7 @@ const ProfileRedirect: React.FC = () => {
   const { user, profile, loading, initialized } = useAuth();
   const navigate = useNavigate();
   const hasRedirected = useRef(false);
+  const redirectTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Aguardar inicialização completa
@@ -46,34 +47,43 @@ const ProfileRedirect: React.FC = () => {
       return;
     }
 
-    // Marcar como redirecionado ANTES de fazer o redirecionamento
+    // Marcar como redirecionado ANTES de fazer o redirecionamento e usar timeout para evitar loops
     hasRedirected.current = true;
 
-    // Redirecionamento baseado no nivel_acesso do perfil
-    console.log('Redirecting based on nivel_acesso:', profile.nivel_acesso);
-    switch (profile.nivel_acesso) {
-      case 'prestador':
-        console.log('Redirecting to prestador portal');
-        navigate('/prestador/portal', { replace: true });
-        break;
-      case 'gerente':
-      case 'atendente':
-      case 'colaborador':
-        console.log('Redirecting to unidade dashboard');
-        navigate('/unidade/dashboard', { replace: true });
-        break;
-      default:
-        console.log('Unknown access level, redirecting to login. Level:', profile.nivel_acesso);
-        navigate('/login', { replace: true });
-        break;
-    }
+    // Usar setTimeout para evitar problemas de re-render durante navegação
+    redirectTimeout.current = setTimeout(() => {
+      // Redirecionamento baseado no nivel_acesso do perfil
+      console.log('Redirecting based on nivel_acesso:', profile.nivel_acesso);
+      switch (profile.nivel_acesso) {
+        case 'prestador':
+          console.log('Redirecting to prestador portal');
+          navigate('/prestador/portal', { replace: true });
+          break;
+        case 'gerente':
+        case 'atendente':
+        case 'colaborador':
+          console.log('Redirecting to unidade dashboard');
+          navigate('/unidade/dashboard', { replace: true });
+          break;
+        default:
+          console.log('Unknown access level, redirecting to login. Level:', profile.nivel_acesso);
+          navigate('/login', { replace: true });
+          break;
+      }
+    }, 100);
   }, [initialized, loading, user, profile, navigate]);
 
-  // Reset hasRedirected se o usuário mudou
+  // Reset hasRedirected se o usuário mudou e limpar timeout
   useEffect(() => {
     if (user?.id) {
       hasRedirected.current = false;
     }
+    
+    return () => {
+      if (redirectTimeout.current) {
+        clearTimeout(redirectTimeout.current);
+      }
+    };
   }, [user?.id]);
 
   if (!initialized || loading) {
