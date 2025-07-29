@@ -20,7 +20,7 @@ export function ProtectedRoute({
   const { user, profile, loading, initialized } = useAuth();
   const location = useLocation();
 
-  console.log('ProtectedRoute - User:', user?.id, 'Profile:', profile, 'Loading:', loading, 'Initialized:', initialized);
+  console.log('ProtectedRoute - User:', user?.id, 'Profile nivel_acesso:', profile?.nivel_acesso, 'Profile status:', profile?.status, 'Loading:', loading, 'Initialized:', initialized);
 
   if (!initialized || loading) {
     return (

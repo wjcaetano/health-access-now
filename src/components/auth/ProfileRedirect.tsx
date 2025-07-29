@@ -10,7 +10,12 @@ const ProfileRedirect: React.FC = () => {
   const hasRedirected = useRef(false);
 
   useEffect(() => {
-    if (loading || !user || !profile || hasRedirected.current) return;
+    console.log('ProfileRedirect useEffect:', { loading, user: !!user, profile, hasRedirected: hasRedirected.current });
+    
+    if (loading || !user || !profile || hasRedirected.current) {
+      console.log('ProfileRedirect - Early return:', { loading, user: !!user, profile: !!profile, hasRedirected: hasRedirected.current });
+      return;
+    }
 
     console.log('ProfileRedirect - User:', user.id, 'Profile:', profile);
     
@@ -18,12 +23,13 @@ const ProfileRedirect: React.FC = () => {
     
     // Verificar se o usuário está ativo
     if (profile.status !== 'ativo') {
-      console.log('User not active, redirecting to login');
+      console.log('User not active, redirecting to login. Status:', profile.status);
       navigate('/login', { replace: true });
       return;
     }
 
     // Redirecionamento baseado no nivel_acesso do perfil
+    console.log('Redirecting based on nivel_acesso:', profile.nivel_acesso);
     switch (profile.nivel_acesso) {
       case 'prestador':
         console.log('Redirecting to prestador portal');
@@ -34,8 +40,12 @@ const ProfileRedirect: React.FC = () => {
         console.log('Redirecting to unidade dashboard');
         navigate('/unidade/dashboard', { replace: true });
         break;
+      case 'colaborador':
+        console.log('Redirecting colaborador to unidade dashboard');
+        navigate('/unidade/dashboard', { replace: true });
+        break;
       default:
-        console.log('Unknown access level, redirecting to login');
+        console.log('Unknown access level, redirecting to login. Level:', profile.nivel_acesso);
         navigate('/login', { replace: true });
         break;
     }

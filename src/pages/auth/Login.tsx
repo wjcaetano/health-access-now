@@ -26,18 +26,8 @@ export default function Login() {
   // Redirect if user is already logged in
   useEffect(() => {
     if (!loading && user && profile && profile.status === 'ativo') {
-      console.log('User already logged in, redirecting based on profile');
-      switch (profile.nivel_acesso) {
-        case 'prestador':
-          navigate('/prestador/portal', { replace: true });
-          break;
-        case 'gerente':
-        case 'atendente':
-          navigate('/unidade/dashboard', { replace: true });
-          break;
-        default:
-          break;
-      }
+      console.log('User already logged in, redirecting based on profile:', profile.nivel_acesso);
+      navigate('/auth/redirect', { replace: true });
     }
   }, [user, profile, loading, navigate]);
 
@@ -88,7 +78,8 @@ export default function Login() {
             title: "Login realizado com sucesso!",
             description: "Redirecionando..."
           });
-          // O redirecionamento será feito pelo useEffect acima
+          // Redirecionar para a página de redirecionamento que fará o roteamento correto
+          navigate('/auth/redirect', { replace: true });
         }
       }
     } catch (error) {

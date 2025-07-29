@@ -19,7 +19,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loadUserProfile = useCallback(async (userId: string) => {
     try {
+      console.log('Loading user profile for:', userId);
       const userProfile = await fetchUserProfile(userId);
+      console.log('User profile loaded:', userProfile);
       setProfile(userProfile);
     } catch (error) {
       console.error('Error loading user profile:', error);
@@ -36,7 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           async (event, session) => {
             if (!mounted) return;
 
-            console.log('Auth state change:', event, session?.user?.id);
+            console.log('Auth state change:', event, session?.user?.id, 'Profile will be loaded');
             
             setSession(session);
             setUser(session?.user ?? null);
