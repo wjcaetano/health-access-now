@@ -74,7 +74,7 @@ const UnidadePortal: React.FC = () => {
               <Financeiro />
             </SuspenseWrapper>
           } />
-          {(profile?.nivel_acesso === 'gerente' || profile?.nivel_acesso === 'admin') && (
+          {profile?.nivel_acesso === 'gerente' && (
             <Route path="colaboradores" element={
               <SuspenseWrapper>
                 <Colaboradores />
@@ -86,7 +86,7 @@ const UnidadePortal: React.FC = () => {
               <MeuPerfil />
             </SuspenseWrapper>
           } />
-          {profile?.nivel_acesso === 'admin' && (
+          {profile?.nivel_acesso === 'gerente' && (
             <Route path="configuracoes" element={
               <SuspenseWrapper>
                 <SystemSettings />

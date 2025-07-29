@@ -21,7 +21,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       id: data.id,
       email: data.email,
       nome: data.nome,
-      nivel_acesso: data.nivel_acesso as 'atendente' | 'gerente' | 'admin' | 'prestador',
+      nivel_acesso: data.nivel_acesso as 'colaborador' | 'atendente' | 'gerente' | 'prestador',
       colaborador_id: data.colaborador_id,
       prestador_id: data.prestador_id,
       tenant_id: data.tenant_id,

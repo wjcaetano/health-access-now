@@ -7,10 +7,10 @@ import { Users, Building2, Shield, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const AdminDashboardPage: React.FC = () => {
-  const { isAdmin } = useAuth();
+  const { isManager } = useAuth();
   const navigate = useNavigate();
 
-  if (!isAdmin) {
+  if (!isManager) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Card>

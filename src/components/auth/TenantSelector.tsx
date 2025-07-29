@@ -24,8 +24,7 @@ export const TenantSelector: React.FC = () => {
 
   const accessibleTenants = tenants.filter(tenant => 
     tenant.id === profile.tenant_id || 
-    tenant.tenant_pai_id === profile.tenant_id ||
-    profile.nivel_acesso === 'admin'
+    tenant.tenant_pai_id === profile.tenant_id
   );
 
   if (accessibleTenants.length <= 1) {

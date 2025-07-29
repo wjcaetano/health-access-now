@@ -23,8 +23,8 @@ export default function Sidebar({ collapsed, setCollapsed, userProfile }: Sideba
   // Determinar qual menu mostrar baseado no perfil do usuário
   const menuItems = userProfile === "prestador" ? prestadorMenuItems : unidadeMenuItems;
   
-  // Verificar se é gerente ou admin para mostrar opções administrativas
-  const isManager = profile?.nivel_acesso === 'gerente' || profile?.nivel_acesso === 'admin';
+  // Verificar se é gerente para mostrar opções administrativas
+  const isManager = profile?.nivel_acesso === 'gerente';
   const adminMenuItems = isManager ? unidadeMenuItems.filter(item => 
     item.roles?.includes('gerente') || item.roles?.includes('admin')
   ) : [];

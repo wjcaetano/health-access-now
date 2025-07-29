@@ -17,14 +17,12 @@ import SuspenseWrapper from "@/components/shared/SuspenseWrapper";
 // Lazy load portals
 import { 
   LazyUnidadePortal, 
-  LazyPrestadorPortal, 
-  LazyFranqueadoraPortal 
+  LazyPrestadorPortal
 } from "@/components/layout/LazyPages";
 
 // Páginas públicas (não lazy pois são críticas)
 import PaginaDeVendas from "@/pages/PaginaDeVendas";
 import PortalParceiro from "@/pages/parceiros/PortalParceiro";
-import SejaFranqueado from "@/pages/franquia/SejaFranqueado";
 import ConsultasMedicas from "@/pages/servicos/ConsultasMedicas";
 import ExamesLaboratoriais from "@/pages/servicos/ExamesLaboratoriais";
 import ExamesDeImagem from "@/pages/servicos/ExamesDeImagem";
@@ -63,7 +61,6 @@ function App() {
                   
                   {/* Páginas Públicas */}
                   <Route path="/portal-parceiro" element={<PortalParceiro />} />
-                  <Route path="/seja-franqueado" element={<SejaFranqueado />} />
                   
                   {/* Serviços Públicos */}
                   <Route path="/servicos/consultas-medicas" element={<ConsultasMedicas />} />
@@ -89,14 +86,6 @@ function App() {
                     </ProtectedRoute>
                   } />
                   
-                  {/* Portal da Franqueadora - apenas para admins da franqueadora */}
-                  <Route path="/franqueadora/*" element={
-                    <ProtectedRoute requireAdmin>
-                      <SuspenseWrapper minHeight="100vh">
-                        <LazyFranqueadoraPortal />
-                      </SuspenseWrapper>
-                    </ProtectedRoute>
-                  } />
                   
                   {/* Redirecionamentos para compatibilidade */}
                   <Route path="/sistema/*" element={<Navigate to="/unidade/dashboard" replace />} />

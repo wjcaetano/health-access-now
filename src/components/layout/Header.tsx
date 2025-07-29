@@ -25,7 +25,7 @@ interface HeaderProps {
 
 export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) {
   const { toast } = useToast();
-  const { signOut, profile, user, isAdmin, isManager } = useAuth();
+  const { signOut, profile, user, isManager } = useAuth();
   const isMobile = useIsMobile();
 
   const handleLogout = async () => {
@@ -133,7 +133,7 @@ export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) 
                   <span>Meu Perfil</span>
                 </Link>
               </DropdownMenuItem>
-              {(isAdmin || isManager) && (
+              {isManager && (
                 <>
                   <DropdownMenuItem asChild>
                     <Link to="/dashboard/gestao-usuarios" className="flex items-center cursor-pointer">
@@ -141,14 +141,12 @@ export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) 
                       <span>Gestão de Usuários</span>
                     </Link>
                   </DropdownMenuItem>
-                  {isAdmin && (
-                    <DropdownMenuItem asChild>
-                      <Link to="/dashboard/analise-sistema" className="flex items-center cursor-pointer">
-                        <BarChart3 className="mr-2 h-4 w-4" />
-                        <span>Análise do Sistema</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard/analise-sistema" className="flex items-center cursor-pointer">
+                      <BarChart3 className="mr-2 h-4 w-4" />
+                      <span>Análise do Sistema</span>
+                    </Link>
+                  </DropdownMenuItem>
                 </>
               )}
               <DropdownMenuSeparator />

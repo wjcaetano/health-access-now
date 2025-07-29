@@ -23,7 +23,7 @@ const MenuItems: React.FC<MenuItemsProps> = React.memo(({ onItemClick }) => {
       return prestadorMenuItems;
     }
     
-    if (["admin", "gerente", "atendente"].includes(profile?.nivel_acesso || "")) {
+    if (["gerente", "atendente"].includes(profile?.nivel_acesso || "")) {
       return unidadeMenuItems;
     }
     

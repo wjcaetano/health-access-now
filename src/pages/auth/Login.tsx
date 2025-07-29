@@ -31,9 +31,6 @@ export default function Login() {
         case 'prestador':
           navigate('/prestador/portal', { replace: true });
           break;
-        case 'admin':
-          navigate('/franqueadora/dashboard', { replace: true });
-          break;
         case 'gerente':
         case 'atendente':
           navigate('/unidade/dashboard', { replace: true });

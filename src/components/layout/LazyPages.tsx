@@ -36,23 +36,9 @@ export const LazyFaturamentoPrestador = lazy(() => import('@/pages/prestador/Fat
 // Cliente pages
 export const LazyPortalCliente = lazy(() => import('@/pages/clientes/PortalCliente'));
 
-// Franqueadora pages
-export const LazyDashboardFranqueadora = lazy(() => import('@/pages/franqueadora/DashboardFranqueadora'));
-export const LazyGestaoFranquias = lazy(() => import('@/pages/franqueadora/GestaoFranquias'));
-export const LazyLeadsFranqueados = lazy(() => import('@/pages/franqueadora/LeadsFranqueados'));
-export const LazyCRMFranqueados = lazy(() => import('@/pages/franqueadora/CRMFranqueados'));
-export const LazyFinanceiroMatriz = lazy(() => import('@/pages/franqueadora/FinanceiroMatriz'));
-export const LazyGestaoRoyalties = lazy(() => import('@/pages/franqueadora/GestaoRoyalties'));
-export const LazyGestaoContratos = lazy(() => import('@/pages/franqueadora/GestaoContratos'));
-export const LazyRelatoriosExecutivos = lazy(() => import('@/pages/franqueadora/RelatoriosExecutivos'));
-export const LazyMetasKPIs = lazy(() => import('@/pages/franqueadora/MetasKPIs'));
-export const LazyExpansaoFranquias = lazy(() => import('@/pages/franqueadora/ExpansaoFranquias'));
-
 // Dashboard pages
-export const LazyDashboardFranqueadoraPage = lazy(() => import('@/pages/dashboard/DashboardFranqueadoraPage'));
 export const LazyDashboardUnidadePage = lazy(() => import('@/pages/dashboard/DashboardUnidadePage'));
 
 // Portais com Lazy Loading
 export const LazyUnidadePortal = lazy(() => import('@/components/portals/UnidadePortal'));
 export const LazyPrestadorPortal = lazy(() => import('@/components/portals/PrestadorPortal'));
-export const LazyFranqueadoraPortal = lazy(() => import('@/components/portals/FranqueadoraPortal'));

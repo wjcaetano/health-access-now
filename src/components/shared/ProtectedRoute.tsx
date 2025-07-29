@@ -45,9 +45,9 @@ export function ProtectedRoute({
     return <Navigate to="/login" replace />;
   }
 
-  // Check admin requirement
-  if (requireAdmin && profile.nivel_acesso !== 'admin') {
-    console.log('Admin required but user is not admin, redirecting');
+  // Check admin requirement (no admin level anymore)
+  if (requireAdmin) {
+    console.log('Admin required but admin level removed, redirecting');
     return <Navigate to="/unidade/dashboard" replace />;
   }
 
@@ -57,8 +57,6 @@ export function ProtectedRoute({
     switch (profile.nivel_acesso) {
       case 'prestador':
         return <Navigate to="/prestador/portal" replace />;
-      case 'admin':
-        return <Navigate to="/franqueadora/dashboard" replace />;
       default:
         return <Navigate to="/unidade/dashboard" replace />;
     }

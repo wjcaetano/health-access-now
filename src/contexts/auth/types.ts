@@ -5,7 +5,7 @@ export interface UserProfile {
   id: string;
   email: string;
   nome?: string;
-  nivel_acesso: 'colaborador' | 'atendente' | 'gerente' | 'admin' | 'prestador';
+  nivel_acesso: 'colaborador' | 'atendente' | 'gerente' | 'prestador';
   status: 'pendente' | 'aguardando_aprovacao' | 'ativo' | 'suspenso' | 'inativo';
   tenant_id?: string;
   colaborador_id?: string;
@@ -27,11 +27,9 @@ export interface AuthContextType {
   updateProfile: (updates: Partial<UserProfile>) => Promise<{ error: any }>;
   updatePassword: (newPassword: string) => Promise<{ error: any }>;
   sendPasswordReset: (email: string) => Promise<{ error: any }>;
-  isAdmin: boolean;
   isManager: boolean;
   isPrestador: boolean;
   isActive: boolean;
   requiresPasswordChange: boolean;
   isUnidadeUser: boolean;
-  isFranqueadoraUser: boolean;
 }

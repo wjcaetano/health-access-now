@@ -29,10 +29,6 @@ const ProfileRedirect: React.FC = () => {
         console.log('Redirecting to prestador portal');
         navigate('/prestador/portal', { replace: true });
         break;
-      case 'admin':
-        console.log('Redirecting to franqueadora dashboard');
-        navigate('/franqueadora/dashboard', { replace: true });
-        break;
       case 'gerente':
       case 'atendente':
         console.log('Redirecting to unidade dashboard');

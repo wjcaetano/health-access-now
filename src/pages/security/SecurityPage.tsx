@@ -6,9 +6,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Shield } from 'lucide-react';
 
 export default function SecurityPage() {
-  const { isAdmin } = useAuth();
+  const { isManager } = useAuth();
 
-  if (!isAdmin) {
+  if (!isManager) {
     return (
       <div className="container mx-auto p-6">
         <Alert>

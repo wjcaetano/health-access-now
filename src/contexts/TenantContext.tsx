@@ -36,10 +36,10 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const canAccessTenant = (tenantId: string) => {
     // Simplified logic - in practice would check user permissions
-    return profile?.nivel_acesso === 'admin' || profile?.tenant_id === tenantId;
+    return profile?.tenant_id === tenantId;
   };
 
-  const hasMultipleTenants = profile?.nivel_acesso === 'admin';
+  const hasMultipleTenants = false;
 
   const value: TenantContextType = {
     currentTenant: currentTenant || null,

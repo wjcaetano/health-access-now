@@ -67,10 +67,10 @@ const menuItems: MenuItem[] = [
 ];
 
 export const AdministrativeMenu: React.FC = () => {
-  const { profile, isAdmin } = useAuth();
+  const { profile, isManager } = useAuth();
   
   const visibleItems = menuItems.filter(item => 
-    !item.adminOnly || isAdmin
+    !item.adminOnly || isManager
   );
 
   return (
