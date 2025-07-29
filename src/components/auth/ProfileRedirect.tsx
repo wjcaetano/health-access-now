@@ -5,28 +5,49 @@ import { useAuth } from '@/contexts/AuthContext';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
 const ProfileRedirect: React.FC = () => {
-  const { user, profile, loading } = useAuth();
+  const { user, profile, loading, initialized } = useAuth();
   const navigate = useNavigate();
   const hasRedirected = useRef(false);
 
   useEffect(() => {
-    console.log('ProfileRedirect useEffect:', { loading, user: !!user, profile, hasRedirected: hasRedirected.current });
-    
-    if (loading || !user || !profile || hasRedirected.current) {
-      console.log('ProfileRedirect - Early return:', { loading, user: !!user, profile: !!profile, hasRedirected: hasRedirected.current });
+    // Aguardar inicialização completa
+    if (!initialized || loading) {
+      console.log('ProfileRedirect - Waiting for initialization:', { initialized, loading });
       return;
     }
 
-    console.log('ProfileRedirect - User:', user.id, 'Profile:', profile);
-    
-    hasRedirected.current = true;
+    // Se já redirecionou, não fazer nada
+    if (hasRedirected.current) {
+      console.log('ProfileRedirect - Already redirected, skipping');
+      return;
+    }
+
+    // Se não tem usuário, redirecionar para login
+    if (!user) {
+      console.log('ProfileRedirect - No user, redirecting to login');
+      hasRedirected.current = true;
+      navigate('/login', { replace: true });
+      return;
+    }
+
+    // Se não tem perfil ainda, aguardar
+    if (!profile) {
+      console.log('ProfileRedirect - No profile yet, waiting...');
+      return;
+    }
+
+    console.log('ProfileRedirect - Processing redirect for user:', user.id, 'Profile:', profile);
     
     // Verificar se o usuário está ativo
     if (profile.status !== 'ativo') {
       console.log('User not active, redirecting to login. Status:', profile.status);
+      hasRedirected.current = true;
       navigate('/login', { replace: true });
       return;
     }
+
+    // Marcar como redirecionado ANTES de fazer o redirecionamento
+    hasRedirected.current = true;
 
     // Redirecionamento baseado no nivel_acesso do perfil
     console.log('Redirecting based on nivel_acesso:', profile.nivel_acesso);
@@ -37,11 +58,8 @@ const ProfileRedirect: React.FC = () => {
         break;
       case 'gerente':
       case 'atendente':
-        console.log('Redirecting to unidade dashboard');
-        navigate('/unidade/dashboard', { replace: true });
-        break;
       case 'colaborador':
-        console.log('Redirecting colaborador to unidade dashboard');
+        console.log('Redirecting to unidade dashboard');
         navigate('/unidade/dashboard', { replace: true });
         break;
       default:
@@ -49,9 +67,16 @@ const ProfileRedirect: React.FC = () => {
         navigate('/login', { replace: true });
         break;
     }
-  }, [user, profile, loading, navigate]);
+  }, [initialized, loading, user, profile, navigate]);
 
-  if (loading) {
+  // Reset hasRedirected se o usuário mudou
+  useEffect(() => {
+    if (user?.id) {
+      hasRedirected.current = false;
+    }
+  }, [user?.id]);
+
+  if (!initialized || loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <LoadingSpinner size="lg" />
