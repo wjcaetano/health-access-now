@@ -77,21 +77,65 @@ const HeaderVendas: React.FC<HeaderVendasProps> = ({ onAbrirLogin }) => {
           <div className="md:hidden">
             <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-6 w-6" />
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  className="relative h-10 w-10 rounded-lg border border-border/40 bg-background/80 backdrop-blur-sm hover:bg-accent transition-all duration-200"
+                >
+                  <Menu className="h-5 w-5 text-foreground" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                {menuItems.map((item) => (
-                  <DropdownMenuItem key={item.href} asChild>
-                    <Link to={item.href}>{item.label}</Link>
+              <DropdownMenuContent 
+                align="end" 
+                className="w-72 mt-2 bg-background/95 backdrop-blur-md border border-border/50 shadow-2xl rounded-xl p-2 animate-fade-in"
+                sideOffset={8}
+              >
+                <div className="px-3 py-2 mb-2">
+                  <h3 className="text-sm font-semibold text-foreground/90">Menu de Navegação</h3>
+                </div>
+                
+                <div className="space-y-1">
+                  <div className="px-2 py-1">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Serviços</p>
+                  </div>
+                  {menuItems.slice(0, 4).map((item) => (
+                    <DropdownMenuItem key={item.href} asChild className="rounded-lg">
+                      <Link 
+                        to={item.href} 
+                        className="flex items-center px-3 py-3 text-sm font-medium text-foreground hover:bg-accent/50 hover:text-accent-foreground transition-colors duration-200 rounded-lg"
+                      >
+                        <div className="w-2 h-2 rounded-full bg-primary/60 mr-3"></div>
+                        {item.label}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+
+                <div className="my-3 border-t border-border/50"></div>
+
+                <div className="space-y-1">
+                  <div className="px-2 py-1">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Acesso</p>
+                  </div>
+                  <DropdownMenuItem asChild className="rounded-lg">
+                    <Link 
+                      to="/portal-parceiro" 
+                      className="flex items-center px-3 py-3 text-sm font-medium text-foreground hover:bg-accent/50 hover:text-accent-foreground transition-colors duration-200 rounded-lg"
+                    >
+                      <div className="w-2 h-2 rounded-full bg-secondary/60 mr-3"></div>
+                      Portal Parceiro
+                    </Link>
                   </DropdownMenuItem>
-                ))}
-                <DropdownMenuItem asChild>
-                  <button onClick={onAbrirLogin} className="w-full text-left">
-                    Entrar no Sistema
-                  </button>
-                </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-lg">
+                    <button 
+                      onClick={onAbrirLogin} 
+                      className="w-full flex items-center px-3 py-3 text-sm font-medium bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-200 rounded-lg"
+                    >
+                      <div className="w-2 h-2 rounded-full bg-primary mr-3"></div>
+                      Entrar no Sistema
+                    </button>
+                  </DropdownMenuItem>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
