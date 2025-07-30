@@ -124,21 +124,21 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-agendaja-primary">
-            AGENDA<span className="text-agendaja-secondary">JA</span>
+          <h1 className="text-4xl font-bold text-primary">
+            AGENDA<span className="text-accent">JA</span>
           </h1>
-          <p className="text-gray-600 mt-2">Sistema de Agendamento de Saúde</p>
+          <p className="text-muted-foreground mt-2">Sistema de Agendamento de Saúde</p>
         </div>
         
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl text-center">
+        <Card className="shadow-lg border-0 bg-card">
+          <CardHeader className="space-y-2 text-center">
+            <CardTitle className="text-2xl font-semibold text-foreground">
               {isSignUp ? "Criar Conta" : "Acesso ao Sistema"}
             </CardTitle>
-            <CardDescription className="text-center">
+            <CardDescription className="text-muted-foreground">
               {isSignUp 
                 ? "Preencha os dados para criar sua conta" 
                 : "Faça login para continuar"
@@ -183,7 +183,7 @@ export default function Login() {
                     <Button 
                       type="button"
                       variant="link" 
-                      className="px-0 h-auto text-xs text-agendaja-primary hover:text-agendaja-secondary"
+                      className="px-0 h-auto text-xs text-primary hover:text-primary/80"
                       onClick={() => setShowForgotPassword(true)}
                       disabled={isLoading}
                     >
@@ -222,7 +222,7 @@ export default function Login() {
             <CardFooter className="flex flex-col space-y-4">
               <Button 
                 type="submit" 
-                className="w-full bg-agendaja-primary hover:bg-agendaja-secondary"
+                className="w-full"
                 disabled={isLoading}
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

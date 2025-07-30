@@ -7,12 +7,7 @@ export const signIn = async (email: string, password: string) => {
   try {
     cleanupAuthState();
     
-    try {
-      await supabase.auth.signOut({ scope: 'global' });
-    } catch (err) {
-      console.log('Logout prévio falhou, continuando...');
-    }
-    
+    // Remover tentativa de logout prévio que pode causar conflitos
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -20,6 +15,7 @@ export const signIn = async (email: string, password: string) => {
     
     return { error };
   } catch (error) {
+    console.error('Erro no signIn:', error);
     return { error };
   }
 };
