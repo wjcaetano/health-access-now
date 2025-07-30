@@ -26,11 +26,11 @@ import {
   Search,
   User
 } from "lucide-react";
-import { Agendamento } from "@/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { agendamentos } from "@/data/mock";
 import { Link } from "react-router-dom";
+import { useAgendamentos } from "@/hooks/useAgendamentos";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const statusMap = {
   agendado: {
@@ -54,16 +54,39 @@ const statusMap = {
 const Agendamentos: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFiltro, setStatusFiltro] = useState<string>("todos");
+  const { data: agendamentos, isLoading, error } = useAgendamentos();
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-96 w-full" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center text-red-600">
+              Erro ao carregar agendamentos: {error.message}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   
   // Filtrar agendamentos com base no termo de busca e status
-  const agendamentosFiltrados = agendamentos.filter((agendamento) => {
+  const agendamentosFiltrados = (agendamentos || []).filter((agendamento) => {
     const matchBusca = 
       !searchTerm || 
-      agendamento.cliente?.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      agendamento.servico.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      agendamento.clinica.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      agendamento.profissional.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      agendamento.codigoAutenticacao.toLowerCase().includes(searchTerm.toLowerCase());
+      agendamento.clientes?.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      agendamento.servicos?.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      agendamento.prestadores?.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      agendamento.codigo_autenticacao.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchStatus = statusFiltro === "todos" || agendamento.status === statusFiltro;
     
@@ -72,7 +95,7 @@ const Agendamentos: React.FC = () => {
   
   // Organizar por data, mais recentes primeiro
   const agendamentosOrdenados = [...agendamentosFiltrados].sort(
-    (a, b) => b.dataAgendamento.getTime() - a.dataAgendamento.getTime()
+    (a, b) => new Date(b.data_agendamento).getTime() - new Date(a.data_agendamento).getTime()
   );
 
   return (
@@ -141,9 +164,9 @@ const Agendamentos: React.FC = () => {
                           <User className="h-5 w-5" />
                         </div>
                         <div>
-                          <p className="font-medium">{agendamento.cliente?.nome}</p>
+                          <p className="font-medium">{agendamento.clientes?.nome || 'Cliente não informado'}</p>
                           <div className="flex items-center text-sm text-gray-500">
-                            <span>#{agendamento.codigoAutenticacao}</span>
+                            <span>#{agendamento.codigo_autenticacao}</span>
                           </div>
                         </div>
                       </div>
@@ -157,9 +180,9 @@ const Agendamentos: React.FC = () => {
                         <Calendar className="h-5 w-5 text-agendaja-primary shrink-0 mt-0.5" />
                         <div>
                           <p className="text-sm text-gray-500">Data</p>
-                          <p>{format(agendamento.dataAgendamento, "dd/MM/yyyy")}</p>
+                          <p>{format(new Date(agendamento.data_agendamento), "dd/MM/yyyy")}</p>
                           <p className="text-xs text-gray-500 capitalize">
-                            {format(agendamento.dataAgendamento, "EEEE", { locale: ptBR })}
+                            {format(new Date(agendamento.data_agendamento), "EEEE", { locale: ptBR })}
                           </p>
                         </div>
                       </div>
@@ -168,23 +191,23 @@ const Agendamentos: React.FC = () => {
                         <Clock className="h-5 w-5 text-agendaja-primary shrink-0 mt-0.5" />
                         <div>
                           <p className="text-sm text-gray-500">Horário</p>
-                          <p>{agendamento.horario}</p>
+                          <p>{agendamento.horario || 'Não informado'}</p>
                         </div>
                       </div>
                       
                       <div className="flex items-start gap-3">
                         <MapPin className="h-5 w-5 text-agendaja-primary shrink-0 mt-0.5" />
                         <div>
-                          <p className="text-sm text-gray-500">Local</p>
-                          <p>{agendamento.clinica}</p>
+                          <p className="text-sm text-gray-500">Prestador</p>
+                          <p>{agendamento.prestadores?.nome || 'Não informado'}</p>
                         </div>
                       </div>
                     </div>
                   </div>
                   
                   <div className="bg-gray-50 p-4 md:p-6 md:w-64 md:border-l flex flex-col gap-2">
-                    <p className="font-medium">{agendamento.servico}</p>
-                    <p className="text-sm text-gray-500">{agendamento.profissional}</p>
+                    <p className="font-medium">{agendamento.servicos?.nome || 'Serviço não informado'}</p>
+                    <p className="text-sm text-gray-500">{agendamento.prestadores?.nome || 'Prestador não informado'}</p>
                     <div className="mt-4 flex gap-2">
                       <Button variant="outline" className="flex-1 h-9">
                         Editar

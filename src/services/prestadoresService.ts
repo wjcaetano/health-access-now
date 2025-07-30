@@ -9,7 +9,8 @@ class PrestadoresService {
   private cache = new Map<string, Prestador[]>();
   private cacheTimeout = 5 * 60 * 1000; // 5 minutes
 
-  async fetchPrestadores(): Promise<Prestador[]> {
+  // Bind methods to preserve context
+  fetchPrestadores = async (): Promise<Prestador[]> => {
     const cacheKey = 'all-prestadores';
     const cached = this.cache.get(cacheKey);
     
@@ -35,7 +36,7 @@ class PrestadoresService {
     return prestadores;
   }
 
-  async createPrestador(prestador: NovoPrestador): Promise<Prestador> {
+  createPrestador = async (prestador: NovoPrestador): Promise<Prestador> => {
     const { data, error } = await supabase
       .from("prestadores")
       .insert([prestador])
@@ -48,7 +49,7 @@ class PrestadoresService {
     return data;
   }
 
-  async updatePrestador(id: string, updates: Partial<Prestador>): Promise<Prestador> {
+  updatePrestador = async (id: string, updates: Partial<Prestador>): Promise<Prestador> => {
     const { data, error } = await supabase
       .from("prestadores")
       .update(updates)
@@ -62,7 +63,7 @@ class PrestadoresService {
     return data;
   }
 
-  async deletePrestador(id: string): Promise<void> {
+  deletePrestador = async (id: string): Promise<void> => {
     const { error } = await supabase
       .from("prestadores")
       .update({ ativo: false })

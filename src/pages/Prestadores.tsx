@@ -52,7 +52,7 @@ const Prestadores = () => {
   };
 
   const handleEditarPrestador = (prestadorId: string) => {
-    navigate(`/dashboard/prestadores/editar/${prestadorId}`);
+    navigate(`/unidade/prestadores/editar/${prestadorId}`);
   };
 
   const handleExcluirPrestador = (prestadorId: string) => {
@@ -70,7 +70,7 @@ const Prestadores = () => {
           </p>
         </div>
         <Button 
-          onClick={() => navigate("/dashboard/prestadores/novo")}
+          onClick={() => navigate("/unidade/prestadores/novo")}
           className="bg-agendaja-primary hover:bg-agendaja-secondary"
         >
           <Plus className="h-4 w-4 mr-2" />
