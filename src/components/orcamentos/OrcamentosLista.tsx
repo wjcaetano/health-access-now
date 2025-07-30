@@ -55,6 +55,24 @@ const formatarValor = (valor: number) => {
   }).format(valor);
 };
 
+// Função para calcular o status real do orçamento
+const calcularStatusReal = (orcamento: any) => {
+  const hoje = new Date();
+  const dataValidade = new Date(orcamento.data_validade);
+  
+  // Se já foi aprovado, recusado ou cancelado, manter o status
+  if (['aprovado', 'recusado', 'cancelado'].includes(orcamento.status)) {
+    return orcamento.status;
+  }
+  
+  // Se a data de validade passou e está pendente, marcar como expirado
+  if (orcamento.status === 'pendente' && hoje > dataValidade) {
+    return 'expirado';
+  }
+  
+  return orcamento.status;
+};
+
 const OrcamentosLista: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
@@ -97,24 +115,28 @@ const OrcamentosLista: React.FC = () => {
   );
 
   // Mobile Card View
-  const MobileOrcamentoCard = ({ orcamento }: { orcamento: any }) => (
-    <Card className="mb-3 overflow-hidden">
-      <CardContent className="p-4">
-        <div className="space-y-3">
-          {/* Header */}
-          <div className="flex items-start justify-between">
-            <div className="flex items-center space-x-2 flex-1 min-w-0">
-              <div className="h-8 w-8 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary flex-shrink-0">
-                <User className="h-4 w-4" />
+  const MobileOrcamentoCard = ({ orcamento }: { orcamento: any }) => {
+    const statusReal = calcularStatusReal(orcamento);
+    
+    return (
+      <Card className="mb-3 overflow-hidden">
+        <CardContent className="p-4">
+          <div className="space-y-3">
+            {/* Header */}
+            <div className="flex items-start justify-between">
+              <div className="flex items-center space-x-2 flex-1 min-w-0">
+                <div className="h-8 w-8 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary flex-shrink-0">
+                  <User className="h-4 w-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-sm truncate">{orcamento.clientes?.nome || 'Cliente não encontrado'}</p>
+                  <p className="text-xs text-gray-500 truncate">{orcamento.servicos?.nome || 'Serviço não encontrado'}</p>
+                </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="font-medium text-sm truncate">{orcamento.clientes?.nome || 'Cliente não encontrado'}</p>
-                <p className="text-xs text-gray-500 truncate">{orcamento.servicos?.nome || 'Serviço não encontrado'}</p>
-              </div>
+              <Badge variant="outline" className={`text-xs ${statusMap[statusReal as keyof typeof statusMap]?.color || statusMap.pendente.color}`}>
+                {statusMap[statusReal as keyof typeof statusMap]?.label || statusReal}
+              </Badge>
             </div>
-            <Badge variant="outline" className={`text-xs ${statusMap[orcamento.status as keyof typeof statusMap]?.color || statusMap.pendente.color}`}>
-              {statusMap[orcamento.status as keyof typeof statusMap]?.label || orcamento.status}
-            </Badge>
           </div>
 
           {/* Details */}
@@ -152,9 +174,10 @@ const OrcamentosLista: React.FC = () => {
             Visualizar Orçamento
           </Button>
         </div>
-      </CardContent>
-    </Card>
-  );
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -217,38 +240,40 @@ const OrcamentosLista: React.FC = () => {
                         <TableHead className="w-[100px]">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
-                    <TableBody>
-                      {orcamentosOrdenados.map((orcamento) => (
-                        <TableRow key={orcamento.id}>
-                          <TableCell>
-                            <div className="flex items-center">
-                              <div className="h-8 w-8 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary mr-2">
-                                <User className="h-4 w-4" />
-                              </div>
-                              <span className="font-medium">{orcamento.clientes?.nome || 'Cliente não encontrado'}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell>{orcamento.servicos?.nome || 'Serviço não encontrado'}</TableCell>
-                          <TableCell>{orcamento.prestadores?.nome || 'Prestador não encontrado'}</TableCell>
-                          <TableCell className="font-medium">
-                            {formatarValor(orcamento.valor_final)}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center text-sm">
-                              <Calendar className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
-                              <div className="flex flex-col">
-                                <span>{orcamento.created_at ? format(new Date(orcamento.created_at), "dd/MM/yyyy", { locale: ptBR }) : 'N/A'}</span>
-                                <span className="text-xs text-gray-500">
-                                  Validade: {format(new Date(orcamento.data_validade), "dd/MM/yyyy", { locale: ptBR })}
-                                </span>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className={statusMap[orcamento.status as keyof typeof statusMap]?.color || statusMap.pendente.color}>
-                              {statusMap[orcamento.status as keyof typeof statusMap]?.label || orcamento.status}
-                            </Badge>
-                          </TableCell>
+                     <TableBody>
+                       {orcamentosOrdenados.map((orcamento) => {
+                         const statusReal = calcularStatusReal(orcamento);
+                         return (
+                           <TableRow key={orcamento.id}>
+                             <TableCell>
+                               <div className="flex items-center">
+                                 <div className="h-8 w-8 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary mr-2">
+                                   <User className="h-4 w-4" />
+                                 </div>
+                                 <span className="font-medium">{orcamento.clientes?.nome || 'Cliente não encontrado'}</span>
+                               </div>
+                             </TableCell>
+                             <TableCell>{orcamento.servicos?.nome || 'Serviço não encontrado'}</TableCell>
+                             <TableCell>{orcamento.prestadores?.nome || 'Prestador não encontrado'}</TableCell>
+                             <TableCell className="font-medium">
+                               {formatarValor(orcamento.valor_final)}
+                             </TableCell>
+                             <TableCell>
+                               <div className="flex items-center text-sm">
+                                 <Calendar className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
+                                 <div className="flex flex-col">
+                                   <span>{orcamento.created_at ? format(new Date(orcamento.created_at), "dd/MM/yyyy", { locale: ptBR }) : 'N/A'}</span>
+                                   <span className="text-xs text-gray-500">
+                                     Validade: {format(new Date(orcamento.data_validade), "dd/MM/yyyy", { locale: ptBR })}
+                                   </span>
+                                 </div>
+                               </div>
+                             </TableCell>
+                             <TableCell>
+                               <Badge variant="outline" className={statusMap[statusReal as keyof typeof statusMap]?.color || statusMap.pendente.color}>
+                                 {statusMap[statusReal as keyof typeof statusMap]?.label || statusReal}
+                               </Badge>
+                             </TableCell>
                           <TableCell>
                             <Button 
                               variant="ghost" 
@@ -260,14 +285,15 @@ const OrcamentosLista: React.FC = () => {
                               Ver
                             </Button>
                           </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-            </>
-          )}
+                         </TableRow>
+                         );
+                       })}
+                     </TableBody>
+                   </Table>
+                 </div>
+               )}
+             </>
+           )}
         </CardContent>
       </Card>
     </div>
