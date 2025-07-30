@@ -9,7 +9,8 @@ class ClientesService {
   private cache = new Map<string, Cliente[]>();
   private cacheTimeout = 5 * 60 * 1000; // 5 minutes
 
-  async fetchClientes(): Promise<Cliente[]> {
+  // Bind methods to preserve context
+  fetchClientes = async (): Promise<Cliente[]> => {
     const cacheKey = 'all-clientes';
     const cached = this.cache.get(cacheKey);
     
@@ -35,7 +36,7 @@ class ClientesService {
     return clientes;
   }
 
-  async createCliente(cliente: NovoCliente): Promise<Cliente> {
+  createCliente = async (cliente: NovoCliente): Promise<Cliente> => {
     const { data, error } = await supabase
       .from("clientes")
       .insert([cliente])
@@ -50,7 +51,7 @@ class ClientesService {
     return data;
   }
 
-  async updateCliente(id: string, updates: Partial<Cliente>): Promise<Cliente> {
+  updateCliente = async (id: string, updates: Partial<Cliente>): Promise<Cliente> => {
     const { data, error } = await supabase
       .from("clientes")
       .update(updates)
@@ -66,7 +67,7 @@ class ClientesService {
     return data;
   }
 
-  async deleteCliente(id: string): Promise<void> {
+  deleteCliente = async (id: string): Promise<void> => {
     const { error } = await supabase
       .from("clientes")
       .delete()
