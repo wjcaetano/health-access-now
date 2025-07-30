@@ -29,10 +29,17 @@ export default function Login() {
     // Aguardar inicialização completa e evitar loops
     if (!initialized || loading || hasRedirected) return;
     
-    if (user && profile && profile.status === 'ativo') {
+    // Só redirecionar se realmente tiver usuário E perfil válidos
+    if (user && profile && profile.status === 'ativo' && profile.nivel_acesso) {
       console.log('User already logged in, redirecting based on profile:', profile.nivel_acesso);
       setHasRedirected(true);
-      navigate('/auth/redirect', { replace: true });
+      
+      // Redirecionar diretamente para o destino final ao invés de passar por /auth/redirect
+      if (profile.nivel_acesso === 'prestador') {
+        navigate('/prestador/portal', { replace: true });
+      } else if (['gerente', 'atendente', 'colaborador'].includes(profile.nivel_acesso)) {
+        navigate('/unidade/dashboard', { replace: true });
+      }
     }
   }, [user, profile, loading, initialized, navigate, hasRedirected]);
 

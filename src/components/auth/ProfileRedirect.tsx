@@ -23,17 +23,28 @@ const ProfileRedirect: React.FC = () => {
       return;
     }
 
-    // Se não tem usuário, redirecionar para login
+    // Se não tem usuário, redirecionar para login (mas evitar loop)
     if (!user) {
       console.log('ProfileRedirect - No user, redirecting to login');
       hasRedirected.current = true;
-      navigate('/login', { replace: true });
+      // Usar timeout para evitar problemas de navegação
+      setTimeout(() => {
+        navigate('/login', { replace: true });
+      }, 100);
       return;
     }
 
-    // Se não tem perfil ainda, aguardar
+    // Se não tem perfil ainda, aguardar um pouco mais antes de redirecionar
     if (!profile) {
       console.log('ProfileRedirect - No profile yet, waiting...');
+      // Se já aguardou muito tempo sem perfil, redirecionar para login
+      setTimeout(() => {
+        if (!profile && !hasRedirected.current) {
+          console.log('ProfileRedirect - Timeout waiting for profile, redirecting to login');
+          hasRedirected.current = true;
+          navigate('/login', { replace: true });
+        }
+      }, 3000);
       return;
     }
 
@@ -43,7 +54,19 @@ const ProfileRedirect: React.FC = () => {
     if (profile.status !== 'ativo') {
       console.log('User not active, redirecting to login. Status:', profile.status);
       hasRedirected.current = true;
-      navigate('/login', { replace: true });
+      setTimeout(() => {
+        navigate('/login', { replace: true });
+      }, 100);
+      return;
+    }
+
+    // Verificar se tem nível de acesso válido
+    if (!profile.nivel_acesso) {
+      console.log('ProfileRedirect - No access level, redirecting to login');
+      hasRedirected.current = true;
+      setTimeout(() => {
+        navigate('/login', { replace: true });
+      }, 100);
       return;
     }
 
