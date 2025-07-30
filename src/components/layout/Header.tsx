@@ -128,26 +128,18 @@ export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) 
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/dashboard/meu-perfil" className="flex items-center cursor-pointer">
+                <Link to="/unidade/perfil" className="flex items-center cursor-pointer">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Meu Perfil</span>
                 </Link>
               </DropdownMenuItem>
               {isManager && (
-                <>
-                  <DropdownMenuItem asChild>
-                    <Link to="/dashboard/gestao-usuarios" className="flex items-center cursor-pointer">
-                      <Users className="mr-2 h-4 w-4" />
-                      <span>Gestão de Usuários</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/dashboard/analise-sistema" className="flex items-center cursor-pointer">
-                      <BarChart3 className="mr-2 h-4 w-4" />
-                      <span>Análise do Sistema</span>
-                    </Link>
-                  </DropdownMenuItem>
-                </>
+                <DropdownMenuItem asChild>
+                  <Link to="/unidade/configuracoes" className="flex items-center cursor-pointer">
+                    <BarChart3 className="mr-2 h-4 w-4" />
+                    <span>Configurações</span>
+                  </Link>
+                </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-red-600">

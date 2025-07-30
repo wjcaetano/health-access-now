@@ -25,7 +25,7 @@ const UnidadePortal: React.FC = () => {
   const { profile, isActive } = useAuth();
 
   // Verificar se é um usuário da unidade
-  if (!isActive || !['atendente', 'gerente'].includes(profile?.nivel_acesso || '')) {
+  if (!isActive || !['atendente', 'gerente', 'colaborador'].includes(profile?.nivel_acesso || '')) {
     return <Navigate to="/login" replace />;
   }
 
