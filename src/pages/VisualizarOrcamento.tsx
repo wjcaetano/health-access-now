@@ -50,7 +50,7 @@ const VisualizarOrcamento: React.FC = () => {
           <p className="text-red-500 mb-4">
             {isError ? "Erro ao carregar orçamento" : "Orçamento não encontrado"}
           </p>
-          <Button onClick={() => navigate('/orcamentos')} className="mt-4">
+          <Button onClick={() => navigate('/unidade/orcamentos')} className="mt-4">
             Voltar para Orçamentos
           </Button>
         </div>
@@ -112,7 +112,7 @@ const VisualizarOrcamento: React.FC = () => {
           title: "Orçamento cancelado",
           description: "O orçamento foi cancelado com sucesso."
         });
-        navigate('/orcamentos');
+        navigate('/unidade/orcamentos');
       },
       onError: (error) => {
         console.error('Erro ao cancelar orçamento:', error);
@@ -133,7 +133,7 @@ const VisualizarOrcamento: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate('/orcamentos')}
+            onClick={() => navigate('/unidade/orcamentos')}
             className="flex items-center"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
