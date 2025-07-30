@@ -25,11 +25,17 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const authContext = useAuth();
   const { toast } = useToast();
   
-  // Verificar se o contexto de auth está disponível
-  const user = authContext?.user;
+  // Verificar se o contexto de auth está disponível de forma segura
+  let user = null;
+  try {
+    const authContext = useAuth();
+    user = authContext?.user;
+  } catch (error) {
+    // AuthProvider ainda não está disponível
+    console.log('AuthProvider not available yet');
+  }
 
   useEffect(() => {
     if (!user) return;
