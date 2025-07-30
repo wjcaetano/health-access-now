@@ -137,9 +137,8 @@ const OrcamentosLista: React.FC = () => {
                 {statusMap[statusReal as keyof typeof statusMap]?.label || statusReal}
               </Badge>
             </div>
-          </div>
 
-          {/* Details */}
+            {/* Details */}
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
               <p className="text-gray-500">Prestador</p>
