@@ -23,7 +23,6 @@ const HeaderVendas: React.FC<HeaderVendasProps> = ({ onAbrirLogin }) => {
     { label: "Exames de Imagem", href: "/servicos/exames-de-imagem" },
     { label: "Outros Exames", href: "/servicos/outros-exames" },
     { label: "Portal Parceiro", href: "/portal-parceiro" },
-    { label: "Seja Franqueado", href: "/seja-franqueado" },
   ];
 
   return (
@@ -64,10 +63,6 @@ const HeaderVendas: React.FC<HeaderVendasProps> = ({ onAbrirLogin }) => {
 
             <Link to="/portal-parceiro" className="text-gray-700 hover:text-agendaja-primary">
               Portal Parceiro
-            </Link>
-            
-            <Link to="/seja-franqueado" className="text-gray-700 hover:text-agendaja-primary">
-              Seja Franqueado
             </Link>
 
             <Button 
