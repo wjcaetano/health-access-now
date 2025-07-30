@@ -37,7 +37,7 @@ export default function Login() {
       // Redirecionar diretamente para o destino final ao invés de passar por /auth/redirect
       if (profile.nivel_acesso === 'prestador') {
         navigate('/prestador/portal', { replace: true });
-      } else if (['gerente', 'atendente', 'colaborador'].includes(profile.nivel_acesso)) {
+      } else if (['admin', 'gerente', 'atendente', 'colaborador'].includes(profile.nivel_acesso)) {
         navigate('/unidade/dashboard', { replace: true });
       }
     }

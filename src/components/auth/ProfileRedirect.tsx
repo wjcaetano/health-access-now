@@ -82,6 +82,7 @@ const ProfileRedirect: React.FC = () => {
           console.log('Redirecting to prestador portal');
           navigate('/prestador/portal', { replace: true });
           break;
+        case 'admin':
         case 'gerente':
         case 'atendente':
         case 'colaborador':

@@ -25,7 +25,7 @@ const UnidadePortal: React.FC = () => {
   const { profile, isActive } = useAuth();
 
   // Verificar se é um usuário da unidade
-  if (!isActive || !['atendente', 'gerente', 'colaborador'].includes(profile?.nivel_acesso || '')) {
+  if (!isActive || !['admin', 'atendente', 'gerente', 'colaborador'].includes(profile?.nivel_acesso || '')) {
     return <Navigate to="/login" replace />;
   }
 
@@ -74,7 +74,7 @@ const UnidadePortal: React.FC = () => {
               <Financeiro />
             </SuspenseWrapper>
           } />
-          {profile?.nivel_acesso === 'gerente' && (
+          {['gerente', 'admin'].includes(profile?.nivel_acesso || '') && (
             <Route path="colaboradores" element={
               <SuspenseWrapper>
                 <Colaboradores />
@@ -86,7 +86,7 @@ const UnidadePortal: React.FC = () => {
               <MeuPerfil />
             </SuspenseWrapper>
           } />
-          {profile?.nivel_acesso === 'gerente' && (
+          {['gerente', 'admin'].includes(profile?.nivel_acesso || '') && (
             <Route path="configuracoes" element={
               <SuspenseWrapper>
                 <SystemSettings />

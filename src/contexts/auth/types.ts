@@ -5,7 +5,7 @@ export interface UserProfile {
   id: string;
   email: string;
   nome?: string;
-  nivel_acesso: 'colaborador' | 'atendente' | 'gerente' | 'prestador';
+  nivel_acesso: 'colaborador' | 'atendente' | 'gerente' | 'admin' | 'prestador';
   status: 'pendente' | 'aguardando_aprovacao' | 'ativo' | 'suspenso' | 'inativo';
   tenant_id?: string;
   colaborador_id?: string;
