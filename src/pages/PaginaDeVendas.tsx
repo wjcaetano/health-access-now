@@ -39,10 +39,8 @@ const PaginaDeVendas = ({ mostrarLogin }: PaginaDeVendasProps) => {
         <CallToAction />
       </main>
       <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
-        <DialogContent className="max-w-md p-0 bg-transparent shadow-none border-none">
-          <div className="bg-white rounded-lg shadow-lg p-0">
-            <Login />
-          </div>
+        <DialogContent className="max-w-md w-full mx-4 p-0 bg-transparent border-none shadow-none overflow-hidden">
+          <Login />
         </DialogContent>
       </Dialog>
     </div>

@@ -5,14 +5,18 @@ import { cleanupAuthState } from './authUtils';
 
 export const signIn = async (email: string, password: string) => {
   try {
+    console.log('Iniciando processo de login...');
     cleanupAuthState();
     
-    // Remover tentativa de logout prévio que pode causar conflitos
+    // Aguardar um momento antes da tentativa para evitar conflitos
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     
+    console.log('Resultado do login:', error ? 'Erro' : 'Sucesso');
     return { error };
   } catch (error) {
     console.error('Erro no signIn:', error);

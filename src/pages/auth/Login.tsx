@@ -124,21 +124,21 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-6">
+    <div className="w-full max-w-md mx-auto p-6 bg-card rounded-lg shadow-lg">
+      <div className="space-y-6">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-primary">
+          <h1 className="text-3xl font-bold text-primary">
             AGENDA<span className="text-accent">JA</span>
           </h1>
           <p className="text-muted-foreground mt-2">Sistema de Agendamento de Saúde</p>
         </div>
         
-        <Card className="shadow-lg border-0 bg-card">
-          <CardHeader className="space-y-2 text-center">
-            <CardTitle className="text-2xl font-semibold text-foreground">
+        <Card className="border-border/50 bg-background">
+          <CardHeader className="space-y-2 text-center pb-4">
+            <CardTitle className="text-xl font-semibold text-foreground">
               {isSignUp ? "Criar Conta" : "Acesso ao Sistema"}
             </CardTitle>
-            <CardDescription className="text-muted-foreground">
+            <CardDescription className="text-muted-foreground text-sm">
               {isSignUp 
                 ? "Preencha os dados para criar sua conta" 
                 : "Faça login para continuar"
@@ -214,12 +214,12 @@ export default function Login() {
                   </Button>
                 </div>
                 {isSignUp && (
-                  <p className="text-xs text-gray-500">Mínimo 6 caracteres</p>
+                  <p className="text-xs text-muted-foreground">Mínimo 6 caracteres</p>
                 )}
               </div>
             </CardContent>
             
-            <CardFooter className="flex flex-col space-y-4">
+            <CardFooter className="flex flex-col space-y-3 pt-4">
               <Button 
                 type="submit" 
                 className="w-full"
