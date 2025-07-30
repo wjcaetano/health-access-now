@@ -1,23 +1,24 @@
-
 import React from "react";
-import FormularioCliente from "@/components/clientes/FormularioCliente";
-import ListaClientes from "@/components/clientes/ListaClientes";
+import { Routes, Route } from "react-router-dom";
+import { LazyNovoCliente } from "@/components/layout/LazyPages";
+import SuspenseWrapper from "@/components/shared/SuspenseWrapper";
+import ClientesLista from "@/components/clientes/ClientesLista";
 
-const Clientes = () => {
+const Clientes: React.FC = () => {
   return (
-    <div className="container mx-auto px-4 py-6 space-y-6 animate-fade-in max-w-7xl">
-      <div className="space-y-2">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Gestão de Clientes</h2>
-        <p className="text-gray-500 text-sm md:text-base">
-          Cadastre e gerencie os clientes do sistema
-        </p>
-      </div>
-
-      <div className="space-y-6">
-        <FormularioCliente />
-        <ListaClientes />
-      </div>
-    </div>
+    <Routes>
+      <Route index element={<ClientesLista />} />
+      <Route path="novo" element={
+        <SuspenseWrapper>
+          <LazyNovoCliente />
+        </SuspenseWrapper>
+      } />
+      <Route path="editar/:id" element={
+        <SuspenseWrapper>
+          <LazyNovoCliente />
+        </SuspenseWrapper>
+      } />
+    </Routes>
   );
 };
 
