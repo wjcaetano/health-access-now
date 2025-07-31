@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTenantById } from '@/hooks/useTenants';
 import { Tables } from '@/integrations/supabase/types';
 
-type Tenant = Tables<"unidades">;
+type Tenant = Tables<"tenants">;
 
 interface TenantContextType {
   currentTenant: Tenant | null;
@@ -23,10 +23,10 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const { data: currentTenant, isLoading } = useTenantById(currentTenantId || '');
 
   useEffect(() => {
-    if (profile?.unidade_id && !currentTenantId) {
-      setCurrentTenantId(profile.unidade_id);
+    if (profile?.tenant_id && !currentTenantId) {
+      setCurrentTenantId(profile.tenant_id);
     }
-  }, [profile?.unidade_id, currentTenantId]);
+  }, [profile?.tenant_id, currentTenantId]);
 
   const switchTenant = (tenantId: string) => {
     setCurrentTenantId(tenantId);
@@ -36,7 +36,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const canAccessTenant = (tenantId: string) => {
     // Simplified logic - in practice would check user permissions
-    return profile?.unidade_id === tenantId;
+    return profile?.tenant_id === tenantId;
   };
 
   const hasMultipleTenants = false;
