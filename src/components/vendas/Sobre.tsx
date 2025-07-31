@@ -43,7 +43,7 @@ const numeros = [
 
 const Sobre = () => {
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20 bg-agendaja-light">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
           {/* Lado esquerdo - Conteúdo */}

@@ -28,7 +28,7 @@ const PaginaDeVendas = ({ mostrarLogin }: PaginaDeVendasProps) => {
   };
 
   return (
-    <div className="bg-white">
+    <div className="bg-agendaja-background">
       <HeaderVendas onAbrirLogin={handleAbrirLogin} />
       <main className="flex flex-col">
         <Hero />

@@ -28,17 +28,17 @@ const servicos = [
 ];
 
 const ServicosPrincipais = () => (
-  <section className="bg-agendaja-light py-12 px-4">
-    <h2 className="text-3xl font-semibold text-center mb-8">Exames e Consultas Populares</h2>
+  <section className="bg-agendaja-background py-12 px-4">
+    <h2 className="text-3xl font-semibold text-center mb-8 text-agendaja-text-primary">Exames e Consultas Populares</h2>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
       {servicos.map((servico, i) => (
         <div 
           key={i}
-          className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-2 items-start hover-scale border"
+          className="bg-agendaja-surface rounded-xl shadow-md p-6 flex flex-col gap-2 items-start hover:shadow-lg transition-all duration-300 border border-agendaja-border"
         >
           <h3 className="font-bold text-lg text-agendaja-primary">{servico.nome}</h3>
-          <span className="text-gray-500 text-sm">{servico.descricao}</span>
-          <span className="font-semibold text-agendaja-primary">{servico.preco}</span>
+          <span className="text-agendaja-text-secondary text-sm">{servico.descricao}</span>
+          <span className="font-semibold text-agendaja-primary text-xl">{servico.preco}</span>
         </div>
       ))}
     </div>

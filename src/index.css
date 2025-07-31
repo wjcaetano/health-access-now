@@ -34,23 +34,23 @@
   --sidebar-border: 214.3 31.8% 91.4%;
   --sidebar-ring: 222.1 83.2% 53.4%;
   
-  /* Agendaja elegant color palette - Branco, Azul e Roxo */
-  --agendaja-primary: 258 90% 66%;        /* Roxo vibrante principal */
-  --agendaja-secondary: 216 100% 50%;     /* Azul complementar */
-  --agendaja-tertiary: 258 30% 15%;       /* Roxo escuro para contraste */
-  --agendaja-light: 258 50% 98%;          /* Branco levemente roxo */
+  /* Agendaja elegant color palette - Branco, Azul e Roxo - cores mais claras */
+  --agendaja-primary: 258 85% 65%;        /* Roxo vibrante principal */
+  --agendaja-secondary: 216 95% 55%;      /* Azul complementar */
+  --agendaja-tertiary: 258 30% 20%;       /* Roxo escuro para contraste */
+  --agendaja-light: 0 0% 98%;             /* Branco quase puro */
   --agendaja-dark: 258 25% 15%;           /* Escuro com base roxa */
-  --agendaja-accent: 216 85% 60%;         /* Azul accent */
+  --agendaja-accent: 216 80% 65%;         /* Azul accent */
   --agendaja-danger: 0 84% 60%;           /* Vermelho para erros */
   --agendaja-success: 142 76% 36%;        /* Verde para sucesso */
-  --agendaja-neutral: 258 8% 50%;         /* Neutro com base roxa */
-  --agendaja-background: 258 100% 99%;    /* Fundo quase branco */
+  --agendaja-neutral: 220 15% 60%;        /* Neutro mais claro */
+  --agendaja-background: 0 0% 100%;       /* Fundo branco puro */
   --agendaja-surface: 0 0% 100%;          /* Branco puro para cards */
-  --agendaja-border: 258 20% 90%;         /* Bordas sutis */
-  --agendaja-text-primary: 258 25% 15%;   /* Texto principal escuro */
-  --agendaja-text-secondary: 258 15% 45%; /* Texto secundário */
-  --agendaja-gradient-start: 258 90% 66%; /* Início do gradiente */
-  --agendaja-gradient-end: 216 100% 50%;  /* Fim do gradiente */
+  --agendaja-border: 220 25% 85%;         /* Bordas mais visíveis */
+  --agendaja-text-primary: 220 25% 20%;   /* Texto principal escuro */
+  --agendaja-text-secondary: 220 15% 50%; /* Texto secundário */
+  --agendaja-gradient-start: 258 85% 65%; /* Início do gradiente */
+  --agendaja-gradient-end: 216 95% 55%;   /* Fim do gradiente */
 }
 
 .dark {
