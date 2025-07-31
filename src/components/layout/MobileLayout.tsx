@@ -1,9 +1,10 @@
 
 import React from "react";
+import Header from "./Header";
 import AppSidebar from "./Sidebar";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import { Outlet } from "react-router-dom";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 interface MobileLayoutProps {
   userProfile: string;
@@ -14,13 +15,13 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({ userProfile, childre
   return (
     <ErrorBoundary>
       <SidebarProvider>
-        <div className="min-h-screen flex flex-col w-full bg-background">
-          <header className="h-16 flex items-center border-b bg-background px-4">
-            <SidebarTrigger className="mr-4" />
-            <h1 className="text-lg font-semibold text-foreground">Dashboard</h1>
-          </header>
+        <div className="min-h-screen flex flex-col w-full bg-white">
+          <Header 
+            title="Dashboard"
+            toggleSidebar={() => {}}
+          />
           <AppSidebar userProfile={userProfile} />
-          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background">
+          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-white">
             <div className="p-3 pb-20">
               {children || <Outlet />}
             </div>

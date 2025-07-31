@@ -4,7 +4,7 @@ import Header from "./Header";
 import AppSidebar from "./Sidebar";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import { Outlet } from "react-router-dom";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 
 interface DesktopLayoutProps {
   userProfile: string;
@@ -15,17 +15,17 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ userProfile, child
   return (
     <ErrorBoundary>
       <SidebarProvider defaultOpen>
-        <div className="min-h-screen flex w-full bg-background">
+        <div className="min-h-screen flex w-full bg-white">
           <AppSidebar userProfile={userProfile} />
-          <div className="flex flex-col flex-1 overflow-hidden">
-            <header className="h-16 flex items-center border-b bg-background px-4">
-              <SidebarTrigger className="mr-4" />
-              <h1 className="text-lg font-semibold text-foreground">Dashboard</h1>
-            </header>
-            <main className="flex-1 overflow-y-auto p-6 bg-background">
+          <SidebarInset className="flex flex-col flex-1 overflow-hidden">
+            <Header 
+              title="Dashboard"
+              toggleSidebar={() => {}} 
+            />
+            <main className="flex-1 overflow-y-auto p-6 bg-white">
               {children || <Outlet />}
             </main>
-          </div>
+          </SidebarInset>
         </div>
       </SidebarProvider>
     </ErrorBoundary>

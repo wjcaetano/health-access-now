@@ -30,7 +30,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   // Renderizar layout apropriado
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-white text-gray-900" style={{ backgroundColor: '#ffffff', color: '#1f2937' }}>
       {isMobile ? (
         <MobileLayout userProfile={userProfile}>
           {children}

@@ -45,7 +45,7 @@ export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) 
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-40" style={{ backgroundColor: '#ffffff', borderColor: '#e5e7eb' }}>
       <div className={`flex items-center justify-between ${isMobile ? 'px-4 py-3' : 'px-6 py-4'}`}>
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <Button 
