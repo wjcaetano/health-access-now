@@ -54,7 +54,7 @@ export type Database = {
             foreignKeyName: "agenda_pagamentos_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -125,7 +125,7 @@ export type Database = {
             foreignKeyName: "agendamentos_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -169,7 +169,7 @@ export type Database = {
             foreignKeyName: "clientes_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -213,7 +213,7 @@ export type Database = {
             foreignKeyName: "colaboradores_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -267,7 +267,7 @@ export type Database = {
             foreignKeyName: "contas_pagar_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -324,274 +324,7 @@ export type Database = {
             foreignKeyName: "contas_receber_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      contratos_franquia: {
-        Row: {
-          arquivo_contrato_url: string | null
-          clausulas_especiais: string | null
-          created_at: string | null
-          data_assinatura: string
-          data_inicio: string
-          data_vencimento: string
-          franquia_id: string
-          id: string
-          numero_contrato: string
-          status: string
-          taxa_marketing: number
-          taxa_royalty: number
-          territorio: string | null
-          valor_inicial: number
-        }
-        Insert: {
-          arquivo_contrato_url?: string | null
-          clausulas_especiais?: string | null
-          created_at?: string | null
-          data_assinatura: string
-          data_inicio: string
-          data_vencimento: string
-          franquia_id: string
-          id?: string
-          numero_contrato: string
-          status?: string
-          taxa_marketing: number
-          taxa_royalty: number
-          territorio?: string | null
-          valor_inicial: number
-        }
-        Update: {
-          arquivo_contrato_url?: string | null
-          clausulas_especiais?: string | null
-          created_at?: string | null
-          data_assinatura?: string
-          data_inicio?: string
-          data_vencimento?: string
-          franquia_id?: string
-          id?: string
-          numero_contrato?: string
-          status?: string
-          taxa_marketing?: number
-          taxa_royalty?: number
-          territorio?: string | null
-          valor_inicial?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "contratos_franquia_franquia_id_fkey"
-            columns: ["franquia_id"]
-            isOneToOne: false
-            referencedRelation: "franquias"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "contratos_franquia_franquia_id_fkey"
-            columns: ["franquia_id"]
-            isOneToOne: false
-            referencedRelation: "view_franquias_resumo"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      franqueados: {
-        Row: {
-          capital_disponivel: number | null
-          cpf: string
-          created_at: string | null
-          data_nascimento: string | null
-          data_primeiro_contato: string | null
-          email: string
-          endereco_completo: string | null
-          experiencia_empresarial: string | null
-          id: string
-          nome_completo: string
-          observacoes: string | null
-          origem_lead: string | null
-          referencias: string | null
-          rg: string | null
-          score_credito: number | null
-          status: string
-          telefone: string
-          updated_at: string | null
-        }
-        Insert: {
-          capital_disponivel?: number | null
-          cpf: string
-          created_at?: string | null
-          data_nascimento?: string | null
-          data_primeiro_contato?: string | null
-          email: string
-          endereco_completo?: string | null
-          experiencia_empresarial?: string | null
-          id?: string
-          nome_completo: string
-          observacoes?: string | null
-          origem_lead?: string | null
-          referencias?: string | null
-          rg?: string | null
-          score_credito?: number | null
-          status?: string
-          telefone: string
-          updated_at?: string | null
-        }
-        Update: {
-          capital_disponivel?: number | null
-          cpf?: string
-          created_at?: string | null
-          data_nascimento?: string | null
-          data_primeiro_contato?: string | null
-          email?: string
-          endereco_completo?: string | null
-          experiencia_empresarial?: string | null
-          id?: string
-          nome_completo?: string
-          observacoes?: string | null
-          origem_lead?: string | null
-          referencias?: string | null
-          rg?: string | null
-          score_credito?: number | null
-          status?: string
-          telefone?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      franquia_franqueados: {
-        Row: {
-          ativo: boolean | null
-          created_at: string | null
-          data_fim: string | null
-          data_inicio: string
-          franqueado_id: string
-          franquia_id: string
-          id: string
-          percentual_participacao: number | null
-        }
-        Insert: {
-          ativo?: boolean | null
-          created_at?: string | null
-          data_fim?: string | null
-          data_inicio: string
-          franqueado_id: string
-          franquia_id: string
-          id?: string
-          percentual_participacao?: number | null
-        }
-        Update: {
-          ativo?: boolean | null
-          created_at?: string | null
-          data_fim?: string | null
-          data_inicio?: string
-          franqueado_id?: string
-          franquia_id?: string
-          id?: string
-          percentual_participacao?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "franquia_franqueados_franqueado_id_fkey"
-            columns: ["franqueado_id"]
-            isOneToOne: false
-            referencedRelation: "franqueados"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "franquia_franqueados_franquia_id_fkey"
-            columns: ["franquia_id"]
-            isOneToOne: false
-            referencedRelation: "franquias"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "franquia_franqueados_franquia_id_fkey"
-            columns: ["franquia_id"]
-            isOneToOne: false
-            referencedRelation: "view_franquias_resumo"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      franquias: {
-        Row: {
-          cep: string
-          cidade: string
-          cnpj: string
-          created_at: string | null
-          data_cadastro: string | null
-          data_inauguracao: string | null
-          email: string
-          endereco_completo: string
-          estado: string
-          franqueado_responsavel_id: string | null
-          id: string
-          meta_mensal: number | null
-          nome_fantasia: string
-          razao_social: string
-          status: string
-          taxa_marketing: number | null
-          taxa_royalty: number | null
-          telefone: string
-          territorio_exclusivo: string | null
-          tipo_franquia: string
-          updated_at: string | null
-          valor_investimento: number | null
-        }
-        Insert: {
-          cep: string
-          cidade: string
-          cnpj: string
-          created_at?: string | null
-          data_cadastro?: string | null
-          data_inauguracao?: string | null
-          email: string
-          endereco_completo: string
-          estado: string
-          franqueado_responsavel_id?: string | null
-          id?: string
-          meta_mensal?: number | null
-          nome_fantasia: string
-          razao_social: string
-          status?: string
-          taxa_marketing?: number | null
-          taxa_royalty?: number | null
-          telefone: string
-          territorio_exclusivo?: string | null
-          tipo_franquia?: string
-          updated_at?: string | null
-          valor_investimento?: number | null
-        }
-        Update: {
-          cep?: string
-          cidade?: string
-          cnpj?: string
-          created_at?: string | null
-          data_cadastro?: string | null
-          data_inauguracao?: string | null
-          email?: string
-          endereco_completo?: string
-          estado?: string
-          franqueado_responsavel_id?: string | null
-          id?: string
-          meta_mensal?: number | null
-          nome_fantasia?: string
-          razao_social?: string
-          status?: string
-          taxa_marketing?: number | null
-          taxa_royalty?: number | null
-          telefone?: string
-          territorio_exclusivo?: string | null
-          tipo_franquia?: string
-          updated_at?: string | null
-          valor_investimento?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fk_franquia_responsavel"
-            columns: ["franqueado_responsavel_id"]
-            isOneToOne: false
-            referencedRelation: "franqueados"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -681,114 +414,10 @@ export type Database = {
             foreignKeyName: "guias_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
-      }
-      lead_acompanhamentos: {
-        Row: {
-          created_at: string | null
-          data_contato: string
-          id: string
-          lead_id: string
-          proximo_contato: string | null
-          responsavel_id: string
-          resumo: string
-          status_anterior: string | null
-          status_novo: string | null
-          tipo_contato: string
-        }
-        Insert: {
-          created_at?: string | null
-          data_contato?: string
-          id?: string
-          lead_id: string
-          proximo_contato?: string | null
-          responsavel_id: string
-          resumo: string
-          status_anterior?: string | null
-          status_novo?: string | null
-          tipo_contato: string
-        }
-        Update: {
-          created_at?: string | null
-          data_contato?: string
-          id?: string
-          lead_id?: string
-          proximo_contato?: string | null
-          responsavel_id?: string
-          resumo?: string
-          status_anterior?: string | null
-          status_novo?: string | null
-          tipo_contato?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "lead_acompanhamentos_lead_id_fkey"
-            columns: ["lead_id"]
-            isOneToOne: false
-            referencedRelation: "leads_franqueados"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      leads_franqueados: {
-        Row: {
-          capital_disponivel: number | null
-          cidade_interesse: string | null
-          created_at: string | null
-          data_primeiro_contato: string | null
-          email: string
-          estado_interesse: string | null
-          experiencia_empresarial: string | null
-          id: string
-          nome: string
-          observacoes: string | null
-          origem: string | null
-          responsavel_id: string | null
-          score: number | null
-          status: string
-          telefone: string
-          updated_at: string | null
-        }
-        Insert: {
-          capital_disponivel?: number | null
-          cidade_interesse?: string | null
-          created_at?: string | null
-          data_primeiro_contato?: string | null
-          email: string
-          estado_interesse?: string | null
-          experiencia_empresarial?: string | null
-          id?: string
-          nome: string
-          observacoes?: string | null
-          origem?: string | null
-          responsavel_id?: string | null
-          score?: number | null
-          status?: string
-          telefone: string
-          updated_at?: string | null
-        }
-        Update: {
-          capital_disponivel?: number | null
-          cidade_interesse?: string | null
-          created_at?: string | null
-          data_primeiro_contato?: string | null
-          email?: string
-          estado_interesse?: string | null
-          experiencia_empresarial?: string | null
-          id?: string
-          nome?: string
-          observacoes?: string | null
-          origem?: string | null
-          responsavel_id?: string | null
-          score?: number | null
-          status?: string
-          telefone?: string
-          updated_at?: string | null
-        }
-        Relationships: []
       }
       mensagens: {
         Row: {
@@ -840,49 +469,10 @@ export type Database = {
             foreignKeyName: "mensagens_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
-      }
-      metas_franqueadora: {
-        Row: {
-          ano: number
-          created_at: string | null
-          id: string
-          mes: number
-          observacoes: string | null
-          percentual_atingido: number | null
-          tipo_meta: string
-          updated_at: string | null
-          valor_meta: number
-          valor_realizado: number | null
-        }
-        Insert: {
-          ano: number
-          created_at?: string | null
-          id?: string
-          mes: number
-          observacoes?: string | null
-          percentual_atingido?: number | null
-          tipo_meta: string
-          updated_at?: string | null
-          valor_meta: number
-          valor_realizado?: number | null
-        }
-        Update: {
-          ano?: number
-          created_at?: string | null
-          id?: string
-          mes?: number
-          observacoes?: string | null
-          percentual_atingido?: number | null
-          tipo_meta?: string
-          updated_at?: string | null
-          valor_meta?: number
-          valor_realizado?: number | null
-        }
-        Relationships: []
       }
       notifications: {
         Row: {
@@ -920,7 +510,7 @@ export type Database = {
             foreignKeyName: "notifications_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -1000,7 +590,7 @@ export type Database = {
             foreignKeyName: "orcamentos_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
           {
@@ -1058,7 +648,7 @@ export type Database = {
             foreignKeyName: "ponto_eletronico_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -1123,7 +713,7 @@ export type Database = {
             foreignKeyName: "prestadores_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -1187,70 +777,7 @@ export type Database = {
             foreignKeyName: "profiles_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      royalties: {
-        Row: {
-          ano_referencia: number
-          created_at: string | null
-          data_pagamento: string | null
-          data_vencimento: string
-          faturamento_bruto: number
-          franquia_id: string
-          id: string
-          mes_referencia: number
-          observacoes: string | null
-          status: string
-          valor_marketing: number
-          valor_royalty: number
-          valor_total: number
-        }
-        Insert: {
-          ano_referencia: number
-          created_at?: string | null
-          data_pagamento?: string | null
-          data_vencimento: string
-          faturamento_bruto?: number
-          franquia_id: string
-          id?: string
-          mes_referencia: number
-          observacoes?: string | null
-          status?: string
-          valor_marketing?: number
-          valor_royalty?: number
-          valor_total?: number
-        }
-        Update: {
-          ano_referencia?: number
-          created_at?: string | null
-          data_pagamento?: string | null
-          data_vencimento?: string
-          faturamento_bruto?: number
-          franquia_id?: string
-          id?: string
-          mes_referencia?: number
-          observacoes?: string | null
-          status?: string
-          valor_marketing?: number
-          valor_royalty?: number
-          valor_total?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "royalties_franquia_id_fkey"
-            columns: ["franquia_id"]
-            isOneToOne: false
-            referencedRelation: "franquias"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "royalties_franquia_id_fkey"
-            columns: ["franquia_id"]
-            isOneToOne: false
-            referencedRelation: "view_franquias_resumo"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -1346,7 +873,7 @@ export type Database = {
             foreignKeyName: "servicos_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -1396,51 +923,60 @@ export type Database = {
             foreignKeyName: "tenant_invites_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
       }
-      tenants: {
+      unidades: {
         Row: {
           codigo: string
           configuracoes: Json | null
           created_at: string
+          gerente_responsavel_id: string | null
+          horario_funcionamento: Json | null
           id: string
+          meta_mensal_vendas: number | null
           nome: string
           status: string
-          tenant_pai_id: string | null
           tipo: string
+          unidade_matriz_id: string | null
           updated_at: string
         }
         Insert: {
           codigo: string
           configuracoes?: Json | null
           created_at?: string
+          gerente_responsavel_id?: string | null
+          horario_funcionamento?: Json | null
           id?: string
+          meta_mensal_vendas?: number | null
           nome: string
           status?: string
-          tenant_pai_id?: string | null
-          tipo: string
+          tipo?: string
+          unidade_matriz_id?: string | null
           updated_at?: string
         }
         Update: {
           codigo?: string
           configuracoes?: Json | null
           created_at?: string
+          gerente_responsavel_id?: string | null
+          horario_funcionamento?: Json | null
           id?: string
+          meta_mensal_vendas?: number | null
           nome?: string
           status?: string
-          tenant_pai_id?: string | null
           tipo?: string
+          unidade_matriz_id?: string | null
           updated_at?: string
         }
         Relationships: [
           {
             foreignKeyName: "tenants_tenant_pai_id_fkey"
-            columns: ["tenant_pai_id"]
+            columns: ["unidade_matriz_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -1521,7 +1057,7 @@ export type Database = {
             foreignKeyName: "vendas_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -1582,7 +1118,7 @@ export type Database = {
             foreignKeyName: "vendas_servicos_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "tenants"
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
           {
@@ -1596,24 +1132,7 @@ export type Database = {
       }
     }
     Views: {
-      view_franquias_resumo: {
-        Row: {
-          cidade: string | null
-          data_inauguracao: string | null
-          estado: string | null
-          faturamento_total: number | null
-          franqueado_email: string | null
-          franqueado_nome: string | null
-          id: string | null
-          nome_fantasia: string | null
-          royalties_atrasados: number | null
-          status: string | null
-          tipo_franquia: string | null
-          total_clientes: number | null
-          total_vendas: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       accept_tenant_invite: {
