@@ -160,7 +160,7 @@ export default function Login() {
                     onChange={(e) => setNome(e.target.value)}
                     required={isSignUp}
                     disabled={isLoading}
-                    className="border-agendaja-border/40 bg-white/90 focus:border-agendaja-primary focus:ring-agendaja-primary/20 h-12"
+                    className="border-agendaja-border/40 bg-white text-agendaja-text-primary placeholder:text-agendaja-text-secondary/60 focus:border-agendaja-primary focus:ring-agendaja-primary/20 h-12"
                   />
                 </div>
               )}
@@ -175,7 +175,7 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="border-agendaja-border/40 bg-white/90 focus:border-agendaja-primary focus:ring-agendaja-primary/20 h-12"
+                  className="border-agendaja-border/40 bg-white text-agendaja-text-primary placeholder:text-agendaja-text-secondary/60 focus:border-agendaja-primary focus:ring-agendaja-primary/20 h-12"
                 />
               </div>
               
@@ -203,7 +203,7 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     disabled={isLoading}
-                    className="pr-12 border-agendaja-border/40 bg-white/90 focus:border-agendaja-primary focus:ring-agendaja-primary/20 h-12"
+                    className="pr-12 border-agendaja-border/40 bg-white text-agendaja-text-primary placeholder:text-agendaja-text-secondary/60 focus:border-agendaja-primary focus:ring-agendaja-primary/20 h-12"
                   />
                   <Button
                     type="button"
