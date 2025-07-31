@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useColaboradores } from "@/hooks/useColaboradores";
 import { useUsuarios, useUpdateUsuario, useDeleteUsuario } from "@/hooks/useUsuarios";
@@ -29,6 +28,26 @@ export default function ListaColaboradores() {
   const updateUsuario = useUpdateUsuario();
   const deleteUsuario = useDeleteUsuario();
   const { toast } = useToast();
+
+  // Merge colaboradores data with profiles data
+  const colaboradoresCompletos = React.useMemo(() => {
+    if (!colaboradores || !usuarios) return [];
+    
+    return colaboradores.map(colaborador => {
+      const usuario = usuarios.find(u => u.email === colaborador.email);
+      return {
+        ...colaborador,
+        ...usuario,
+        // Keep colaborador data as priority for specific fields
+        id: usuario?.id || colaborador.id,
+        nome: colaborador.nome,
+        email: colaborador.email,
+        nivel_acesso: colaborador.nivel_acesso,
+        created_at: colaborador.data_cadastro,
+        status: colaborador.ativo ? 'ativo' : 'inativo'
+      };
+    });
+  }, [colaboradores, usuarios]);
   
   const [editingUser, setEditingUser] = useState<any>(null);
   const [resetModalOpen, setResetModalOpen] = useState(false);
@@ -140,141 +159,151 @@ export default function ListaColaboradores() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Nível</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Cadastro</TableHead>
-                  <TableHead>Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {usuarios?.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.nome}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{getNivelBadge(user.nivel_acesso)}</TableCell>
-                    <TableCell>{getStatusBadge(user.status)}</TableCell>
-                    <TableCell>
-                      {formatDistanceToNow(new Date(user.created_at), { 
-                        addSuffix: true, 
-                        locale: ptBR 
-                      })}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleEdit(user)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Editar Usuário</DialogTitle>
-                            </DialogHeader>
-                            <div className="space-y-4">
-                              <div>
-                                <Label htmlFor="nome">Nome</Label>
-                                <Input
-                                  id="nome"
-                                  value={editForm.nome}
-                                  onChange={(e) => setEditForm({...editForm, nome: e.target.value})}
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor="email">Email</Label>
-                                <Input
-                                  id="email"
-                                  value={editForm.email}
-                                  disabled
-                                  className="bg-gray-50"
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor="nivel">Nível de Acesso</Label>
-                                <Select 
-                                  value={editForm.nivel_acesso} 
-                                  onValueChange={(value) => setEditForm({...editForm, nivel_acesso: value})}
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {niveis.map((nivel) => (
-                                      <SelectItem key={nivel.value} value={nivel.value}>
-                                        {nivel.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div>
-                                <Label htmlFor="status">Status</Label>
-                                <Select 
-                                  value={editForm.status} 
-                                  onValueChange={(value) => setEditForm({...editForm, status: value})}
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="ativo">Ativo</SelectItem>
-                                    <SelectItem value="inativo">Inativo</SelectItem>
-                                    <SelectItem value="suspenso">Suspenso</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div className="flex justify-end gap-2">
-                                <Button 
-                                  variant="outline" 
-                                  onClick={() => setEditingUser(null)}
-                                >
-                                  Cancelar
-                                </Button>
-                                <Button 
-                                  onClick={handleSave}
-                                  disabled={updateUsuario.isPending}
-                                >
-                                  {updateUsuario.isPending ? "Salvando..." : "Salvar"}
-                                </Button>
-                              </div>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                        
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleResetPassword(user)}
-                          className="text-orange-600 hover:text-orange-700"
-                        >
-                          <Key className="h-4 w-4" />
-                        </Button>
-                        
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleDelete(user.email, user.nome)}
-                          disabled={deleteUsuario.isPending}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+          {colaboradoresCompletos?.length > 0 ? (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Nível</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Cadastro</TableHead>
+                    <TableHead>Ações</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {colaboradoresCompletos.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="font-medium">{user.nome}</TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>{getNivelBadge(user.nivel_acesso)}</TableCell>
+                      <TableCell>{getStatusBadge(user.status)}</TableCell>
+                      <TableCell>
+                        {formatDistanceToNow(new Date(user.created_at), { 
+                          addSuffix: true, 
+                          locale: ptBR 
+                        })}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleEdit(user)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Editar Usuário</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                <div>
+                                  <Label htmlFor="nome">Nome</Label>
+                                  <Input
+                                    id="nome"
+                                    value={editForm.nome}
+                                    onChange={(e) => setEditForm({...editForm, nome: e.target.value})}
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="email">Email</Label>
+                                  <Input
+                                    id="email"
+                                    value={editForm.email}
+                                    disabled
+                                    className="bg-gray-50"
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="nivel">Nível de Acesso</Label>
+                                  <Select 
+                                    value={editForm.nivel_acesso} 
+                                    onValueChange={(value) => setEditForm({...editForm, nivel_acesso: value})}
+                                  >
+                                    <SelectTrigger>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {niveis.map((nivel) => (
+                                        <SelectItem key={nivel.value} value={nivel.value}>
+                                          {nivel.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div>
+                                  <Label htmlFor="status">Status</Label>
+                                  <Select 
+                                    value={editForm.status} 
+                                    onValueChange={(value) => setEditForm({...editForm, status: value})}
+                                  >
+                                    <SelectTrigger>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="ativo">Ativo</SelectItem>
+                                      <SelectItem value="inativo">Inativo</SelectItem>
+                                      <SelectItem value="suspenso">Suspenso</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="flex justify-end gap-2">
+                                  <Button 
+                                    variant="outline" 
+                                    onClick={() => setEditingUser(null)}
+                                  >
+                                    Cancelar
+                                  </Button>
+                                  <Button 
+                                    onClick={handleSave}
+                                    disabled={updateUsuario.isPending}
+                                  >
+                                    {updateUsuario.isPending ? "Salvando..." : "Salvar"}
+                                  </Button>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                          
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleResetPassword(user)}
+                            className="text-orange-600 hover:text-orange-700"
+                          >
+                            <Key className="h-4 w-4" />
+                          </Button>
+                          
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleDelete(user.email, user.nome)}
+                            disabled={deleteUsuario.isPending}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium text-muted-foreground">Nenhum colaborador encontrado</h3>
+              <p className="text-sm text-muted-foreground mt-2">
+                Os colaboradores cadastrados aparecerão aqui
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
