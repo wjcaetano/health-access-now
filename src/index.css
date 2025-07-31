@@ -34,17 +34,23 @@
   --sidebar-border: 214.3 31.8% 91.4%;
   --sidebar-ring: 222.1 83.2% 53.4%;
   
-  /* Agendaja color palette */
-  --agendaja-primary: 262.1 83.3% 57.8%;
-  --agendaja-secondary: 251.4 53.2% 52.4%;
-  --agendaja-tertiary: 258.3 89.5% 66.3%;
-  --agendaja-light: 251.4 53.2% 91.4%;
-  --agendaja-dark: 220 13% 18%;
-  --agendaja-accent: 199.7 89.1% 48.2%;
-  --agendaja-danger: 0 66% 62%;
-  --agendaja-success: 160 84% 39%;
-  --agendaja-neutral: 220 9% 56%;
-  --agendaja-background: 251.4 53.2% 96.1%;
+  /* Agendaja elegant color palette - Branco, Azul e Roxo */
+  --agendaja-primary: 258 90% 66%;        /* Roxo vibrante principal */
+  --agendaja-secondary: 216 100% 50%;     /* Azul complementar */
+  --agendaja-tertiary: 258 30% 15%;       /* Roxo escuro para contraste */
+  --agendaja-light: 258 50% 98%;          /* Branco levemente roxo */
+  --agendaja-dark: 258 25% 15%;           /* Escuro com base roxa */
+  --agendaja-accent: 216 85% 60%;         /* Azul accent */
+  --agendaja-danger: 0 84% 60%;           /* Vermelho para erros */
+  --agendaja-success: 142 76% 36%;        /* Verde para sucesso */
+  --agendaja-neutral: 258 8% 50%;         /* Neutro com base roxa */
+  --agendaja-background: 258 100% 99%;    /* Fundo quase branco */
+  --agendaja-surface: 0 0% 100%;          /* Branco puro para cards */
+  --agendaja-border: 258 20% 90%;         /* Bordas sutis */
+  --agendaja-text-primary: 258 25% 15%;   /* Texto principal escuro */
+  --agendaja-text-secondary: 258 15% 45%; /* Texto secundário */
+  --agendaja-gradient-start: 258 90% 66%; /* Início do gradiente */
+  --agendaja-gradient-end: 216 100% 50%;  /* Fim do gradiente */
 }
 
 .dark {
@@ -125,16 +131,37 @@ body {
   color: #8B5CF6;
 }
 
-/* Animations */
+/* Elegant animations */
 @keyframes fade-in {
   0% {
     opacity: 0;
     transform: translateY(10px);
   }
-
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
@@ -143,12 +170,45 @@ body {
   animation: fade-in 0.3s ease-out;
 }
 
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out;
+}
+
 /* PWA specific styles */
 @media (display-mode: standalone) {
   body {
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
   }
+}
+
+/* Global elegant styles */
+.elegant-card {
+  background: hsl(var(--agendaja-surface));
+  border: 1px solid hsl(var(--agendaja-border));
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 hsl(var(--agendaja-text-secondary) / 0.1);
+  transition: all 0.3s ease;
+}
+
+.elegant-card:hover {
+  box-shadow: 0 4px 6px -1px hsl(var(--agendaja-text-secondary) / 0.1);
+  transform: translateY(-1px);
+}
+
+.elegant-gradient {
+  background: linear-gradient(135deg, hsl(var(--agendaja-primary)), hsl(var(--agendaja-secondary)));
+}
+
+.elegant-text-gradient {
+  background: linear-gradient(135deg, hsl(var(--agendaja-primary)), hsl(var(--agendaja-secondary)));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Dark mode improvements */

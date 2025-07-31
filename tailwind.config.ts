@@ -74,6 +74,12 @@ export default {
                     success: 'hsl(var(--agendaja-success))',
                     neutral: 'hsl(var(--agendaja-neutral))',
                     background: 'hsl(var(--agendaja-background))',
+                    surface: 'hsl(var(--agendaja-surface))',
+                    border: 'hsl(var(--agendaja-border))',
+                    'text-primary': 'hsl(var(--agendaja-text-primary))',
+                    'text-secondary': 'hsl(var(--agendaja-text-secondary))',
+                    'gradient-start': 'hsl(var(--agendaja-gradient-start))',
+                    'gradient-end': 'hsl(var(--agendaja-gradient-end))',
                 }
 			},
 			borderRadius: {
