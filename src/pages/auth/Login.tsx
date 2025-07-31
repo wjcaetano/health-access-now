@@ -90,10 +90,8 @@ export default function Login() {
             title: "Login realizado com sucesso!",
             description: "Redirecionando..."
           });
-          // Aguardar um momento para o contexto de auth atualizar
-          setTimeout(() => {
-            window.location.href = '/';
-          }, 500);
+          // Deixar o useEffect com a lógica de redirecionamento baseada no perfil fazer seu trabalho
+          // Não forçar redirecionamento manual aqui
         }
       }
     } catch (error) {
