@@ -124,7 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isManager = profile?.nivel_acesso === 'gerente';
   const isPrestador = profile?.nivel_acesso === 'prestador';
   const isActive = profile?.status === 'ativo';
-  const isUnidadeUser = ['atendente', 'gerente'].includes(profile?.nivel_acesso || '');
+  const isUnidadeUser = ['atendente', 'gerente', 'admin'].includes(profile?.nivel_acesso || '');
 
   const value = {
     user,
