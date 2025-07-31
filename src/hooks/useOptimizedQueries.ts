@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { optimizedApiService } from "@/services/optimizedApiService";
 import { useTenant } from "@/contexts/TenantContext";
 import { useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 // Hook otimizado para clientes
 export function useOptimizedClientes() {
@@ -143,4 +144,32 @@ export function usePrefetchCriticalData() {
   }, [currentTenant?.id, queryClient]);
 
   return { prefetch };
+}
+
+// Hook otimizado para orçamentos
+export function useOptimizedOrcamentos() {
+  const { currentTenant } = useTenant();
+  
+  return useQuery({
+    queryKey: ["orcamentos-optimized", currentTenant?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("orcamentos")
+        .select(`
+          *,
+          clientes (id, nome, cpf),
+          prestadores (id, nome, tipo),
+          servicos (id, nome, categoria)
+        `)
+        .eq("tenant_id", currentTenant?.id)
+        .order("created_at", { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    enabled: !!currentTenant?.id,
+  });
 }
