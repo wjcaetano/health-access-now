@@ -125,21 +125,21 @@ export default function Login() {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-card rounded-lg shadow-lg">
+    <div className="w-full max-w-md mx-auto p-6 bg-agendaja-surface rounded-lg shadow-lg border border-agendaja-border">
       <div className="space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-primary">
-            AGENDA<span className="text-accent">JA</span>
+          <h1 className="text-3xl font-bold text-agendaja-primary">
+            AGENDA<span className="text-agendaja-secondary">JA</span>
           </h1>
-          <p className="text-muted-foreground mt-2">Sistema de Agendamento de Saúde</p>
+          <p className="text-agendaja-text-secondary mt-2">Sistema de Agendamento de Saúde</p>
         </div>
         
-        <Card className="border-border/50 bg-background">
+        <Card className="border-agendaja-border bg-agendaja-background">
           <CardHeader className="space-y-2 text-center pb-4">
-            <CardTitle className="text-xl font-semibold text-foreground">
+            <CardTitle className="text-xl font-semibold text-agendaja-text-primary">
               {isSignUp ? "Criar Conta" : "Acesso ao Sistema"}
             </CardTitle>
-            <CardDescription className="text-muted-foreground text-sm">
+            <CardDescription className="text-agendaja-text-secondary text-sm">
               {isSignUp 
                 ? "Preencha os dados para criar sua conta" 
                 : "Faça login para continuar"
@@ -184,7 +184,7 @@ export default function Login() {
                     <Button 
                       type="button"
                       variant="link" 
-                      className="px-0 h-auto text-xs text-primary hover:text-primary/80"
+                      className="px-0 h-auto text-xs text-agendaja-primary hover:text-agendaja-secondary"
                       onClick={() => setShowForgotPassword(true)}
                       disabled={isLoading}
                     >
@@ -215,7 +215,7 @@ export default function Login() {
                   </Button>
                 </div>
                 {isSignUp && (
-                  <p className="text-xs text-muted-foreground">Mínimo 6 caracteres</p>
+                  <p className="text-xs text-agendaja-text-secondary">Mínimo 6 caracteres</p>
                 )}
               </div>
             </CardContent>
