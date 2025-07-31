@@ -13,7 +13,7 @@ export class TenantApiService {
     let query = supabase
       .from("clientes")
       .select("*")
-      .eq("tenant_id", this.tenantId);
+      .eq("unidade_id", this.tenantId);
 
     if (filters?.search) {
       query = query.or(`nome.ilike.%${filters.search}%,email.ilike.%${filters.search}%`);
@@ -25,7 +25,7 @@ export class TenantApiService {
   async createCliente(clienteData: any) {
     return supabase
       .from("clientes")
-      .insert([{ ...clienteData, tenant_id: this.tenantId }])
+      .insert([{ ...clienteData, unidade_id: this.tenantId }])
       .select()
       .single();
   }
@@ -35,7 +35,7 @@ export class TenantApiService {
     let query = supabase
       .from("prestadores")
       .select("*")
-      .eq("tenant_id", this.tenantId);
+      .eq("unidade_id", this.tenantId);
 
     if (filters?.tipo) {
       query = query.eq("tipo", filters.tipo);
@@ -51,7 +51,7 @@ export class TenantApiService {
   async createPrestador(prestadorData: any) {
     return supabase
       .from("prestadores")
-      .insert([{ ...prestadorData, tenant_id: this.tenantId }])
+      .insert([{ ...prestadorData, unidade_id: this.tenantId }])
       .select()
       .single();
   }
@@ -64,7 +64,7 @@ export class TenantApiService {
         *,
         prestador:prestadores(nome, tipo)
       `)
-      .eq("tenant_id", this.tenantId);
+      .eq("unidade_id", this.tenantId);
 
     if (filters?.categoria) {
       query = query.eq("categoria", filters.categoria);
@@ -90,7 +90,7 @@ export class TenantApiService {
           prestador:prestadores(nome)
         )
       `)
-      .eq("tenant_id", this.tenantId);
+      .eq("unidade_id", this.tenantId);
 
     if (filters?.status) {
       query = query.eq("status", filters.status);
