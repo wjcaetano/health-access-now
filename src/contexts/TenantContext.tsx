@@ -1,17 +1,17 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTenantById } from '@/hooks/useTenants';
+import { useUnidadeById } from '@/hooks/useTenants';
 import { Tables } from '@/integrations/supabase/types';
 
-type Tenant = Tables<"tenants">;
+type Unidade = Tables<"unidades">;
 
 interface TenantContextType {
-  currentTenant: Tenant | null;
+  currentTenant: Unidade | null;
   isLoading: boolean;
-  switchTenant: (tenantId: string) => void;
+  switchTenant: (unidadeId: string) => void;
   hasMultipleTenants: boolean;
-  canAccessTenant: (tenantId: string) => boolean;
+  canAccessTenant: (unidadeId: string) => boolean;
 }
 
 const TenantContext = createContext<TenantContextType | undefined>(undefined);
@@ -20,23 +20,23 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const { profile } = useAuth();
   const [currentTenantId, setCurrentTenantId] = useState<string | null>(null);
   
-  const { data: currentTenant, isLoading } = useTenantById(currentTenantId || '');
+  const { data: currentTenant, isLoading } = useUnidadeById(currentTenantId || '');
 
   useEffect(() => {
-    if (profile?.tenant_id && !currentTenantId) {
-      setCurrentTenantId(profile.tenant_id);
+    if (profile?.unidade_id && !currentTenantId) {
+      setCurrentTenantId(profile.unidade_id);
     }
-  }, [profile?.tenant_id, currentTenantId]);
+  }, [profile?.unidade_id, currentTenantId]);
 
-  const switchTenant = (tenantId: string) => {
-    setCurrentTenantId(tenantId);
+  const switchTenant = (unidadeId: string) => {
+    setCurrentTenantId(unidadeId);
     // Store in localStorage for persistence
-    localStorage.setItem('current-tenant-id', tenantId);
+    localStorage.setItem('current-tenant-id', unidadeId);
   };
 
-  const canAccessTenant = (tenantId: string) => {
+  const canAccessTenant = (unidadeId: string) => {
     // Simplified logic - in practice would check user permissions
-    return profile?.tenant_id === tenantId;
+    return profile?.unidade_id === unidadeId;
   };
 
   const hasMultipleTenants = false;

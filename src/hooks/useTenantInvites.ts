@@ -3,26 +3,26 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables, TablesInsert } from "@/integrations/supabase/types";
 
-type TenantInvite = Tables<"tenant_invites">;
-type NovoTenantInvite = TablesInsert<"tenant_invites">;
+type UnidadeInvite = Tables<"unidade_invites">;
+type NovoUnidadeInvite = TablesInsert<"unidade_invites">;
 
-export function useTenantInvites(tenantId?: string) {
+export function useTenantInvites(unidadeId?: string) {
   return useQuery({
-    queryKey: ["tenant-invites", tenantId],
+    queryKey: ["unidade-invites", unidadeId],
     queryFn: async () => {
       let query = supabase
-        .from("tenant_invites")
+        .from("unidade_invites")
         .select("*")
         .order("created_at", { ascending: false });
       
-      if (tenantId) {
-        query = query.eq("tenant_id", tenantId);
+      if (unidadeId) {
+        query = query.eq("unidade_id", unidadeId);
       }
       
       const { data, error } = await query;
       
       if (error) throw error;
-      return data as TenantInvite[];
+      return data as UnidadeInvite[];
     },
   });
 }
@@ -31,9 +31,9 @@ export function useCreateTenantInvite() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (invite: NovoTenantInvite) => {
+    mutationFn: async (invite: NovoUnidadeInvite) => {
       const { data, error } = await supabase
-        .from("tenant_invites")
+        .from("unidade_invites")
         .insert([invite])
         .select()
         .single();
@@ -41,8 +41,10 @@ export function useCreateTenantInvite() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tenant-invites"] });
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ 
+        queryKey: ["unidade-invites", data.unidade_id] 
+      });
     },
   });
 }
@@ -67,7 +69,7 @@ export function useCancelTenantInvite() {
   return useMutation({
     mutationFn: async (inviteId: string) => {
       const { data, error } = await supabase
-        .from("tenant_invites")
+        .from("unidade_invites")
         .update({ status: 'cancelado' })
         .eq("id", inviteId)
         .select()
@@ -76,8 +78,10 @@ export function useCancelTenantInvite() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tenant-invites"] });
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ 
+        queryKey: ["unidade-invites", data.unidade_id] 
+      });
     },
   });
 }

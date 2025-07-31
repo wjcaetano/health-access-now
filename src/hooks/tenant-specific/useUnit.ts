@@ -10,15 +10,15 @@ export function useUnitData() {
   return useQuery({
     queryKey: ["unit", "data", currentTenant?.id],
     queryFn: async () => {
-      if (!currentTenant || currentTenant.tipo !== 'franquia') {
-        throw new Error('Acesso negado: contexto franquia necessário');
+      if (!currentTenant || currentTenant.tipo !== 'filial') {
+        throw new Error('Acesso negado: contexto unidade necessário');
       }
 
       const { data, error } = await supabase
-        .from("tenants")
+        .from("unidades")
         .select(`
           *,
-          holding:tenants!tenant_pai_id(
+          matriz:unidades!unidade_matriz_id(
             id,
             nome,
             codigo
@@ -30,7 +30,7 @@ export function useUnitData() {
       if (error) throw error;
       return data;
     },
-    enabled: !!currentTenant && currentTenant.tipo === 'franquia',
+    enabled: !!currentTenant && currentTenant.tipo === 'filial',
   });
 }
 
@@ -40,14 +40,14 @@ export function useUnitMetrics() {
   const { data: metrics, loading, error } = useCache(
     `unit-metrics-${currentTenant?.id}`,
     async () => {
-      if (!currentTenant || currentTenant.tipo !== 'franquia') {
-        throw new Error('Acesso negado: contexto franquia necessário');
+      if (!currentTenant || currentTenant.tipo !== 'filial') {
+        throw new Error('Acesso negado: contexto unidade necessário');
       }
 
       const [vendas, clientes, prestadores] = await Promise.all([
-        supabase.from("vendas").select("valor_total").eq("tenant_id", currentTenant.id),
-        supabase.from("clientes").select("id").eq("tenant_id", currentTenant.id),
-        supabase.from("prestadores").select("id").eq("tenant_id", currentTenant.id).eq("ativo", true)
+        supabase.from("vendas").select("valor_total").eq("unidade_id", currentTenant.id),
+        supabase.from("clientes").select("id").eq("unidade_id", currentTenant.id),
+        supabase.from("prestadores").select("id").eq("unidade_id", currentTenant.id).eq("ativo", true)
       ]);
 
       const metricas = {
@@ -72,7 +72,7 @@ export function useUnitOperations() {
   const syncWithHolding = useMutation({
     mutationFn: async (data: any) => {
       const { data: result, error } = await supabase.functions.invoke('sync-unit-data', {
-        body: { tenantId: currentTenant?.id, data }
+        body: { unidadeId: currentTenant?.id, data }
       });
       
       if (error) throw error;

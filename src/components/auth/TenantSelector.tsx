@@ -2,7 +2,7 @@
 import React from 'react';
 import { Check, Building2 } from 'lucide-react';
 import { useTenant } from '@/contexts/TenantContext';
-import { useTenants } from '@/hooks/useTenants';
+import { useUnidades } from '@/hooks/useTenants';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   DropdownMenu,
@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 
 export const TenantSelector: React.FC = () => {
   const { currentTenant, switchTenant, hasMultipleTenants } = useTenant();
-  const { data: tenants = [] } = useTenants();
+  const { data: tenants = [] } = useUnidades();
   const { profile } = useAuth();
 
   if (!hasMultipleTenants || !profile) {
@@ -23,8 +23,8 @@ export const TenantSelector: React.FC = () => {
   }
 
   const accessibleTenants = tenants.filter(tenant => 
-    tenant.id === profile.tenant_id || 
-    tenant.tenant_pai_id === profile.tenant_id
+    tenant.id === profile.unidade_id || 
+    tenant.unidade_matriz_id === profile.unidade_id
   );
 
   if (accessibleTenants.length <= 1) {

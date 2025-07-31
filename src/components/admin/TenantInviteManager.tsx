@@ -37,7 +37,7 @@ export const TenantInviteManager: React.FC = () => {
 
     createInvite(
       {
-        tenant_id: currentTenant.id,
+        unidade_id: currentTenant.id,
         invited_by: user.id,
         ...formData
       },

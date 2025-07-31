@@ -3,49 +3,49 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables, TablesInsert } from "@/integrations/supabase/types";
 
-type Tenant = Tables<"tenants">;
-type NovoTenant = TablesInsert<"tenants">;
+type Unidade = Tables<"unidades">;
+type NovaUnidade = TablesInsert<"unidades">;
 
-export function useTenants() {
+export function useUnidades() {
   return useQuery({
-    queryKey: ["tenants"],
+    queryKey: ["unidades"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("tenants")
+        .from("unidades")
         .select("*")
         .order("created_at", { ascending: false });
       
       if (error) throw error;
-      return data as Tenant[];
+      return data as Unidade[];
     },
   });
 }
 
-export function useTenantById(tenantId: string) {
+export function useUnidadeById(unidadeId: string) {
   return useQuery({
-    queryKey: ["tenant", tenantId],
+    queryKey: ["unidade", unidadeId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("tenants")
+        .from("unidades")
         .select("*")
-        .eq("id", tenantId)
+        .eq("id", unidadeId)
         .single();
       
       if (error) throw error;
-      return data as Tenant;
+      return data as Unidade;
     },
-    enabled: !!tenantId,
+    enabled: !!unidadeId,
   });
 }
 
-export function useCreateTenant() {
+export function useCreateUnidade() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (tenant: NovoTenant) => {
+    mutationFn: async (unidade: NovaUnidade) => {
       const { data, error } = await supabase
-        .from("tenants")
-        .insert([tenant])
+        .from("unidades")
+        .insert([unidade])
         .select()
         .single();
       
@@ -53,18 +53,18 @@ export function useCreateTenant() {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tenants"] });
+      queryClient.invalidateQueries({ queryKey: ["unidades"] });
     },
   });
 }
 
-export function useUpdateTenant() {
+export function useUpdateUnidade() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Tenant> }) => {
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Unidade> }) => {
       const { data, error } = await supabase
-        .from("tenants")
+        .from("unidades")
         .update(updates)
         .eq("id", id)
         .select()
@@ -74,8 +74,14 @@ export function useUpdateTenant() {
       return data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["tenants"] });
-      queryClient.invalidateQueries({ queryKey: ["tenant", data.id] });
+      queryClient.invalidateQueries({ queryKey: ["unidades"] });
+      queryClient.invalidateQueries({ queryKey: ["unidade", data.id] });
     },
   });
 }
+
+// Mantendo compatibilidade com código existente
+export const useTenants = useUnidades;
+export const useTenantById = useUnidadeById;
+export const useCreateTenant = useCreateUnidade;
+export const useUpdateTenant = useUpdateUnidade;
