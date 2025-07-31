@@ -64,16 +64,16 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
                 agendaja: {
-                    primary: '#8B5CF6',
-                    secondary: '#6E59A5',
-                    tertiary: '#9b87f5',
-                    light: '#E5DEFF',
-                    dark: '#1A1F2C',
-                    accent: '#0EA5E9',
-                    danger: '#ea384c',
-                    success: '#10B981',
-                    neutral: '#8E9196',
-                    background: '#F1F0FB',
+                    primary: 'hsl(var(--agendaja-primary))',
+                    secondary: 'hsl(var(--agendaja-secondary))',
+                    tertiary: 'hsl(var(--agendaja-tertiary))',
+                    light: 'hsl(var(--agendaja-light))',
+                    dark: 'hsl(var(--agendaja-dark))',
+                    accent: 'hsl(var(--agendaja-accent))',
+                    danger: 'hsl(var(--agendaja-danger))',
+                    success: 'hsl(var(--agendaja-success))',
+                    neutral: 'hsl(var(--agendaja-neutral))',
+                    background: 'hsl(var(--agendaja-background))',
                 }
 			},
 			borderRadius: {

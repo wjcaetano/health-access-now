@@ -33,6 +33,18 @@
   --sidebar-accent-foreground: 222.2 47.4% 11.2%;
   --sidebar-border: 214.3 31.8% 91.4%;
   --sidebar-ring: 222.1 83.2% 53.4%;
+  
+  /* Agendaja color palette */
+  --agendaja-primary: 262.1 83.3% 57.8%;
+  --agendaja-secondary: 251.4 53.2% 52.4%;
+  --agendaja-tertiary: 258.3 89.5% 66.3%;
+  --agendaja-light: 251.4 53.2% 91.4%;
+  --agendaja-dark: 220 13% 18%;
+  --agendaja-accent: 199.7 89.1% 48.2%;
+  --agendaja-danger: 0 66% 62%;
+  --agendaja-success: 160 84% 39%;
+  --agendaja-neutral: 220 9% 56%;
+  --agendaja-background: 251.4 53.2% 96.1%;
 }
 
 .dark {

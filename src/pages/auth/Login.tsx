@@ -90,9 +90,10 @@ export default function Login() {
             title: "Login realizado com sucesso!",
             description: "Redirecionando..."
           });
-          // Redirecionar para a página de redirecionamento que fará o roteamento correto
-          setHasRedirected(true);
-          navigate('/auth/redirect', { replace: true });
+          // Aguardar um momento para o contexto de auth atualizar
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 500);
         }
       }
     } catch (error) {
