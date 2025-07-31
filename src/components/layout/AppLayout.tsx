@@ -29,14 +29,18 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const userProfile = profile?.prestador_id ? "prestador" : "unidade";
 
   // Renderizar layout apropriado
-  return isMobile ? (
-    <MobileLayout userProfile={userProfile}>
-      {children}
-    </MobileLayout>
-  ) : (
-    <DesktopLayout userProfile={userProfile}>
-      {children}
-    </DesktopLayout>
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      {isMobile ? (
+        <MobileLayout userProfile={userProfile}>
+          {children}
+        </MobileLayout>
+      ) : (
+        <DesktopLayout userProfile={userProfile}>
+          {children}
+        </DesktopLayout>
+      )}
+    </div>
   );
 };
 

@@ -1,24 +1,33 @@
-
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { ChevronLeft, Menu } from "lucide-react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarTrigger,
+  useSidebar,
+} from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
-import { SidebarContent } from "./navigation/SidebarContent";
-import { MobileSidebar } from "./navigation/MobileSidebar";
 import { unidadeMenuItems } from "./navigation/menus/UnidadeMenu";
 import { prestadorMenuItems } from "./navigation/menus/PrestadorMenuSimplified";
 
-interface SidebarProps {
-  collapsed: boolean;
-  setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+interface AppSidebarProps {
   userProfile: string;
 }
 
-export default function Sidebar({ collapsed, setCollapsed, userProfile }: SidebarProps) {
-  const isMobile = useIsMobile();
+export default function AppSidebar({ userProfile }: AppSidebarProps) {
   const { profile } = useAuth();
+  const location = useLocation();
+  const { state } = useSidebar();
   
   // Determinar qual menu mostrar baseado no perfil do usuário
   const menuItems = userProfile === "prestador" ? prestadorMenuItems : unidadeMenuItems;
@@ -26,33 +35,20 @@ export default function Sidebar({ collapsed, setCollapsed, userProfile }: Sideba
   // Verificar se é gerente ou admin para mostrar opções administrativas
   const isManagerOrAdmin = ['gerente', 'admin'].includes(profile?.nivel_acesso || '');
   
-  const adminMenuItems = isManagerOrAdmin ? unidadeMenuItems.filter(item => 
-    item.roles?.includes('gerente') || item.roles?.includes('admin')
-  ) : [];
+  const isActive = (href: string) => {
+    return location.pathname.startsWith(href);
+  };
 
-  // Mobile sidebar
-  if (isMobile) {
-    return (
-      <MobileSidebar
-        isOpen={!collapsed}
-        onClose={() => setCollapsed(true)}
-        menuItems={menuItems}
-        gerenteMenuItems={adminMenuItems}
-        userProfile={userProfile}
-      />
-    );
-  }
-
-  // Desktop sidebar
   return (
-    <div
+    <Sidebar 
       className={cn(
-        "fixed inset-y-0 left-0 z-30 flex h-full flex-col bg-white shadow-lg transition-all duration-300 ease-in-out",
-        collapsed ? "w-20" : "w-72"
+        "border-r bg-sidebar text-sidebar-foreground",
+        state === "collapsed" ? "w-14" : "w-64"
       )}
+      collapsible="icon"
     >
-      <div className="flex h-16 items-center justify-between border-b px-6">
-        {collapsed ? (
+      <SidebarHeader className="flex h-16 items-center justify-between border-b px-4">
+        {state === "collapsed" ? (
           <Link to="/" className="font-bold text-2xl text-agendaja-primary">
             A<span className="text-agendaja-secondary">J</span>
           </Link>
@@ -61,36 +57,78 @@ export default function Sidebar({ collapsed, setCollapsed, userProfile }: Sideba
             AGENDA<span className="text-agendaja-secondary">JA</span>
           </Link>
         )}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => setCollapsed((prev) => !prev)}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={cn("h-4 w-4 transition-transform", collapsed ? "rotate-180" : "")}
-          >
-            <path d="m15 16-4-4 4-4"></path>
-          </svg>
-          <span className="sr-only">
-            {collapsed ? "Expandir menu" : "Recolher menu"}
-          </span>
-        </Button>
-      </div>
+      </SidebarHeader>
       
-      <SidebarContent 
-        menuItems={menuItems} 
-        gerenteMenuItems={adminMenuItems} 
-        collapsed={collapsed}
-        userProfile={userProfile}
-      />
-    </div>
+      <SidebarContent className="flex-1 px-2 py-4">
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-sidebar-foreground/60 mb-2">
+            {userProfile === "prestador" ? "Prestador" : "Unidade"}
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {menuItems
+                .filter(item => !item.roles || item.roles.includes(profile?.nivel_acesso || ''))
+                .map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={isActive(item.href)}>
+                    <Link
+                      to={item.href}
+                      className={cn(
+                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                        isActive(item.href)
+                          ? "bg-agendaja-primary/10 text-agendaja-primary"
+                          : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      )}
+                    >
+                      <item.icon className={cn(
+                        "h-4 w-4 flex-shrink-0",
+                        isActive(item.href) ? "text-agendaja-primary" : "text-sidebar-foreground/60"
+                      )} />
+                      {state !== "collapsed" && <span>{item.title}</span>}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Seção Administrativa - apenas para gerentes e admins */}
+        {isManagerOrAdmin && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-xs uppercase tracking-wider text-sidebar-foreground/60 mb-2">
+              Gerência
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {unidadeMenuItems
+                  .filter(item => item.roles?.includes('gerente') || item.roles?.includes('admin'))
+                  .map((item) => (
+                  <SidebarMenuItem key={`admin-${item.title}`}>
+                    <SidebarMenuButton asChild isActive={isActive(item.href)}>
+                      <Link
+                        to={item.href}
+                        className={cn(
+                          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                          isActive(item.href)
+                            ? "bg-agendaja-primary/10 text-agendaja-primary"
+                            : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                        )}
+                      >
+                        <item.icon className={cn(
+                          "h-4 w-4 flex-shrink-0",
+                          isActive(item.href) ? "text-agendaja-primary" : "text-sidebar-foreground/60"
+                        )} />
+                        {state !== "collapsed" && <span>{item.title}</span>}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+      </SidebarContent>
+    </Sidebar>
   );
 }
