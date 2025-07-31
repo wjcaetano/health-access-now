@@ -125,17 +125,17 @@ export default function Login() {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-agendaja-surface rounded-lg shadow-lg border border-agendaja-border">
+    <div className="w-full max-w-md mx-auto p-6 bg-gradient-to-br from-agendaja-light to-white rounded-2xl shadow-xl border border-agendaja-border/30">
       <div className="space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-agendaja-primary">
+          <h1 className="text-3xl font-bold elegant-text-gradient">
             AGENDA<span className="text-agendaja-secondary">JA</span>
           </h1>
-          <p className="text-agendaja-text-secondary mt-2">Sistema de Agendamento de Saúde</p>
+          <p className="text-agendaja-text-secondary mt-2 text-sm">Sistema de Agendamento de Saúde</p>
         </div>
         
-        <Card className="border-agendaja-border bg-agendaja-background">
-          <CardHeader className="space-y-2 text-center pb-4">
+        <Card className="border-agendaja-border/20 bg-white/80 backdrop-blur-sm shadow-lg">
+          <CardHeader className="space-y-2 text-center pb-6">
             <CardTitle className="text-xl font-semibold text-agendaja-text-primary">
               {isSignUp ? "Criar Conta" : "Acesso ao Sistema"}
             </CardTitle>
@@ -148,10 +148,10 @@ export default function Login() {
           </CardHeader>
           
           <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-5">
               {isSignUp && (
                 <div className="space-y-2">
-                  <Label htmlFor="nome">Nome completo</Label>
+                  <Label htmlFor="nome" className="text-agendaja-text-primary font-medium">Nome completo</Label>
                   <Input 
                     id="nome" 
                     type="text" 
@@ -160,12 +160,13 @@ export default function Login() {
                     onChange={(e) => setNome(e.target.value)}
                     required={isSignUp}
                     disabled={isLoading}
+                    className="border-agendaja-border/40 bg-white/90 focus:border-agendaja-primary focus:ring-agendaja-primary/20 h-12"
                   />
                 </div>
               )}
               
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-agendaja-text-primary font-medium">Email</Label>
                 <Input 
                   id="email" 
                   type="email" 
@@ -174,17 +175,18 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={isLoading}
+                  className="border-agendaja-border/40 bg-white/90 focus:border-agendaja-primary focus:ring-agendaja-primary/20 h-12"
                 />
               </div>
               
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Senha</Label>
+                  <Label htmlFor="password" className="text-agendaja-text-primary font-medium">Senha</Label>
                   {!isSignUp && (
                     <Button 
                       type="button"
                       variant="link" 
-                      className="px-0 h-auto text-xs text-agendaja-primary hover:text-agendaja-secondary"
+                      className="px-0 h-auto text-xs text-agendaja-primary hover:text-agendaja-secondary transition-colors"
                       onClick={() => setShowForgotPassword(true)}
                       disabled={isLoading}
                     >
@@ -201,17 +203,20 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     disabled={isLoading}
-                    className="pr-10"
+                    className="pr-12 border-agendaja-border/40 bg-white/90 focus:border-agendaja-primary focus:ring-agendaja-primary/20 h-12"
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-3"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={isLoading}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? 
+                      <EyeOff className="h-4 w-4 text-agendaja-text-secondary" /> : 
+                      <Eye className="h-4 w-4 text-agendaja-text-secondary" />
+                    }
                   </Button>
                 </div>
                 {isSignUp && (
@@ -220,10 +225,10 @@ export default function Login() {
               </div>
             </CardContent>
             
-            <CardFooter className="flex flex-col space-y-3 pt-4">
+            <CardFooter className="flex flex-col space-y-4 pt-6">
               <Button 
                 type="submit" 
-                className="w-full"
+                className="w-full h-12 elegant-gradient text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
                 disabled={isLoading}
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -233,7 +238,7 @@ export default function Login() {
               <Button 
                 type="button"
                 variant="link" 
-                className="text-sm"
+                className="text-sm text-agendaja-primary hover:text-agendaja-secondary transition-colors"
                 onClick={() => setIsSignUp(!isSignUp)}
                 disabled={isLoading}
               >
