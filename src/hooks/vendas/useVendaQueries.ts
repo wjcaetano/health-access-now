@@ -29,7 +29,7 @@ export function useVendas(limit = 50) {
         .limit(limit);
       
       if (currentTenant?.id) {
-        query = query.eq("tenant_id", currentTenant.id);
+        query = query.eq("unidade_id", currentTenant.id);
       }
       
       const { data, error } = await query;
@@ -58,7 +58,7 @@ export function useVendasPorCliente(clienteId: string, limit = 20) {
         .limit(limit);
       
       if (currentTenant?.id) {
-        query = query.eq("tenant_id", currentTenant.id);
+        query = query.eq("unidade_id", currentTenant.id);
       }
       
       const { data, error } = await query;

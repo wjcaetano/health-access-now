@@ -6,11 +6,25 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
   if (!userId) return null;
   
   try {
+    console.log('Fazendo query para buscar perfil do usuário:', userId);
+    
     const { data, error } = await supabase
       .from('profiles')
-      .select('*')
+      .select(`
+        id,
+        email, 
+        nome,
+        nivel_acesso,
+        colaborador_id,
+        prestador_id,
+        unidade_id,
+        status,
+        foto_url
+      `)
       .eq('id', userId)
       .single();
+    
+    console.log('Resultado da query profiles:', { data, error });
     
     if (error) {
       console.error('Erro ao buscar perfil:', error);
