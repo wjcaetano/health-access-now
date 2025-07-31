@@ -7,10 +7,14 @@ import { ChevronLeft, ChevronRight, Search, ArrowUpDown } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface Column<T> {
-  key: keyof T;
-  label: string;
+  key?: keyof T;
+  label?: string;
+  header?: string;
+  accessorKey?: string;
+  id?: string;
   sortable?: boolean;
   render?: (value: any, item: T) => React.ReactNode;
+  cell?: (props: { row: { original: T } }) => React.ReactNode;
   width?: string;
 }
 
@@ -49,7 +53,9 @@ function OptimizedTable<T extends Record<string, any>>({
     
     return data.filter(item => {
       return columns.some(column => {
-        const value = item[column.key];
+        const key = column.key || column.accessorKey;
+        if (!key) return false;
+        const value = item[key];
         return value?.toString().toLowerCase().includes(search.toLowerCase());
       });
     });
@@ -90,8 +96,11 @@ function OptimizedTable<T extends Record<string, any>>({
 
   const totalPages = Math.ceil(sortedData.length / pageSize);
 
-  const handleSort = (key: keyof T) => {
+  const handleSort = (column: Column<T>) => {
     if (!sortable) return;
+    
+    const key = column.key || column.accessorKey;
+    if (!key) return;
     
     setSortConfig(current => ({
       key,
@@ -159,15 +168,15 @@ function OptimizedTable<T extends Record<string, any>>({
         <Table>
           <TableHeader>
             <TableRow>
-              {columns.map((column) => (
+              {columns.map((column, index) => (
                 <TableHead 
-                  key={String(column.key)}
+                  key={column.id || String(column.key || column.accessorKey || index)}
                   style={{ width: column.width }}
                   className={column.sortable !== false && sortable ? "cursor-pointer hover:bg-muted/50" : ""}
-                  onClick={() => column.sortable !== false && handleSort(column.key)}
+                  onClick={() => column.sortable !== false && handleSort(column)}
                 >
                   <div className="flex items-center space-x-1">
-                    <span>{column.label}</span>
+                    <span>{column.header || column.label}</span>
                     {column.sortable !== false && sortable && (
                       <ArrowUpDown className="h-4 w-4" />
                     )}
@@ -185,16 +194,18 @@ function OptimizedTable<T extends Record<string, any>>({
               </TableRow>
             ) : (
               paginatedData.map((item, index) => (
-                <TableRow 
+                 <TableRow 
                   key={item.id || index}
                   className={onRowClick ? "cursor-pointer hover:bg-muted/50" : ""}
                   onClick={() => onRowClick?.(item)}
                 >
-                  {columns.map((column) => (
-                    <TableCell key={String(column.key)} style={{ width: column.width }}>
-                      {column.render 
-                        ? column.render(item[column.key], item)
-                        : String(item[column.key] || '-')
+                  {columns.map((column, colIndex) => (
+                    <TableCell key={column.id || String(column.key || column.accessorKey || colIndex)} style={{ width: column.width }}>
+                      {column.cell 
+                        ? column.cell({ row: { original: item } })
+                        : column.render 
+                        ? column.render(item[column.key || column.accessorKey as keyof T], item)
+                        : String(item[column.key || column.accessorKey as keyof T] || '-')
                       }
                     </TableCell>
                   ))}

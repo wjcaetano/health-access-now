@@ -9,7 +9,6 @@ export function useOrcamentos() {
   return useQuery({
     queryKey: ["orcamentos"],
     queryFn: async () => {
-      console.log('Buscando orçamentos...');
       const { data, error } = await supabase
         .from("orcamentos")
         .select(`
@@ -33,13 +32,14 @@ export function useOrcamentos() {
         .order("created_at", { ascending: false });
       
       if (error) {
-        console.error('Erro ao buscar orçamentos:', error);
         throw error;
       }
       
-      console.log('Orçamentos encontrados:', data);
       return data;
     },
+    staleTime: 5 * 60 * 1000, // 5 minutos
+    gcTime: 10 * 60 * 1000, // 10 minutos
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -48,11 +48,9 @@ export function useOrcamentosPorCliente(clienteId: string) {
     queryKey: ["orcamentos", "cliente", clienteId],
     queryFn: async () => {
       if (!clienteId) {
-        console.log('Cliente ID não fornecido');
         return [];
       }
       
-      console.log('Buscando orçamentos para cliente:', clienteId);
       const { data, error } = await supabase
         .from("orcamentos")
         .select(`
@@ -70,14 +68,15 @@ export function useOrcamentosPorCliente(clienteId: string) {
         .order("created_at", { ascending: false });
       
       if (error) {
-        console.error('Erro ao buscar orçamentos por cliente:', error);
         throw error;
       }
       
-      console.log('Orçamentos por cliente encontrados:', data);
       return data;
     },
     enabled: !!clienteId,
+    staleTime: 3 * 60 * 1000, // 3 minutos
+    gcTime: 8 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -89,7 +88,6 @@ export function useOrcamento(orcamentoId: string) {
         throw new Error('ID do orçamento é obrigatório');
       }
       
-      console.log('Buscando orçamento:', orcamentoId);
       const { data, error } = await supabase
         .from("orcamentos")
         .select(`
@@ -115,19 +113,19 @@ export function useOrcamento(orcamentoId: string) {
         .maybeSingle();
       
       if (error) {
-        console.error('Erro ao buscar orçamento:', error);
         throw error;
       }
       
       if (!data) {
-        console.warn('Orçamento não encontrado:', orcamentoId);
         return null;
       }
       
-      console.log('Orçamento encontrado:', data);
       return data;
     },
     enabled: !!orcamentoId,
+    staleTime: 10 * 60 * 1000, // 10 minutos para item específico
+    gcTime: 15 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 }
 

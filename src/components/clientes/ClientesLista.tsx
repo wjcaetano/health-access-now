@@ -1,6 +1,9 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import FormularioCliente from "@/components/clientes/FormularioCliente";
-import ListaClientes from "@/components/clientes/ListaClientes";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Lazy load para melhor performance
+const LazyOptimizedClientesLista = lazy(() => import("@/components/clientes/OptimizedClientesLista"));
 
 const ClientesLista = () => {
   return (
@@ -14,7 +17,14 @@ const ClientesLista = () => {
 
       <div className="space-y-6">
         <FormularioCliente />
-        <ListaClientes />
+        <Suspense fallback={
+          <div className="space-y-4">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-64 w-full" />
+          </div>
+        }>
+          <LazyOptimizedClientesLista />
+        </Suspense>
       </div>
     </div>
   );
