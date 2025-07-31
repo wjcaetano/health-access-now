@@ -878,7 +878,7 @@ export type Database = {
           },
         ]
       }
-      tenant_invites: {
+      unidade_invites: {
         Row: {
           accepted_at: string | null
           created_at: string
@@ -889,8 +889,8 @@ export type Database = {
           nivel_acesso: string
           nome: string
           status: string
-          tenant_id: string
           token: string
+          unidade_id: string
         }
         Insert: {
           accepted_at?: string | null
@@ -902,8 +902,8 @@ export type Database = {
           nivel_acesso?: string
           nome: string
           status?: string
-          tenant_id: string
           token?: string
+          unidade_id: string
         }
         Update: {
           accepted_at?: string | null
@@ -915,13 +915,13 @@ export type Database = {
           nivel_acesso?: string
           nome?: string
           status?: string
-          tenant_id?: string
           token?: string
+          unidade_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "tenant_invites_tenant_id_fkey"
-            columns: ["tenant_id"]
+            columns: ["unidade_id"]
             isOneToOne: false
             referencedRelation: "unidades"
             referencedColumns: ["id"]
@@ -1176,6 +1176,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_user_unidade_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       is_admin_or_manager: {
         Args: Record<PropertyKey, never>
         Returns: boolean
@@ -1190,6 +1194,10 @@ export type Database = {
       }
       user_has_tenant_access: {
         Args: { target_tenant_id: string }
+        Returns: boolean
+      }
+      user_has_unidade_access: {
+        Args: { target_unidade_id: string }
         Returns: boolean
       }
     }
