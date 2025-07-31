@@ -24,10 +24,6 @@ import {
 const UnidadePortal: React.FC = () => {
   const { profile, isActive } = useAuth();
 
-  // Debug: log do perfil do usuário
-  console.log('UnidadePortal - Profile:', profile);
-  console.log('UnidadePortal - Nivel acesso:', profile?.nivel_acesso);
-
   // Verificar se é um usuário da unidade
   if (!isActive || !['admin', 'atendente', 'gerente', 'colaborador'].includes(profile?.nivel_acesso || '')) {
     return <Navigate to="/login" replace />;

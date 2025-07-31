@@ -20,23 +20,15 @@ export default function Sidebar({ collapsed, setCollapsed, userProfile }: Sideba
   const isMobile = useIsMobile();
   const { profile } = useAuth();
   
-  // Debug: verificar perfil e filtros
-  console.log('Sidebar - Profile:', profile);
-  console.log('Sidebar - UserProfile:', userProfile);
-  console.log('Sidebar - Nivel acesso:', profile?.nivel_acesso);
-  
   // Determinar qual menu mostrar baseado no perfil do usuário
   const menuItems = userProfile === "prestador" ? prestadorMenuItems : unidadeMenuItems;
   
   // Verificar se é gerente ou admin para mostrar opções administrativas
   const isManagerOrAdmin = ['gerente', 'admin'].includes(profile?.nivel_acesso || '');
-  console.log('Sidebar - IsManagerOrAdmin:', isManagerOrAdmin);
   
   const adminMenuItems = isManagerOrAdmin ? unidadeMenuItems.filter(item => 
     item.roles?.includes('gerente') || item.roles?.includes('admin')
   ) : [];
-  
-  console.log('Sidebar - AdminMenuItems:', adminMenuItems.map(item => item.title));
 
   // Mobile sidebar
   if (isMobile) {
