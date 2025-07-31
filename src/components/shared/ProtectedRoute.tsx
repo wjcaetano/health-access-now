@@ -51,14 +51,21 @@ export function ProtectedRoute({
     return <Navigate to="/unidade/dashboard" replace />;
   }
 
-  // Check specific level requirement
-  if (requiredLevel && profile.nivel_acesso !== requiredLevel) {
-    console.log('Required level not met, redirecting based on user level');
-    switch (profile.nivel_acesso) {
-      case 'prestador':
-        return <Navigate to="/prestador/portal" replace />;
-      default:
-        return <Navigate to="/unidade/dashboard" replace />;
+  // Check specific level requirement with hierarchical access
+  if (requiredLevel && profile.nivel_acesso) {
+    const levels = ['colaborador', 'atendente', 'gerente', 'admin'];
+    const userLevelIndex = levels.indexOf(profile.nivel_acesso);
+    const requiredLevelIndex = levels.indexOf(requiredLevel);
+    
+    // Allow access if user level is equal or higher than required, or if user is prestador accessing prestador routes
+    if (profile.nivel_acesso === 'prestador' && requiredLevel !== 'prestador') {
+      console.log('Prestador trying to access non-prestador route, redirecting');
+      return <Navigate to="/prestador/portal" replace />;
+    }
+    
+    if (requiredLevel !== 'prestador' && userLevelIndex < requiredLevelIndex) {
+      console.log('Required level not met, redirecting based on user level');
+      return <Navigate to="/unidade/dashboard" replace />;
     }
   }
 
