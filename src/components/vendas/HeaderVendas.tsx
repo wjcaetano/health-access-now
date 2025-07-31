@@ -40,7 +40,7 @@ const HeaderVendas: React.FC<HeaderVendasProps> = ({ onAbrirLogin }) => {
           <nav className="hidden md:flex items-center space-x-8">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2">
+                <Button variant="ghost" className="flex items-center gap-2 text-agendaja-text-primary hover:text-agendaja-primary hover:bg-agendaja-light">
                   Serviços
                   <ChevronDown className="h-4 w-4" />
                 </Button>
