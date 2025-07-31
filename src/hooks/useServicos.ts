@@ -19,6 +19,9 @@ export function useServicos() {
       if (error) throw error;
       return data;
     },
+    staleTime: 15 * 60 * 1000,
+    gcTime: 20 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -37,6 +40,9 @@ export function useServicosPorPrestador(prestadorId: string) {
       return data;
     },
     enabled: !!prestadorId,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 }
 

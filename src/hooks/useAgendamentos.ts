@@ -23,6 +23,9 @@ export function useAgendamentos() {
       if (error) throw error;
       return data;
     },
+    staleTime: 3 * 60 * 1000,
+    gcTime: 8 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 }
 

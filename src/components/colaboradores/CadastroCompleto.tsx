@@ -56,17 +56,12 @@ export default function CadastroCompleto() {
     }
     
     try {
-      console.log("=== INICIANDO CADASTRO NO COMPONENTE ===");
-      console.log("Dados do formulário:", { nome: nome.trim(), email: email.trim(), cargo, nivel });
-      
       const result = await createUsuario.mutateAsync({
         nome: nome.trim(),
         email: email.trim(),
         cargo: cargo.trim() || undefined,
         nivel_acesso: nivel
       });
-      
-      console.log("=== CADASTRO CONCLUÍDO COM SUCESSO ===");
       
       // Mostrar senha provisória
       setSenhaDialog({
@@ -87,11 +82,7 @@ export default function CadastroCompleto() {
       setNivel("colaborador");
       
     } catch (error) {
-      console.error("=== ERRO NO COMPONENTE ===");
-      console.error("Erro capturado:", error);
-      
       const errorMessage = error instanceof Error ? error.message : "Erro desconhecido ao criar usuário";
-      console.error("Mensagem do erro:", errorMessage);
       
       setError(errorMessage);
       

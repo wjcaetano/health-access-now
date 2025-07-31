@@ -18,6 +18,9 @@ export function useColaboradores() {
       if (error) throw error;
       return data as Colaborador[];
     },
+    staleTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 }
 

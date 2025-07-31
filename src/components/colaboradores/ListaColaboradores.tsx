@@ -95,7 +95,6 @@ export default function ListaColaboradores() {
         description: `O usuário ${userName} foi removido do sistema`,
       });
     } catch (error) {
-      console.error("Erro ao excluir usuário:", error);
       toast({
         title: "Erro",
         description: "Não foi possível excluir o usuário",

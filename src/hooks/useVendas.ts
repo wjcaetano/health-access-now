@@ -28,7 +28,6 @@ export function useCreateVenda() {
   
   return useMutation<CreateVendaResponse, Error, { venda: NovaVenda; servicos: NovoVendaServico[] }>({
     mutationFn: async ({ venda, servicos }) => {
-      console.log('=== INICIANDO CRIAÇÃO DA VENDA ===');
       
       // 1. Criar a venda
       const { data: vendaData, error: vendaError } = await supabase
@@ -38,7 +37,6 @@ export function useCreateVenda() {
         .single();
       
       if (vendaError) {
-        console.error('Erro ao criar venda:', vendaError);
         throw vendaError;
       }
 
@@ -58,7 +56,6 @@ export function useCreateVenda() {
         `);
       
       if (servicosError) {
-        console.error('Erro ao criar serviços da venda:', servicosError);
         throw servicosError;
       }
 
@@ -79,7 +76,6 @@ export function useCreateVenda() {
         .select(`*, clientes (*), servicos (*), prestadores (*)`);
 
       if (guiasError) {
-        console.error('❌ ERRO ao criar guias:', guiasError);
         return { 
           venda: vendaData, 
           servicos: servicosData, 
@@ -87,8 +83,6 @@ export function useCreateVenda() {
           erro_guias: guiasError.message
         };
       }
-
-      console.log('✅ VENDA E GUIAS CRIADAS COM SUCESSO!');
       return { 
         venda: vendaData, 
         servicos: servicosData, 
