@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { useVendas } from "@/hooks/useVendas";
+import { useVendas } from "@/hooks/vendas/useVendaQueries";
 import ListaVendas from "./ListaVendas";
 
 const HistoricoVendasTab: React.FC = () => {
