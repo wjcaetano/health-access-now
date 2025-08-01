@@ -2,6 +2,7 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { TenantProvider } from "@/contexts/TenantContext";
 import Layout from "@/components/layout/Layout";
 import PortalErrorBoundary from "@/components/shared/PortalErrorBoundary";
 import SuspenseWrapper from "@/components/shared/SuspenseWrapper";
@@ -31,7 +32,8 @@ const UnidadePortal: React.FC = () => {
 
   return (
     <PortalErrorBoundary portalType="unidade">
-      <Layout>
+      <TenantProvider>
+        <Layout>
         <Routes>
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={
@@ -96,6 +98,7 @@ const UnidadePortal: React.FC = () => {
           <Route path="*" element={<Navigate to="dashboard" replace />} />
         </Routes>
       </Layout>
+      </TenantProvider>
     </PortalErrorBoundary>
   );
 };
