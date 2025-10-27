@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -21,8 +21,8 @@ export type Database = {
           data_escolhida: string
           id: string
           mes: number
+          organizacao_id: string | null
           prestador_id: string | null
-          unidade_id: string | null
         }
         Insert: {
           ano: number
@@ -30,8 +30,8 @@ export type Database = {
           data_escolhida: string
           id?: string
           mes: number
+          organizacao_id?: string | null
           prestador_id?: string | null
-          unidade_id?: string | null
         }
         Update: {
           ano?: number
@@ -39,8 +39,8 @@ export type Database = {
           data_escolhida?: string
           id?: string
           mes?: number
+          organizacao_id?: string | null
           prestador_id?: string | null
-          unidade_id?: string | null
         }
         Relationships: [
           {
@@ -52,9 +52,9 @@ export type Database = {
           },
           {
             foreignKeyName: "agenda_pagamentos_tenant_id_fkey"
-            columns: ["unidade_id"]
+            columns: ["organizacao_id"]
             isOneToOne: false
-            referencedRelation: "unidades"
+            referencedRelation: "organizacoes"
             referencedColumns: ["id"]
           },
         ]
@@ -68,10 +68,10 @@ export type Database = {
           horario: string
           id: string
           observacoes: string | null
+          organizacao_id: string | null
           prestador_id: string | null
           servico_id: string | null
           status: string
-          unidade_id: string | null
         }
         Insert: {
           cliente_id?: string | null
@@ -81,10 +81,10 @@ export type Database = {
           horario: string
           id?: string
           observacoes?: string | null
+          organizacao_id?: string | null
           prestador_id?: string | null
           servico_id?: string | null
           status: string
-          unidade_id?: string | null
         }
         Update: {
           cliente_id?: string | null
@@ -94,10 +94,10 @@ export type Database = {
           horario?: string
           id?: string
           observacoes?: string | null
+          organizacao_id?: string | null
           prestador_id?: string | null
           servico_id?: string | null
           status?: string
-          unidade_id?: string | null
         }
         Relationships: [
           {
@@ -123,9 +123,9 @@ export type Database = {
           },
           {
             foreignKeyName: "agendamentos_tenant_id_fkey"
-            columns: ["unidade_id"]
+            columns: ["organizacao_id"]
             isOneToOne: false
-            referencedRelation: "unidades"
+            referencedRelation: "organizacoes"
             referencedColumns: ["id"]
           },
         ]
@@ -139,8 +139,8 @@ export type Database = {
           id: string
           id_associado: string
           nome: string
+          organizacao_id: string | null
           telefone: string
-          unidade_id: string | null
         }
         Insert: {
           cpf: string
@@ -150,8 +150,8 @@ export type Database = {
           id?: string
           id_associado: string
           nome: string
+          organizacao_id?: string | null
           telefone: string
-          unidade_id?: string | null
         }
         Update: {
           cpf?: string
@@ -161,15 +161,15 @@ export type Database = {
           id?: string
           id_associado?: string
           nome?: string
+          organizacao_id?: string | null
           telefone?: string
-          unidade_id?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "clientes_tenant_id_fkey"
-            columns: ["unidade_id"]
+            columns: ["organizacao_id"]
             isOneToOne: false
-            referencedRelation: "unidades"
+            referencedRelation: "organizacoes"
             referencedColumns: ["id"]
           },
         ]
@@ -183,8 +183,8 @@ export type Database = {
           id: string
           nivel_acesso: string
           nome: string
+          organizacao_id: string | null
           status_trabalho: string | null
-          unidade_id: string | null
         }
         Insert: {
           ativo?: boolean | null
@@ -194,8 +194,8 @@ export type Database = {
           id?: string
           nivel_acesso: string
           nome: string
+          organizacao_id?: string | null
           status_trabalho?: string | null
-          unidade_id?: string | null
         }
         Update: {
           ativo?: boolean | null
@@ -205,15 +205,15 @@ export type Database = {
           id?: string
           nivel_acesso?: string
           nome?: string
+          organizacao_id?: string | null
           status_trabalho?: string | null
-          unidade_id?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "colaboradores_tenant_id_fkey"
-            columns: ["unidade_id"]
+            columns: ["organizacao_id"]
             isOneToOne: false
-            referencedRelation: "unidades"
+            referencedRelation: "organizacoes"
             referencedColumns: ["id"]
           },
         ]
@@ -226,9 +226,9 @@ export type Database = {
           descricao: string | null
           guias_ids: string[] | null
           id: string
+          organizacao_id: string | null
           prestador_id: string | null
           status: string
-          unidade_id: string | null
           valor: number
         }
         Insert: {
@@ -238,9 +238,9 @@ export type Database = {
           descricao?: string | null
           guias_ids?: string[] | null
           id?: string
+          organizacao_id?: string | null
           prestador_id?: string | null
           status: string
-          unidade_id?: string | null
           valor: number
         }
         Update: {
@@ -250,9 +250,9 @@ export type Database = {
           descricao?: string | null
           guias_ids?: string[] | null
           id?: string
+          organizacao_id?: string | null
           prestador_id?: string | null
           status?: string
-          unidade_id?: string | null
           valor?: number
         }
         Relationships: [
@@ -265,9 +265,9 @@ export type Database = {
           },
           {
             foreignKeyName: "contas_pagar_tenant_id_fkey"
-            columns: ["unidade_id"]
+            columns: ["organizacao_id"]
             isOneToOne: false
-            referencedRelation: "unidades"
+            referencedRelation: "organizacoes"
             referencedColumns: ["id"]
           },
         ]
@@ -281,9 +281,9 @@ export type Database = {
           descricao: string | null
           guias_ids: string[] | null
           id: string
+          organizacao_id: string | null
           status: string
           tipo_pagamento: string | null
-          unidade_id: string | null
           valor: number
         }
         Insert: {
@@ -294,9 +294,9 @@ export type Database = {
           descricao?: string | null
           guias_ids?: string[] | null
           id?: string
+          organizacao_id?: string | null
           status: string
           tipo_pagamento?: string | null
-          unidade_id?: string | null
           valor: number
         }
         Update: {
@@ -307,9 +307,9 @@ export type Database = {
           descricao?: string | null
           guias_ids?: string[] | null
           id?: string
+          organizacao_id?: string | null
           status?: string
           tipo_pagamento?: string | null
-          unidade_id?: string | null
           valor?: number
         }
         Relationships: [
@@ -322,9 +322,9 @@ export type Database = {
           },
           {
             foreignKeyName: "contas_receber_tenant_id_fkey"
-            columns: ["unidade_id"]
+            columns: ["organizacao_id"]
             isOneToOne: false
-            referencedRelation: "unidades"
+            referencedRelation: "organizacoes"
             referencedColumns: ["id"]
           },
         ]
@@ -341,10 +341,10 @@ export type Database = {
           data_pagamento: string | null
           data_realizacao: string | null
           id: string
+          organizacao_id: string | null
           prestador_id: string | null
           servico_id: string | null
           status: string
-          unidade_id: string | null
           valor: number
         }
         Insert: {
@@ -358,10 +358,10 @@ export type Database = {
           data_pagamento?: string | null
           data_realizacao?: string | null
           id?: string
+          organizacao_id?: string | null
           prestador_id?: string | null
           servico_id?: string | null
           status: string
-          unidade_id?: string | null
           valor: number
         }
         Update: {
@@ -375,10 +375,10 @@ export type Database = {
           data_pagamento?: string | null
           data_realizacao?: string | null
           id?: string
+          organizacao_id?: string | null
           prestador_id?: string | null
           servico_id?: string | null
           status?: string
-          unidade_id?: string | null
           valor?: number
         }
         Relationships: [
@@ -412,9 +412,9 @@ export type Database = {
           },
           {
             foreignKeyName: "guias_tenant_id_fkey"
-            columns: ["unidade_id"]
+            columns: ["organizacao_id"]
             isOneToOne: false
-            referencedRelation: "unidades"
+            referencedRelation: "organizacoes"
             referencedColumns: ["id"]
           },
         ]
@@ -426,9 +426,9 @@ export type Database = {
           created_at: string | null
           id: string
           lida: boolean | null
+          organizacao_id: string | null
           texto: string
           tipo: string
-          unidade_id: string | null
         }
         Insert: {
           cliente_id?: string | null
@@ -436,9 +436,9 @@ export type Database = {
           created_at?: string | null
           id?: string
           lida?: boolean | null
+          organizacao_id?: string | null
           texto: string
           tipo: string
-          unidade_id?: string | null
         }
         Update: {
           cliente_id?: string | null
@@ -446,9 +446,9 @@ export type Database = {
           created_at?: string | null
           id?: string
           lida?: boolean | null
+          organizacao_id?: string | null
           texto?: string
           tipo?: string
-          unidade_id?: string | null
         }
         Relationships: [
           {
@@ -467,9 +467,9 @@ export type Database = {
           },
           {
             foreignKeyName: "mensagens_tenant_id_fkey"
-            columns: ["unidade_id"]
+            columns: ["organizacao_id"]
             isOneToOne: false
-            referencedRelation: "unidades"
+            referencedRelation: "organizacoes"
             referencedColumns: ["id"]
           },
         ]
@@ -479,38 +479,38 @@ export type Database = {
           created_at: string
           id: string
           message: string
+          organizacao_id: string | null
           read_at: string | null
           title: string
           type: string
-          unidade_id: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
           message: string
+          organizacao_id?: string | null
           read_at?: string | null
           title: string
           type?: string
-          unidade_id?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
           message?: string
+          organizacao_id?: string | null
           read_at?: string | null
           title?: string
           type?: string
-          unidade_id?: string | null
           user_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "notifications_tenant_id_fkey"
-            columns: ["unidade_id"]
+            columns: ["organizacao_id"]
             isOneToOne: false
-            referencedRelation: "unidades"
+            referencedRelation: "organizacoes"
             referencedColumns: ["id"]
           },
         ]
@@ -522,11 +522,11 @@ export type Database = {
           data_validade: string
           id: string
           observacoes: string | null
+          organizacao_id: string | null
           percentual_desconto: number | null
           prestador_id: string | null
           servico_id: string | null
           status: string
-          unidade_id: string | null
           valor_custo: number
           valor_final: number
           valor_venda: number
@@ -538,11 +538,11 @@ export type Database = {
           data_validade: string
           id?: string
           observacoes?: string | null
+          organizacao_id?: string | null
           percentual_desconto?: number | null
           prestador_id?: string | null
           servico_id?: string | null
           status: string
-          unidade_id?: string | null
           valor_custo: number
           valor_final: number
           valor_venda: number
@@ -554,11 +554,11 @@ export type Database = {
           data_validade?: string
           id?: string
           observacoes?: string | null
+          organizacao_id?: string | null
           percentual_desconto?: number | null
           prestador_id?: string | null
           servico_id?: string | null
           status?: string
-          unidade_id?: string | null
           valor_custo?: number
           valor_final?: number
           valor_venda?: number
@@ -588,9 +588,9 @@ export type Database = {
           },
           {
             foreignKeyName: "orcamentos_tenant_id_fkey"
-            columns: ["unidade_id"]
+            columns: ["organizacao_id"]
             isOneToOne: false
-            referencedRelation: "unidades"
+            referencedRelation: "organizacoes"
             referencedColumns: ["id"]
           },
           {
@@ -602,6 +602,42 @@ export type Database = {
           },
         ]
       }
+      organizacoes: {
+        Row: {
+          codigo: string
+          configuracoes: Json | null
+          created_at: string
+          horario_funcionamento: Json | null
+          id: string
+          nome: string
+          status: string
+          tipo_organizacao: string
+          updated_at: string
+        }
+        Insert: {
+          codigo: string
+          configuracoes?: Json | null
+          created_at?: string
+          horario_funcionamento?: Json | null
+          id?: string
+          nome: string
+          status?: string
+          tipo_organizacao?: string
+          updated_at?: string
+        }
+        Update: {
+          codigo?: string
+          configuracoes?: Json | null
+          created_at?: string
+          horario_funcionamento?: Json | null
+          id?: string
+          nome?: string
+          status?: string
+          tipo_organizacao?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ponto_eletronico: {
         Row: {
           colaborador_id: string | null
@@ -611,8 +647,8 @@ export type Database = {
           hora_saida: string | null
           id: string
           observacao: string | null
+          organizacao_id: string | null
           tipo_ponto: string
-          unidade_id: string | null
         }
         Insert: {
           colaborador_id?: string | null
@@ -622,8 +658,8 @@ export type Database = {
           hora_saida?: string | null
           id?: string
           observacao?: string | null
+          organizacao_id?: string | null
           tipo_ponto: string
-          unidade_id?: string | null
         }
         Update: {
           colaborador_id?: string | null
@@ -633,8 +669,8 @@ export type Database = {
           hora_saida?: string | null
           id?: string
           observacao?: string | null
+          organizacao_id?: string | null
           tipo_ponto?: string
-          unidade_id?: string | null
         }
         Relationships: [
           {
@@ -646,9 +682,9 @@ export type Database = {
           },
           {
             foreignKeyName: "ponto_eletronico_tenant_id_fkey"
-            columns: ["unidade_id"]
+            columns: ["organizacao_id"]
             isOneToOne: false
-            referencedRelation: "unidades"
+            referencedRelation: "organizacoes"
             referencedColumns: ["id"]
           },
         ]
@@ -667,10 +703,10 @@ export type Database = {
           especialidades: string[] | null
           id: string
           nome: string
+          organizacao_id: string | null
           telefone: string
           tipo: string
           tipo_conta: string | null
-          unidade_id: string | null
         }
         Insert: {
           agencia?: string | null
@@ -685,10 +721,10 @@ export type Database = {
           especialidades?: string[] | null
           id?: string
           nome: string
+          organizacao_id?: string | null
           telefone: string
           tipo: string
           tipo_conta?: string | null
-          unidade_id?: string | null
         }
         Update: {
           agencia?: string | null
@@ -703,17 +739,17 @@ export type Database = {
           especialidades?: string[] | null
           id?: string
           nome?: string
+          organizacao_id?: string | null
           telefone?: string
           tipo?: string
           tipo_conta?: string | null
-          unidade_id?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "prestadores_tenant_id_fkey"
-            columns: ["unidade_id"]
+            columns: ["organizacao_id"]
             isOneToOne: false
-            referencedRelation: "unidades"
+            referencedRelation: "organizacoes"
             referencedColumns: ["id"]
           },
         ]
@@ -727,9 +763,9 @@ export type Database = {
           id: string
           nivel_acesso: string
           nome: string | null
+          organizacao_id: string | null
           prestador_id: string | null
           status: string | null
-          unidade_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -740,9 +776,9 @@ export type Database = {
           id: string
           nivel_acesso?: string
           nome?: string | null
+          organizacao_id?: string | null
           prestador_id?: string | null
           status?: string | null
-          unidade_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -753,9 +789,9 @@ export type Database = {
           id?: string
           nivel_acesso?: string
           nome?: string | null
+          organizacao_id?: string | null
           prestador_id?: string | null
           status?: string | null
-          unidade_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -775,9 +811,9 @@ export type Database = {
           },
           {
             foreignKeyName: "profiles_tenant_id_fkey"
-            columns: ["unidade_id"]
+            columns: ["organizacao_id"]
             isOneToOne: false
-            referencedRelation: "unidades"
+            referencedRelation: "organizacoes"
             referencedColumns: ["id"]
           },
         ]
@@ -829,9 +865,9 @@ export type Database = {
           descricao: string | null
           id: string
           nome: string
+          organizacao_id: string | null
           prestador_id: string | null
           tempo_estimado: string | null
-          unidade_id: string | null
           valor_custo: number
           valor_venda: number
         }
@@ -842,9 +878,9 @@ export type Database = {
           descricao?: string | null
           id?: string
           nome: string
+          organizacao_id?: string | null
           prestador_id?: string | null
           tempo_estimado?: string | null
-          unidade_id?: string | null
           valor_custo: number
           valor_venda: number
         }
@@ -855,9 +891,9 @@ export type Database = {
           descricao?: string | null
           id?: string
           nome?: string
+          organizacao_id?: string | null
           prestador_id?: string | null
           tempo_estimado?: string | null
-          unidade_id?: string | null
           valor_custo?: number
           valor_venda?: number
         }
@@ -871,112 +907,9 @@ export type Database = {
           },
           {
             foreignKeyName: "servicos_tenant_id_fkey"
-            columns: ["unidade_id"]
+            columns: ["organizacao_id"]
             isOneToOne: false
-            referencedRelation: "unidades"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      unidade_invites: {
-        Row: {
-          accepted_at: string | null
-          created_at: string
-          email: string
-          expires_at: string
-          id: string
-          invited_by: string
-          nivel_acesso: string
-          nome: string
-          status: string
-          token: string
-          unidade_id: string
-        }
-        Insert: {
-          accepted_at?: string | null
-          created_at?: string
-          email: string
-          expires_at?: string
-          id?: string
-          invited_by: string
-          nivel_acesso?: string
-          nome: string
-          status?: string
-          token?: string
-          unidade_id: string
-        }
-        Update: {
-          accepted_at?: string | null
-          created_at?: string
-          email?: string
-          expires_at?: string
-          id?: string
-          invited_by?: string
-          nivel_acesso?: string
-          nome?: string
-          status?: string
-          token?: string
-          unidade_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "tenant_invites_tenant_id_fkey"
-            columns: ["unidade_id"]
-            isOneToOne: false
-            referencedRelation: "unidades"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      unidades: {
-        Row: {
-          codigo: string
-          configuracoes: Json | null
-          created_at: string
-          gerente_responsavel_id: string | null
-          horario_funcionamento: Json | null
-          id: string
-          meta_mensal_vendas: number | null
-          nome: string
-          status: string
-          tipo: string
-          unidade_matriz_id: string | null
-          updated_at: string
-        }
-        Insert: {
-          codigo: string
-          configuracoes?: Json | null
-          created_at?: string
-          gerente_responsavel_id?: string | null
-          horario_funcionamento?: Json | null
-          id?: string
-          meta_mensal_vendas?: number | null
-          nome: string
-          status?: string
-          tipo?: string
-          unidade_matriz_id?: string | null
-          updated_at?: string
-        }
-        Update: {
-          codigo?: string
-          configuracoes?: Json | null
-          created_at?: string
-          gerente_responsavel_id?: string | null
-          horario_funcionamento?: Json | null
-          id?: string
-          meta_mensal_vendas?: number | null
-          nome?: string
-          status?: string
-          tipo?: string
-          unidade_matriz_id?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "tenants_tenant_pai_id_fkey"
-            columns: ["unidade_matriz_id"]
-            isOneToOne: false
-            referencedRelation: "unidades"
+            referencedRelation: "organizacoes"
             referencedColumns: ["id"]
           },
         ]
@@ -1021,8 +954,8 @@ export type Database = {
           id: string
           metodo_pagamento: string
           observacoes: string | null
+          organizacao_id: string | null
           status: string
-          unidade_id: string | null
           valor_total: number
         }
         Insert: {
@@ -1031,8 +964,8 @@ export type Database = {
           id?: string
           metodo_pagamento: string
           observacoes?: string | null
+          organizacao_id?: string | null
           status?: string
-          unidade_id?: string | null
           valor_total: number
         }
         Update: {
@@ -1041,8 +974,8 @@ export type Database = {
           id?: string
           metodo_pagamento?: string
           observacoes?: string | null
+          organizacao_id?: string | null
           status?: string
-          unidade_id?: string | null
           valor_total?: number
         }
         Relationships: [
@@ -1055,9 +988,9 @@ export type Database = {
           },
           {
             foreignKeyName: "vendas_tenant_id_fkey"
-            columns: ["unidade_id"]
+            columns: ["organizacao_id"]
             isOneToOne: false
-            referencedRelation: "unidades"
+            referencedRelation: "organizacoes"
             referencedColumns: ["id"]
           },
         ]
@@ -1068,10 +1001,10 @@ export type Database = {
           data_agendamento: string | null
           horario: string | null
           id: string
+          organizacao_id: string | null
           prestador_id: string
           servico_id: string
           status: string
-          unidade_id: string | null
           valor: number
           venda_id: string
         }
@@ -1080,10 +1013,10 @@ export type Database = {
           data_agendamento?: string | null
           horario?: string | null
           id?: string
+          organizacao_id?: string | null
           prestador_id: string
           servico_id: string
           status?: string
-          unidade_id?: string | null
           valor: number
           venda_id: string
         }
@@ -1092,10 +1025,10 @@ export type Database = {
           data_agendamento?: string | null
           horario?: string | null
           id?: string
+          organizacao_id?: string | null
           prestador_id?: string
           servico_id?: string
           status?: string
-          unidade_id?: string | null
           valor?: number
           venda_id?: string
         }
@@ -1116,9 +1049,9 @@ export type Database = {
           },
           {
             foreignKeyName: "vendas_servicos_tenant_id_fkey"
-            columns: ["unidade_id"]
+            columns: ["organizacao_id"]
             isOneToOne: false
-            referencedRelation: "unidades"
+            referencedRelation: "organizacoes"
             referencedColumns: ["id"]
           },
           {
@@ -1141,18 +1074,18 @@ export type Database = {
       }
       create_audit_log: {
         Args: {
-          target_user_id: string
-          action_type: string
           action_details?: Json
+          action_type: string
+          target_user_id: string
         }
         Returns: string
       }
       create_notification: {
         Args: {
-          target_user_id: string
-          notification_title: string
           notification_message: string
+          notification_title: string
           notification_type?: string
+          target_user_id: string
         }
         Returns: string
       }
@@ -1163,37 +1096,18 @@ export type Database = {
       get_ultimo_ponto_colaborador: {
         Args: { colaborador_uuid: string }
         Returns: {
-          tipo_ponto: string
-          data_ponto: string
           created_at: string
+          data_ponto: string
+          tipo_ponto: string
         }[]
       }
-      get_user_level: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_user_tenant_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_user_unidade_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      is_admin_or_manager: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_user_active: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      get_user_level: { Args: never; Returns: string }
+      get_user_organizacao_id: { Args: never; Returns: string }
+      get_user_unidade_id: { Args: never; Returns: string }
+      is_admin_or_manager: { Args: never; Returns: boolean }
+      is_user_active: { Args: never; Returns: boolean }
       ja_bateu_ponto_hoje: {
         Args: { colaborador_uuid: string }
-        Returns: boolean
-      }
-      user_has_tenant_access: {
-        Args: { target_tenant_id: string }
         Returns: boolean
       }
       user_has_unidade_access: {
