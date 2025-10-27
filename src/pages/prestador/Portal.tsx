@@ -1,4 +1,3 @@
-
 import React from "react";
 import { 
   Card, 
@@ -11,16 +10,37 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StatCard from "@/components/dashboard/StatCard";
 import { Calendar, FileText, MessageSquare, Star, Users, DollarSign } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { useProviderData } from "@/hooks/tenant-specific/useProvider";
+import { useAuth } from "@/contexts/AuthContext";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import AgendaOnline from "@/components/prestadores/AgendaOnline";
 import PainelFaturamento from "@/components/prestadores/PainelFaturamento";
 import AvaliacoesFeedback from "@/components/prestadores/AvaliacoesFeedback";
 import ChatIntegrado from "@/components/prestadores/ChatIntegrado";
 
 const PortalPrestador = () => {
-  const { data: prestadorData, isLoading } = useProviderData();
+  const { profile } = useAuth();
+
+  // Buscar dados do prestador baseado no profile.prestador_id
+  const { data: prestadorData, isLoading } = useQuery({
+    queryKey: ['prestador-data', profile?.prestador_id],
+    queryFn: async () => {
+      if (!profile?.prestador_id) return null;
+      
+      const { data, error } = await supabase
+        .from('prestadores')
+        .select(`
+          *,
+          guias:guias(*)
+        `)
+        .eq('id', profile.prestador_id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!profile?.prestador_id,
+  });
 
   if (isLoading) {
     return (
@@ -47,9 +67,9 @@ const PortalPrestador = () => {
 
   // Métricas calculadas
   const totalGuias = prestadorData.guias?.length || 0;
-  const guiasPendentes = prestadorData.guias?.filter(g => g.status === 'pendente').length || 0;
-  const faturamentoMensal = prestadorData.guias?.reduce((sum, g) => sum + Number(g.valor), 0) || 0;
-  const avaliacaoMedia = 4.7; // Mock data - implementar cálculo real
+  const guiasPendentes = prestadorData.guias?.filter((g: any) => g.status === 'emitida').length || 0;
+  const faturamentoMensal = prestadorData.guias?.reduce((sum: number, g: any) => sum + Number(g.valor), 0) || 0;
+  const avaliacaoMedia = 4.7; // Mock data - implementar sistema de avaliações
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -58,7 +78,7 @@ const PortalPrestador = () => {
           Bem-vindo, {prestadorData.nome}!
         </h2>
         <p className="text-gray-500 mt-1">
-          Gerencie suas atividades e serviços na plataforma AGENDAJA
+          Gerencie suas atividades e serviços no Hub AGENDAJA
         </p>
       </div>
       

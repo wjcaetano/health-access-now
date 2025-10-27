@@ -1,4 +1,3 @@
-
 import React from "react";
 import { MenuItem } from "../MenuItems";
 import { 
@@ -11,10 +10,12 @@ import {
   Package,
   Calculator,
   UserCog,
-  Settings
+  Settings,
+  Building2
 } from "lucide-react";
 
-export const unidadeMenuItems: MenuItem[] = [
+// Menu unificado para o Hub AGENDAJA (modelo centralizado)
+export const hubMenuItems: MenuItem[] = [
   {
     title: "Dashboard",
     icon: BarChart3,
@@ -46,7 +47,7 @@ export const unidadeMenuItems: MenuItem[] = [
     roles: ["atendente", "gerente", "admin"]
   },
   {
-    title: "Prestadores Locais",
+    title: "Prestadores",
     icon: Stethoscope,
     href: "/unidade/prestadores",
     roles: ["gerente", "admin"]
@@ -68,6 +69,12 @@ export const unidadeMenuItems: MenuItem[] = [
     icon: UserCog,
     href: "/unidade/colaboradores",
     roles: ["gerente", "admin"]
+  },
+  {
+    title: "Organizações",
+    icon: Building2,
+    href: "/unidade/organizacoes",
+    roles: ["admin"]
   },
   {
     title: "Configurações",

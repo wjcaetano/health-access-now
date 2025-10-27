@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import HeaderVendas from "@/components/vendas/HeaderVendas";
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import SelecaoUnidadeModal from "@/components/vendas/SelecaoUnidadeModal";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Login from "@/pages/auth/Login";
 import { useState } from "react";
 
@@ -28,14 +27,12 @@ const ExamesDeImagem = () => {
                         ))}
                     </div>
                 </div>
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button size="lg">
-                            Agendar Exame de Imagem
-                        </Button>
-                    </DialogTrigger>
-                    <SelecaoUnidadeModal tipoServico="Exame de Imagem" />
-                </Dialog>
+                <Button 
+                  size="lg"
+                  onClick={() => window.location.href = '/unidade/agendamentos'}
+                >
+                  Agendar Exame de Imagem
+                </Button>
             </main>
             <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
                 <DialogContent className="max-w-md p-0 bg-transparent shadow-none border-none">

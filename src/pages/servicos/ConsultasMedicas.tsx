@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
 import HeaderVendas from "@/components/vendas/HeaderVendas";
 import { Stethoscope } from "lucide-react";
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import SelecaoUnidadeModal from "@/components/vendas/SelecaoUnidadeModal";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Login from "@/pages/auth/Login";
 import { useState } from "react";
 
@@ -56,14 +55,12 @@ const ConsultasMedicas = () => {
                         ))}
                     </div>
                 </div>
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button size="lg">
-                            Agendar Consulta
-                        </Button>
-                    </DialogTrigger>
-                    <SelecaoUnidadeModal tipoServico="Consulta Médica" />
-                </Dialog>
+                <Button 
+                  size="lg"
+                  onClick={() => window.location.href = '/unidade/agendamentos'}
+                >
+                  Agendar Consulta
+                </Button>
             </main>
             <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
                 <DialogContent className="max-w-md p-0 bg-transparent shadow-none border-none">

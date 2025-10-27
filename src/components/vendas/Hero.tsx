@@ -1,11 +1,9 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { User, Play, CheckCircle } from "lucide-react";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import SelecaoUnidadeModal from "@/components/vendas/SelecaoUnidadeModal";
+
 const Hero = () => {
-  const [modalOpen, setModalOpen] = useState(false);
-  return <section className="w-full px-4 pt-20 pb-16 bg-gradient-to-br from-agendaja-background via-agendaja-surface to-agendaja-light">
+  return (
+    <section className="w-full px-4 pt-20 pb-16 bg-gradient-to-br from-agendaja-background via-agendaja-surface to-agendaja-light">
       <div className="container mx-auto max-w-7xl">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Lado esquerdo - Conteúdo */}
@@ -44,19 +42,21 @@ const Hero = () => {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-                <DialogTrigger asChild>
-                  <Button size="lg" className="text-lg px-8 py-4 bg-gradient-to-r from-agendaja-primary to-agendaja-secondary text-white hover:from-agendaja-primary/90 hover:to-agendaja-secondary/90 shadow-lg transition-all duration-300 hover:scale-105 border-none" onClick={() => setModalOpen(true)}>
-                    <User className="mr-2 w-5 h-5" /> 
-                    Agendar Agora
-                  </Button>
-                </DialogTrigger>
-                <SelecaoUnidadeModal tipoServico="Consulta ou Exame" />
-              </Dialog>
+              <Button 
+                size="lg" 
+                className="text-lg px-8 py-4 bg-gradient-to-r from-agendaja-primary to-agendaja-secondary text-white hover:from-agendaja-primary/90 hover:to-agendaja-secondary/90 shadow-lg transition-all duration-300 hover:scale-105 border-none" 
+                onClick={() => window.location.href = '/unidade/agendamentos'}
+              >
+                <User className="mr-2 w-5 h-5" /> 
+                Agendar Agora
+              </Button>
               
-              <Button variant="outline" size="lg" className="text-lg px-8 py-4 border-2 border-agendaja-primary text-agendaja-primary bg-agendaja-surface hover:bg-agendaja-primary hover:text-white transition-all duration-300" onClick={() => document.getElementById('como-funciona')?.scrollIntoView({
-              behavior: 'smooth'
-            })}>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="text-lg px-8 py-4 border-2 border-agendaja-primary text-agendaja-primary bg-agendaja-surface hover:bg-agendaja-primary hover:text-white transition-all duration-300" 
+                onClick={() => document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' })}
+              >
                 <Play className="mr-2 w-5 h-5" />
                 Como Funciona
               </Button>
@@ -67,7 +67,14 @@ const Hero = () => {
               <p className="text-sm text-agendaja-text-secondary mb-4">Mais de 50.000 pessoas já confiaram na Agenda Já</p>
               <div className="flex items-center gap-4">
                 <div className="flex -space-x-2">
-                  {[1, 2, 3, 4, 5].map(i => <img key={i} src={`https://randomuser.me/api/portraits/${i % 2 === 0 ? 'women' : 'men'}/${20 + i}.jpg`} alt="Cliente satisfeito" className="w-10 h-10 rounded-full border-2 border-agendaja-surface" />)}
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <img 
+                      key={i} 
+                      src={`https://randomuser.me/api/portraits/${i % 2 === 0 ? 'women' : 'men'}/${20 + i}.jpg`} 
+                      alt="Cliente satisfeito" 
+                      className="w-10 h-10 rounded-full border-2 border-agendaja-surface" 
+                    />
+                  ))}
                 </div>
                 <div className="flex text-yellow-400">
                   {[1, 2, 3, 4, 5].map(i => <span key={i}>⭐</span>)}
@@ -80,8 +87,12 @@ const Hero = () => {
           {/* Lado direito - Imagem */}
           <div className="relative lg:mt-0 mt-12">
             <div className="relative z-10">
-              <img alt="Família feliz e saudável" className="w-full h-auto rounded-2xl shadow-2xl" src="/lovable-uploads/62ef4ecf-40de-4ea2-a21e-ed31123e2898.jpg" />
-              {/* Floating card - Voltando para esquerda inferior */}
+              <img 
+                alt="Família feliz e saudável" 
+                className="w-full h-auto rounded-2xl shadow-2xl" 
+                src="/lovable-uploads/62ef4ecf-40de-4ea2-a21e-ed31123e2898.jpg" 
+              />
+              {/* Floating card */}
               <div className="absolute -bottom-4 -left-4 sm:-bottom-6 sm:-left-6 lg:-bottom-8 lg:-left-8 bg-agendaja-surface p-4 sm:p-6 rounded-xl shadow-xl border border-agendaja-border max-w-[280px] sm:max-w-xs">
                 <div className="flex items-center space-x-3 sm:space-x-4">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-agendaja-success/10 rounded-full flex items-center justify-center flex-shrink-0">
@@ -99,6 +110,8 @@ const Hero = () => {
           </div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default Hero;

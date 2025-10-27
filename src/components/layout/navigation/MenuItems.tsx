@@ -2,7 +2,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { unidadeMenuItems } from "./menus/UnidadeMenu";
+import { hubMenuItems } from "./menus/HubMenu";
 import { prestadorMenuItems } from "./menus/PrestadorMenuSimplified";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +27,7 @@ const MenuItems: React.FC<MenuItemsProps> = React.memo(({ onItemClick }) => {
     }
     
     if (["admin", "gerente", "atendente", "colaborador"].includes(profile?.nivel_acesso || "")) {
-      return unidadeMenuItems;
+      return hubMenuItems;
     }
     
     return [];

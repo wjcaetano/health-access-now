@@ -17,7 +17,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
-import { unidadeMenuItems } from "./navigation/menus/UnidadeMenu";
+import { hubMenuItems } from "./navigation/menus/HubMenu";
 import { prestadorMenuItems } from "./navigation/menus/PrestadorMenuSimplified";
 
 interface AppSidebarProps {
@@ -30,7 +30,7 @@ export default function AppSidebar({ userProfile }: AppSidebarProps) {
   const { state } = useSidebar();
   
   // Determinar qual menu mostrar baseado no perfil do usuário
-  const menuItems = userProfile === "prestador" ? prestadorMenuItems : unidadeMenuItems;
+  const menuItems = userProfile === "prestador" ? prestadorMenuItems : hubMenuItems;
   
   // Verificar se é gerente ou admin para mostrar opções administrativas
   const isManagerOrAdmin = ['gerente', 'admin'].includes(profile?.nivel_acesso || '');
@@ -62,7 +62,7 @@ export default function AppSidebar({ userProfile }: AppSidebarProps) {
       <SidebarContent className="flex-1 px-2 py-4">
         <SidebarGroup>
           <SidebarGroupLabel className="text-xs uppercase tracking-wider text-sidebar-foreground/60 mb-2">
-            {userProfile === "prestador" ? "Prestador" : "Unidade"}
+            {userProfile === "prestador" ? "Prestador" : "Hub AGENDAJA"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -101,7 +101,7 @@ export default function AppSidebar({ userProfile }: AppSidebarProps) {
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {unidadeMenuItems
+                {hubMenuItems
                   .filter(item => item.roles?.includes('gerente') || item.roles?.includes('admin'))
                   .map((item) => (
                   <SidebarMenuItem key={`admin-${item.title}`}>

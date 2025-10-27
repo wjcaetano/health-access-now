@@ -17,7 +17,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
         nivel_acesso,
         colaborador_id,
         prestador_id,
-        unidade_id,
+        organizacao_id,
         status,
         foto_url
       `)
@@ -38,7 +38,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       nivel_acesso: data.nivel_acesso as 'colaborador' | 'atendente' | 'gerente' | 'admin' | 'prestador',
       colaborador_id: data.colaborador_id,
       prestador_id: data.prestador_id,
-      unidade_id: data.unidade_id,
+      organizacao_id: data.organizacao_id,
       status: data.status as 'pendente' | 'aguardando_aprovacao' | 'ativo' | 'suspenso' | 'inativo',
       foto_url: data.foto_url,
     };

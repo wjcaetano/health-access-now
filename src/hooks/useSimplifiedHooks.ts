@@ -1,48 +1,41 @@
-// Hooks simplificados para resolver problemas de tipos complexos
+// Hooks simplificados para dados centralizados (sem filtros de tenant)
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-// Hook simplificado para dados básicos das unidades
-export function useUnidadeData(unidadeId?: string) {
+// Hook para dados de organizações
+export function useOrganizacoes() {
   return useQuery({
-    queryKey: ["unidade-data", unidadeId],
+    queryKey: ["organizacoes"],
     queryFn: async () => {
-      if (!unidadeId) return null;
-      
       const { data, error } = await supabase
-        .from("unidades")
+        .from("organizacoes")
         .select("*")
-        .eq("id", unidadeId)
-        .single();
+        .order("nome");
       
       if (error) throw error;
       return data;
     },
-    enabled: !!unidadeId,
   });
 }
 
-// Hook simplificado para métricas básicas
-export function useUnidadeMetrics(unidadeId?: string) {
+// Hook simplificado para métricas globais
+export function useMetricasGlobais() {
   return useQuery({
-    queryKey: ["unidade-metrics", unidadeId],
+    queryKey: ["metricas-globais"],
     queryFn: async () => {
-      if (!unidadeId) return null;
-      
-      // Busca dados básicos de vendas, clientes e prestadores
+      // Busca dados básicos de vendas, clientes e prestadores (SEM FILTRO DE UNIDADE)
       const [vendas, clientes, prestadores] = await Promise.all([
-        supabase.from("vendas").select("valor_total").eq("unidade_id", unidadeId),
-        supabase.from("clientes").select("id").eq("unidade_id", unidadeId),
-        supabase.from("prestadores").select("id").eq("unidade_id", unidadeId).eq("ativo", true)
+        supabase.from("vendas").select("valor_total"),
+        supabase.from("clientes").select("id"),
+        supabase.from("prestadores").select("id").eq("ativo", true)
       ]);
 
       return {
         totalVendas: vendas.data?.length || 0,
-        faturamentoMensal: vendas.data?.reduce((sum, v) => sum + Number(v.valor_total), 0) || 0,
-        clientesAtivos: clientes.data?.length || 0,
-        prestadoresAtivos: prestadores.data?.length || 0
+        faturamentoTotal: vendas.data?.reduce((sum, v) => sum + Number(v.valor_total), 0) || 0,
+        totalClientes: clientes.data?.length || 0,
+        totalPrestadores: prestadores.data?.length || 0
       };
     },
-    enabled: !!unidadeId,
   });
 }

@@ -1,7 +1,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useTenant } from "@/contexts/TenantContext";
 
 const VENDAS_QUERY_KEY = "vendas";
 
@@ -17,22 +16,14 @@ const VENDAS_SELECT = `
 `;
 
 export function useVendas(limit = 50) {
-  const { currentTenant } = useTenant();
-  
   return useQuery({
-    queryKey: [VENDAS_QUERY_KEY, currentTenant?.id, limit],
+    queryKey: [VENDAS_QUERY_KEY, limit],
     queryFn: async () => {
-      let query = supabase
+      const { data, error } = await supabase
         .from("vendas")
         .select(VENDAS_SELECT)
         .order("created_at", { ascending: false })
         .limit(limit);
-      
-      if (currentTenant?.id) {
-        query = query.eq("unidade_id", currentTenant.id);
-      }
-      
-      const { data, error } = await query;
       
       if (error) throw error;
       return data;
@@ -40,33 +31,24 @@ export function useVendas(limit = 50) {
     staleTime: 5 * 60 * 1000, // 5 minutos
     gcTime: 10 * 60 * 1000, // 10 minutos
     refetchOnWindowFocus: false,
-    enabled: !!currentTenant?.id,
   });
 }
 
 export function useVendasPorCliente(clienteId: string, limit = 20) {
-  const { currentTenant } = useTenant();
-  
   return useQuery({
-    queryKey: [VENDAS_QUERY_KEY, "cliente", clienteId, currentTenant?.id, limit],
+    queryKey: [VENDAS_QUERY_KEY, "cliente", clienteId, limit],
     queryFn: async () => {
-      let query = supabase
+      const { data, error } = await supabase
         .from("vendas")
         .select(VENDAS_SELECT)
         .eq("cliente_id", clienteId)
         .order("created_at", { ascending: false })
         .limit(limit);
       
-      if (currentTenant?.id) {
-        query = query.eq("unidade_id", currentTenant.id);
-      }
-      
-      const { data, error } = await query;
-      
       if (error) throw error;
       return data;
     },
-    enabled: !!clienteId && !!currentTenant?.id,
+    enabled: !!clienteId,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,

@@ -7,7 +7,7 @@ export interface UserProfile {
   nome?: string;
   nivel_acesso: 'colaborador' | 'atendente' | 'gerente' | 'admin' | 'prestador';
   status: 'pendente' | 'aguardando_aprovacao' | 'ativo' | 'suspenso' | 'inativo';
-  unidade_id?: string;
+  organizacao_id?: string;
   colaborador_id?: string;
   prestador_id?: string;
   foto_url?: string;

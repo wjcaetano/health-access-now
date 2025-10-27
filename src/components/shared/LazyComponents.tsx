@@ -12,7 +12,6 @@ export const LazyColaboradores = lazy(() => import('@/pages/Colaboradores'));
 
 // Lazy loading para componentes dashboard
 export const LazyAdvancedDashboard = lazy(() => import('@/components/dashboard/AdvancedDashboard'));
-export const LazyDashboardOperacional = lazy(() => import('@/components/dashboard/unidade/DashboardOperacional'));
 
 // Lazy loading para listas
 export const LazyClientesLista = lazy(() => import('@/components/clientes/ClientesLista'));
