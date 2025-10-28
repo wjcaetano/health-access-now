@@ -9,59 +9,60 @@ import {
   Calendar,
   FileText
 } from "lucide-react";
+import { PROVIDER_ROUTES, CLIENT_ROUTES } from "@/lib/routes";
 
-// Menu para prestadores
+// Menu para prestadores (usando novas rotas padronizadas)
 export const prestadorMenuItems: MenuItem[] = [
   {
-    title: "Portal",
+    title: "Dashboard",
     icon: BarChart3,
-    href: "/prestador/portal",
+    href: PROVIDER_ROUTES.ROOT,
     roles: ["prestador"]
   },
   {
     title: "Minhas Guias",
     icon: ClipboardList,
-    href: "/prestador/guias",
+    href: PROVIDER_ROUTES.GUIDES,
     roles: ["prestador"]
   },
   {
     title: "Faturamento",
     icon: DollarSign,
-    href: "/prestador/faturamento",
+    href: PROVIDER_ROUTES.BILLING,
     roles: ["prestador"]
   },
   {
     title: "Meu Perfil",
     icon: User,
-    href: "/prestador/perfil",
+    href: PROVIDER_ROUTES.PROFILE,
     roles: ["prestador"]
   }
 ];
 
-// Menu para clientes
+// Menu para clientes (usando novas rotas padronizadas)
 export const clienteMenuItems: MenuItem[] = [
   {
-    title: "Meu Portal",
+    title: "Início",
     icon: Home,
-    href: "/cliente/dashboard",
+    href: CLIENT_ROUTES.ROOT,
     roles: ["cliente"]
   },
   {
     title: "Meus Agendamentos",
     icon: Calendar,
-    href: "/cliente/agendamentos",
+    href: CLIENT_ROUTES.APPOINTMENTS,
     roles: ["cliente"]
   },
   {
     title: "Meus Orçamentos",
     icon: FileText,
-    href: "/cliente/orcamentos",
+    href: CLIENT_ROUTES.QUOTES,
     roles: ["cliente"]
   },
   {
     title: "Meu Perfil",
     icon: User,
-    href: "/hub/meu-perfil",
+    href: CLIENT_ROUTES.PROFILE,
     roles: ["cliente"]
   }
 ];

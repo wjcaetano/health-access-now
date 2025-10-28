@@ -6,6 +6,7 @@ import Layout from "@/components/layout/Layout";
 import PortalErrorBoundary from "@/components/shared/PortalErrorBoundary";
 import SuspenseWrapper from "@/components/shared/SuspenseWrapper";
 import { useHasRole } from "@/hooks/useUserRoles";
+import { PROVIDER_ROUTES } from "@/lib/routes";
 
 // Páginas específicas do prestador
 import { 
@@ -27,28 +28,35 @@ const PrestadorPortal: React.FC = () => {
     <PortalErrorBoundary portalType="prestador">
       <Layout>
         <Routes>
-          <Route index element={<Navigate to="portal" replace />} />
-          <Route path="portal" element={
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={
             <SuspenseWrapper>
               <PortalPrestador />
             </SuspenseWrapper>
           } />
-          <Route path="guias" element={
+          <Route path="guides" element={
             <SuspenseWrapper>
               <GuiasPrestador />
             </SuspenseWrapper>
           } />
-          <Route path="faturamento" element={
+          <Route path="billing" element={
             <SuspenseWrapper>
               <FaturamentoPrestador />
             </SuspenseWrapper>
           } />
-          <Route path="perfil" element={
+          <Route path="profile" element={
             <SuspenseWrapper>
               <MeuPerfil />
             </SuspenseWrapper>
           } />
-          <Route path="*" element={<Navigate to="portal" replace />} />
+          
+          {/* Legacy redirects */}
+          <Route path="portal" element={<Navigate to={PROVIDER_ROUTES.ROOT} replace />} />
+          <Route path="guias" element={<Navigate to={PROVIDER_ROUTES.GUIDES} replace />} />
+          <Route path="faturamento" element={<Navigate to={PROVIDER_ROUTES.BILLING} replace />} />
+          <Route path="perfil" element={<Navigate to={PROVIDER_ROUTES.PROFILE} replace />} />
+          
+          <Route path="*" element={<Navigate to="dashboard" replace />} />
         </Routes>
       </Layout>
     </PortalErrorBoundary>

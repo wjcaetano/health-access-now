@@ -1,109 +1,114 @@
 import React from "react";
 import { MenuItem } from "../MenuItems";
-import { 
-  BarChart3,
-  DollarSign,
+import {
+  LayoutDashboard,
+  ShoppingCart,
   Calendar,
   FileText,
   Users,
   Stethoscope,
   Package,
-  Calculator,
+  DollarSign,
   UserCog,
+  Building2,
+  BarChart3,
   Settings,
-  Building2
+  Store,
+  TrendingUp,
+  Search,
 } from "lucide-react";
+import { HUB_ROUTES } from "@/lib/routes";
 
-// Menu unificado para o Hub AGENDAJA (modelo centralizado)
+// Menu items para o Hub AGENDAJA (usando novas rotas padronizadas)
 export const hubMenuItems: MenuItem[] = [
   {
-    title: "Dashboard",
-    icon: BarChart3,
-    href: "/hub/dashboard",
-    roles: ["atendente", "gerente", "admin"]
+    title: "Overview",
+    icon: LayoutDashboard,
+    href: HUB_ROUTES.ROOT,
+    roles: ["admin", "gerente", "atendente", "colaborador"],
   },
   {
-    title: "Dashboard Estratégico",
-    icon: BarChart3,
-    href: "/hub/dashboard-estrategico",
-    roles: ["gerente", "admin"]
+    title: "Analytics",
+    icon: TrendingUp,
+    href: HUB_ROUTES.ANALYTICS,
+    roles: ["admin", "gerente"],
   },
   {
     title: "Vendas",
-    icon: DollarSign,
-    href: "/hub/vendas",
-    roles: ["atendente", "gerente", "admin"]
+    icon: ShoppingCart,
+    href: HUB_ROUTES.SALES,
+    roles: ["admin", "gerente", "atendente"],
   },
   {
     title: "Agendamentos",
     icon: Calendar,
-    href: "/hub/agendamentos",
-    roles: ["atendente", "gerente", "admin"]
+    href: HUB_ROUTES.APPOINTMENTS,
+    roles: ["admin", "gerente", "atendente"],
   },
   {
     title: "Orçamentos",
     icon: FileText,
-    href: "/hub/orcamentos",
-    roles: ["atendente", "gerente", "admin"]
+    href: HUB_ROUTES.QUOTES,
+    roles: ["admin", "gerente", "atendente"],
   },
   {
     title: "Clientes",
     icon: Users,
-    href: "/hub/clientes",
-    roles: ["atendente", "gerente", "admin"]
+    href: HUB_ROUTES.CUSTOMERS,
+    roles: ["admin", "gerente", "atendente"],
   },
   {
     title: "Prestadores",
     icon: Stethoscope,
-    href: "/hub/prestadores",
-    roles: ["gerente", "admin"]
+    href: HUB_ROUTES.PROVIDERS,
+    roles: ["admin", "gerente"],
   },
   {
     title: "Buscar Prestadores",
-    icon: Stethoscope,
-    href: "/hub/buscar-prestadores",
-    roles: ["atendente", "gerente", "admin"]
+    icon: Search,
+    href: HUB_ROUTES.PROVIDERS_SEARCH,
+    roles: ["admin", "gerente"],
   },
   {
     title: "Marketplace",
-    icon: Package,
-    href: "/hub/marketplace",
-    roles: ["atendente", "gerente", "admin"]
+    icon: Store,
+    href: HUB_ROUTES.SERVICES_MARKETPLACE,
+    roles: ["admin", "gerente", "atendente"],
   },
   {
     title: "Serviços",
     icon: Package,
-    href: "/hub/servicos",
-    roles: ["gerente", "admin"]
+    href: HUB_ROUTES.SERVICES,
+    roles: ["admin", "gerente"],
   },
   {
     title: "Financeiro",
-    icon: Calculator,
-    href: "/hub/financeiro",
-    roles: ["gerente", "admin"]
+    icon: DollarSign,
+    href: HUB_ROUTES.FINANCE,
+    roles: ["admin", "gerente"],
   },
   {
     title: "Colaboradores",
     icon: UserCog,
-    href: "/hub/colaboradores",
-    roles: ["gerente", "admin"]
+    href: HUB_ROUTES.TEAM,
+    roles: ["admin", "gerente"],
   },
   {
     title: "Organizações",
     icon: Building2,
-    href: "/hub/organizacoes",
-    roles: ["admin"]
+    href: HUB_ROUTES.ORGANIZATIONS,
+    roles: ["admin"],
   },
   {
     title: "Relatórios",
-    icon: FileText,
-    href: "/hub/relatorios",
-    roles: ["gerente", "admin"]
+    icon: BarChart3,
+    href: HUB_ROUTES.REPORTS,
+    roles: ["admin", "gerente"],
   },
   {
     title: "Configurações",
     icon: Settings,
-    href: "/hub/configuracoes",
-    roles: ["admin"]
-  }
+    href: HUB_ROUTES.SETTINGS,
+    roles: ["admin"],
+  },
 ];

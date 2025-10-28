@@ -3,21 +3,22 @@
  */
 
 import { AppRole } from "@/hooks/useUserRoles";
+import { HUB_ROUTES, PROVIDER_ROUTES, CLIENT_ROUTES } from "./routes";
 
 /**
  * Retorna a rota do perfil baseada no role do usuário
  */
 export function getProfileRoute(userRole: string | AppRole): string {
   if (['admin', 'gerente', 'atendente', 'colaborador'].includes(userRole)) {
-    return '/hub/perfil';
+    return HUB_ROUTES.PROFILE;
   }
   if (userRole === 'prestador') {
-    return '/prestador/perfil';
+    return PROVIDER_ROUTES.PROFILE;
   }
   if (userRole === 'cliente') {
-    return '/cliente/perfil';
+    return CLIENT_ROUTES.PROFILE;
   }
-  return '/perfil';
+  return '/profile';
 }
 
 /**
@@ -26,7 +27,7 @@ export function getProfileRoute(userRole: string | AppRole): string {
  */
 export function getSettingsRoute(userRole: string | AppRole): string {
   if (['admin', 'gerente'].includes(userRole)) {
-    return '/hub/configuracoes';
+    return HUB_ROUTES.SETTINGS;
   }
   return '';
 }
@@ -36,13 +37,13 @@ export function getSettingsRoute(userRole: string | AppRole): string {
  */
 export function getDashboardRoute(userRole: string | AppRole): string {
   if (['admin', 'gerente', 'atendente', 'colaborador'].includes(userRole)) {
-    return '/hub/dashboard';
+    return HUB_ROUTES.ROOT;
   }
   if (userRole === 'prestador') {
-    return '/prestador/portal';
+    return PROVIDER_ROUTES.ROOT;
   }
   if (userRole === 'cliente') {
-    return '/cliente/dashboard';
+    return CLIENT_ROUTES.ROOT;
   }
   return '/';
 }

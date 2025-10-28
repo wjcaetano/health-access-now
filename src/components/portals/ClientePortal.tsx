@@ -7,6 +7,7 @@ import SuspenseWrapper from "@/components/shared/SuspenseWrapper";
 import { PortalClienteDashboard } from "@/pages/clientes/PortalClienteDashboard";
 import { PortalClienteAgendamentos } from "@/pages/clientes/PortalClienteAgendamentos";
 import { useHasRole } from "@/hooks/useUserRoles";
+import { CLIENT_ROUTES } from "@/lib/routes";
 
 const LazyPortalClienteOrcamentos = lazy(() => import("@/pages/clientes/PortalClienteOrcamentos"));
 
@@ -32,16 +33,21 @@ const ClientePortal: React.FC = () => {
               <PortalClienteDashboard />
             </SuspenseWrapper>
           } />
-          <Route path="agendamentos" element={
+          <Route path="appointments" element={
             <SuspenseWrapper>
               <PortalClienteAgendamentos />
             </SuspenseWrapper>
           } />
-          <Route path="orcamentos" element={
+          <Route path="quotes" element={
             <SuspenseWrapper>
               <LazyPortalClienteOrcamentos />
             </SuspenseWrapper>
           } />
+          
+          {/* Legacy redirects */}
+          <Route path="agendamentos" element={<Navigate to={CLIENT_ROUTES.APPOINTMENTS} replace />} />
+          <Route path="orcamentos" element={<Navigate to={CLIENT_ROUTES.QUOTES} replace />} />
+          
           <Route path="*" element={<Navigate to="dashboard" replace />} />
         </Routes>
       </Layout>

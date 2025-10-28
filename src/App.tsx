@@ -2,7 +2,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient"; // Configuração otimizada de cache
+import { queryClient } from "@/lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -18,6 +18,7 @@ import AprovacoesPage from "@/pages/AprovacoesPage";
 import NotFound from "@/pages/NotFound";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import SuspenseWrapper from "@/components/shared/SuspenseWrapper";
+import { RouteRedirects } from "@/components/layout/navigation/RouteRedirects";
 
 // Lazy load portals
 import { 
@@ -45,6 +46,9 @@ function App() {
           <AuthProvider>
             <NotificationProvider>
               <Router>
+                {/* Route Redirects - Handle legacy routes automatically */}
+                <RouteRedirects />
+                
                 <Routes>
                   {/* Página Principal */}
                   <Route path="/" element={<PaginaDeVendas />} />
@@ -52,9 +56,13 @@ function App() {
                   {/* Autenticação */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/recovery" element={<RecoveryPage />} />
-                  <Route path="/cadastro/cliente" element={<CadastroCliente />} />
-                  <Route path="/cadastro/prestador" element={<CadastroPrestador />} />
+                  <Route path="/register/client" element={<CadastroCliente />} />
+                  <Route path="/register/provider" element={<CadastroPrestador />} />
                   <Route path="/auth/redirect" element={<ProfileRedirect />} />
+                  
+                  {/* Legacy auth routes */}
+                  <Route path="/cadastro/cliente" element={<Navigate to="/register/client" replace />} />
+                  <Route path="/cadastro/prestador" element={<Navigate to="/register/provider" replace />} />
                   
                   {/* Páginas Públicas */}
                   <Route path="/portal-parceiro" element={<PortalParceiro />} />
@@ -75,14 +83,14 @@ function App() {
                   } />
                   
                   {/* Aprovações - apenas admins */}
-                  <Route path="/hub/aprovacoes" element={
+                  <Route path="/approvals" element={
                     <ProtectedRoute requiredLevel="admin">
                       <AprovacoesPage />
                     </ProtectedRoute>
                   } />
                   
                   {/* Portal do Prestador - apenas para prestadores */}
-                  <Route path="/prestador/*" element={
+                  <Route path="/provider/*" element={
                     <ProtectedRoute requiredLevel="prestador">
                       <SuspenseWrapper minHeight="100vh">
                         <LazyPrestadorPortal />
@@ -90,8 +98,11 @@ function App() {
                     </ProtectedRoute>
                   } />
                   
+                  {/* Legacy provider route */}
+                  <Route path="/prestador/*" element={<Navigate to="/provider" replace />} />
+                  
                   {/* Portal do Cliente - apenas para clientes */}
-                  <Route path="/cliente/*" element={
+                  <Route path="/client/*" element={
                     <ProtectedRoute requiredLevel="cliente">
                       <SuspenseWrapper minHeight="100vh">
                         <LazyClientePortal />
@@ -99,11 +110,14 @@ function App() {
                     </ProtectedRoute>
                   } />
                   
-                  {/* Redirecionamentos para compatibilidade */}
-                  <Route path="/unidade/*" element={<Navigate to="/hub/dashboard" replace />} />
-                  <Route path="/sistema/*" element={<Navigate to="/hub/dashboard" replace />} />
+                  {/* Legacy client route */}
+                  <Route path="/cliente/*" element={<Navigate to="/client" replace />} />
+                  
+                  {/* Redirecionamentos explícitos para compatibilidade */}
+                  <Route path="/unidade/*" element={<Navigate to="/hub" replace />} />
+                  <Route path="/sistema/*" element={<Navigate to="/hub" replace />} />
                   <Route path="/portal" element={<Navigate to="/" replace />} />
-                  <Route path="/dashboard" element={<Navigate to="/hub/dashboard" replace />} />
+                  <Route path="/dashboard" element={<Navigate to="/hub" replace />} />
                   
                   {/* Página 404 */}
                   <Route path="*" element={<NotFound />} />
