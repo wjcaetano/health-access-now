@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,13 +8,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useUnreadNotifications, useMarkNotificationAsRead } from '@/hooks/useNotifications';
+import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
+import { useAuth } from '@/contexts/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 export default function NotificationBell() {
+  const { user } = useAuth();
   const { data: notifications = [] } = useUnreadNotifications();
   const markAsRead = useMarkNotificationAsRead();
+  
+  // Ativar listener de notificações em tempo real
+  useRealtimeNotifications(user?.id);
 
   const handleMarkAsRead = (notificationId: string) => {
     markAsRead.mutate(notificationId);
@@ -32,44 +39,52 @@ export default function NotificationBell() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon" className="relative hover:bg-accent">
           <Bell className="h-5 w-5" />
           {notifications.length > 0 && (
             <Badge 
               variant="destructive" 
-              className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+              className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs animate-pulse"
             >
-              {notifications.length}
+              {notifications.length > 9 ? '9+' : notifications.length}
             </Badge>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0" align="end">
-        <div className="p-4 border-b">
-          <h3 className="font-semibold">Notificações</h3>
-          {notifications.length > 0 && (
-            <p className="text-sm text-muted-foreground">
-              {notifications.length} não {notifications.length === 1 ? 'lida' : 'lidas'}
-            </p>
-          )}
+      <PopoverContent className="w-96 p-0" align="end">
+        <div className="p-4 border-b bg-background">
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-lg">Notificações</h3>
+            {notifications.length > 0 && (
+              <Badge variant="secondary" className="text-xs">
+                {notifications.length} nova{notifications.length !== 1 ? 's' : ''}
+              </Badge>
+            )}
+          </div>
         </div>
-        <div className="max-h-96 overflow-y-auto">
+        <ScrollArea className="h-[400px]">
           {notifications.length === 0 ? (
-            <div className="p-4 text-center text-muted-foreground">
-              Nenhuma notificação nova
+            <div className="p-8 text-center">
+              <Bell className="h-12 w-12 mx-auto text-muted-foreground mb-3 opacity-50" />
+              <p className="text-sm text-muted-foreground">
+                Nenhuma notificação nova
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Você está em dia! 🎉
+              </p>
             </div>
           ) : (
             notifications.map((notification) => (
               <div
                 key={notification.id}
-                className="p-4 border-b hover:bg-gray-50 cursor-pointer"
+                className="p-4 border-b hover:bg-accent cursor-pointer transition-colors"
                 onClick={() => handleMarkAsRead(notification.id)}
               >
                 <div className="flex items-start gap-3">
-                  <div className={`w-2 h-2 rounded-full mt-2 ${getTypeColor(notification.type)}`} />
-                  <div className="flex-1">
-                    <h4 className="font-medium text-sm">{notification.title}</h4>
-                    <p className="text-sm text-muted-foreground mt-1">
+                  <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${getTypeColor(notification.type)}`} />
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-sm mb-1">{notification.title}</h4>
+                    <p className="text-sm text-muted-foreground line-clamp-2">
                       {notification.message}
                     </p>
                     <p className="text-xs text-muted-foreground mt-2">
@@ -83,7 +98,7 @@ export default function NotificationBell() {
               </div>
             ))
           )}
-        </div>
+        </ScrollArea>
       </PopoverContent>
     </Popover>
   );
