@@ -60,10 +60,6 @@ function App() {
                   <Route path="/register/provider" element={<CadastroPrestador />} />
                   <Route path="/auth/redirect" element={<ProfileRedirect />} />
                   
-                  {/* Legacy auth routes */}
-                  <Route path="/cadastro/cliente" element={<Navigate to="/register/client" replace />} />
-                  <Route path="/cadastro/prestador" element={<Navigate to="/register/provider" replace />} />
-                  
                   {/* Páginas Públicas */}
                   <Route path="/portal-parceiro" element={<PortalParceiro />} />
                   
@@ -98,9 +94,6 @@ function App() {
                     </ProtectedRoute>
                   } />
                   
-                  {/* Legacy provider route */}
-                  <Route path="/prestador/*" element={<Navigate to="/provider" replace />} />
-                  
                   {/* Portal do Cliente - apenas para clientes */}
                   <Route path="/client/*" element={
                     <ProtectedRoute requiredLevel="cliente">
@@ -109,15 +102,6 @@ function App() {
                       </SuspenseWrapper>
                     </ProtectedRoute>
                   } />
-                  
-                  {/* Legacy client route */}
-                  <Route path="/cliente/*" element={<Navigate to="/client" replace />} />
-                  
-                  {/* Redirecionamentos explícitos para compatibilidade */}
-                  <Route path="/unidade/*" element={<Navigate to="/hub" replace />} />
-                  <Route path="/sistema/*" element={<Navigate to="/hub" replace />} />
-                  <Route path="/portal" element={<Navigate to="/" replace />} />
-                  <Route path="/dashboard" element={<Navigate to="/hub" replace />} />
                   
                   {/* Página 404 */}
                   <Route path="*" element={<NotFound />} />

@@ -6,7 +6,24 @@
 import { HUB_ROUTES, PROVIDER_ROUTES, CLIENT_ROUTES } from './routes';
 
 export const routeMigrations: Record<string, string> = {
-  // ========== HUB MIGRATIONS ==========
+  // ========== AUTH MIGRATIONS ==========
+  '/cadastro/cliente': '/register/client',
+  '/cadastro/prestador': '/register/provider',
+  '/recuperar-senha': '/recovery',
+
+  // ========== PORTAL MIGRATIONS ==========
+  '/prestador': '/provider',
+  '/prestador/portal': PROVIDER_ROUTES.ROOT,
+  '/prestador/guias': PROVIDER_ROUTES.GUIDES,
+  '/prestador/faturamento': PROVIDER_ROUTES.BILLING,
+  '/prestador/perfil': PROVIDER_ROUTES.PROFILE,
+
+  '/cliente': '/client',
+  '/cliente/dashboard': CLIENT_ROUTES.ROOT,
+  '/cliente/agendamentos': CLIENT_ROUTES.APPOINTMENTS,
+  '/cliente/orcamentos': CLIENT_ROUTES.QUOTES,
+
+  // ========== HUB MIGRATIONS (Portuguese to English) ==========
   '/hub/dashboard': HUB_ROUTES.ROOT,
   '/hub/dashboard-estrategico': HUB_ROUTES.ANALYTICS,
   '/hub/buscar-prestadores': HUB_ROUTES.PROVIDERS_SEARCH,
@@ -19,52 +36,16 @@ export const routeMigrations: Record<string, string> = {
   '/hub/vendas': HUB_ROUTES.SALES,
   '/hub/financeiro': HUB_ROUTES.FINANCE,
   '/hub/colaboradores': HUB_ROUTES.TEAM,
-  '/hub/organizacoes': HUB_ROUTES.ORGANIZATIONS,
   '/hub/relatorios': HUB_ROUTES.REPORTS,
   '/hub/configuracoes': HUB_ROUTES.SETTINGS,
   '/hub/meu-perfil': HUB_ROUTES.PROFILE,
-  '/hub/usuarios': HUB_ROUTES.USERS,
+  '/hub/perfil': HUB_ROUTES.PROFILE,
 
-  // Specific pages
-  '/novo-agendamento': HUB_ROUTES.APPOINTMENTS_NEW,
-  '/novo-cliente': HUB_ROUTES.CUSTOMERS_NEW,
-  '/novo-servico': HUB_ROUTES.SERVICES_NEW,
-  '/novo-prestador': HUB_ROUTES.PROVIDERS_NEW,
-  '/checkout-vendas': HUB_ROUTES.SALES_CHECKOUT,
-  '/agenda-pagamentos': HUB_ROUTES.FINANCE_RECEIVABLES,
-  '/relatorios-centralizados': HUB_ROUTES.REPORTS,
-  '/aprovacoes': HUB_ROUTES.APPROVALS,
-  '/backup': HUB_ROUTES.BACKUP,
-  '/seguranca': HUB_ROUTES.SECURITY,
-  '/qualidade': HUB_ROUTES.QUALITY,
-  '/analise-sistema': HUB_ROUTES.SYSTEM_ANALYSIS,
-
-  // ========== PROVIDER MIGRATIONS ==========
-  '/prestador/portal': PROVIDER_ROUTES.ROOT,
-  '/prestador/guias': PROVIDER_ROUTES.GUIDES,
-  '/prestador/faturamento': PROVIDER_ROUTES.BILLING,
-  '/prestador/perfil': PROVIDER_ROUTES.PROFILE,
-
-  // ========== CLIENT MIGRATIONS ==========
-  '/cliente/dashboard': CLIENT_ROUTES.ROOT,
-  '/cliente/agendamentos': CLIENT_ROUTES.APPOINTMENTS,
-  '/cliente/orcamentos': CLIENT_ROUTES.QUOTES,
-
-  // ========== LEGACY SYSTEM MIGRATIONS ==========
-  '/sistema': HUB_ROUTES.ROOT,
-  '/sistema/dashboard': HUB_ROUTES.ROOT,
-  '/sistema/prestador/portal': PROVIDER_ROUTES.ROOT,
-  '/sistema/prestador/guias': PROVIDER_ROUTES.GUIDES,
-  '/sistema/prestador/faturamento': PROVIDER_ROUTES.BILLING,
+  // ========== LEGACY SYSTEM MIGRATIONS (Deprecated) ==========
   '/unidade': HUB_ROUTES.ROOT,
-  '/unidade/perfil': HUB_ROUTES.PROFILE,
-  '/unidade/configuracoes': HUB_ROUTES.SETTINGS,
+  '/sistema': HUB_ROUTES.ROOT,
+  '/portal': '/',
   '/dashboard': HUB_ROUTES.ROOT,
-
-  // ========== AUTH MIGRATIONS ==========
-  '/cadastro/cliente': '/register/client',
-  '/cadastro/prestador': '/register/provider',
-  '/recuperar-senha': '/recovery',
 } as const;
 
 /**
@@ -102,15 +83,43 @@ export function isLegacyRoute(route: string): boolean {
 
 /**
  * Lista de rotas que devem ser removidas gradualmente
- * (após período de transição)
+ * (após período de transição de 6 meses)
+ * Data de criação: 2024-10-28
+ * Data prevista de remoção: 2025-04-28
  */
 export const deprecatedRoutes = [
+  // Hub routes (PT → EN)
   '/hub/dashboard',
   '/hub/dashboard-estrategico',
   '/hub/buscar-prestadores',
   '/hub/marketplace',
+  '/hub/clientes',
+  '/hub/prestadores',
+  '/hub/servicos',
+  '/hub/orcamentos',
+  '/hub/agendamentos',
+  '/hub/vendas',
+  '/hub/financeiro',
+  '/hub/colaboradores',
+  '/hub/relatorios',
+  '/hub/configuracoes',
+  '/hub/meu-perfil',
+  '/hub/perfil',
+
+  // Portal routes (PT → EN)
+  '/prestador',
   '/prestador/portal',
+  '/prestador/guias',
+  '/prestador/faturamento',
+  '/prestador/perfil',
+  '/cliente',
   '/cliente/dashboard',
-  '/sistema',
+  '/cliente/agendamentos',
+  '/cliente/orcamentos',
+
+  // Legacy systems (will be removed after transition)
   '/unidade',
+  '/sistema',
+  '/portal',
+  '/dashboard',
 ] as const;

@@ -138,24 +138,6 @@ const HubPortal: React.FC = () => {
             </SuspenseWrapper>
           } />
           
-          {/* Legacy redirects - backward compatibility */}
-          <Route path="dashboard" element={<Navigate to={HUB_ROUTES.ROOT} replace />} />
-          <Route path="dashboard-estrategico" element={<Navigate to={HUB_ROUTES.ANALYTICS} replace />} />
-          <Route path="vendas" element={<Navigate to={HUB_ROUTES.SALES} replace />} />
-          <Route path="agendamentos" element={<Navigate to={HUB_ROUTES.APPOINTMENTS} replace />} />
-          <Route path="orcamentos" element={<Navigate to={HUB_ROUTES.QUOTES} replace />} />
-          <Route path="clientes" element={<Navigate to={HUB_ROUTES.CUSTOMERS} replace />} />
-          <Route path="prestadores" element={<Navigate to={HUB_ROUTES.PROVIDERS} replace />} />
-          <Route path="buscar-prestadores" element={<Navigate to={HUB_ROUTES.PROVIDERS_SEARCH} replace />} />
-          <Route path="marketplace" element={<Navigate to={HUB_ROUTES.SERVICES_MARKETPLACE} replace />} />
-          <Route path="servicos" element={<Navigate to={HUB_ROUTES.SERVICES} replace />} />
-          <Route path="financeiro" element={<Navigate to={HUB_ROUTES.FINANCE} replace />} />
-          <Route path="colaboradores" element={<Navigate to={HUB_ROUTES.TEAM} replace />} />
-          <Route path="relatorios" element={<Navigate to={HUB_ROUTES.REPORTS} replace />} />
-          <Route path="configuracoes" element={<Navigate to={HUB_ROUTES.SETTINGS} replace />} />
-          <Route path="perfil" element={<Navigate to={HUB_ROUTES.PROFILE} replace />} />
-          <Route path="meu-perfil" element={<Navigate to={HUB_ROUTES.PROFILE} replace />} />
-          
           {/* Catch all - redirect to root */}
           <Route path="*" element={<Navigate to="overview" replace />} />
         </Routes>
