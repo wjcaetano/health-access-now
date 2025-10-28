@@ -8,7 +8,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Menu, ChevronDown } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface HeaderVendasProps {
   onAbrirLogin: () => void;
@@ -16,6 +17,24 @@ interface HeaderVendasProps {
 
 const HeaderVendas: React.FC<HeaderVendasProps> = ({ onAbrirLogin }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, profile } = useAuth();
+  const navigate = useNavigate();
+
+  const handleEntrarSistema = () => {
+    // Se já estiver logado, redirecionar para a página apropriada
+    if (user && profile) {
+      if (profile.nivel_acesso === 'prestador') {
+        navigate('/provider');
+      } else if (profile.nivel_acesso === 'cliente') {
+        navigate('/client');
+      } else if (['admin', 'gerente', 'atendente', 'colaborador'].includes(profile.nivel_acesso)) {
+        navigate('/hub');
+      }
+    } else {
+      // Não logado, abrir modal de login
+      onAbrirLogin();
+    }
+  };
 
   const menuItems = [
     { label: "Consultas Médicas", href: "/servicos/consultas-medicas" },
@@ -66,7 +85,7 @@ const HeaderVendas: React.FC<HeaderVendasProps> = ({ onAbrirLogin }) => {
             </Link>
 
             <Button 
-              onClick={onAbrirLogin}
+              onClick={handleEntrarSistema}
               className="bg-agendaja-primary hover:bg-agendaja-secondary text-white"
             >
               Entrar no Sistema
@@ -128,7 +147,7 @@ const HeaderVendas: React.FC<HeaderVendasProps> = ({ onAbrirLogin }) => {
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-lg">
                     <button 
-                      onClick={onAbrirLogin} 
+                      onClick={handleEntrarSistema} 
                       className="w-full flex items-center px-3 py-3 text-sm font-medium bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-200 rounded-lg"
                     >
                       <div className="w-2 h-2 rounded-full bg-primary mr-3"></div>

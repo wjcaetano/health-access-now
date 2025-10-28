@@ -79,15 +79,19 @@ const ProfileRedirect: React.FC = () => {
       console.log('Redirecting based on nivel_acesso:', profile.nivel_acesso);
       switch (profile.nivel_acesso) {
         case 'prestador':
-          console.log('Redirecting to prestador portal');
-          navigate('/prestador/portal', { replace: true });
+          console.log('Redirecting to provider portal');
+          navigate('/provider', { replace: true });
+          break;
+        case 'cliente':
+          console.log('Redirecting to client portal');
+          navigate('/client', { replace: true });
           break;
         case 'admin':
         case 'gerente':
         case 'atendente':
         case 'colaborador':
-          console.log('Redirecting to unidade dashboard');
-          navigate('/unidade/dashboard', { replace: true });
+          console.log('Redirecting to hub');
+          navigate('/hub', { replace: true });
           break;
         default:
           console.log('Unknown access level, redirecting to login. Level:', profile.nivel_acesso);

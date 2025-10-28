@@ -15,8 +15,10 @@ export function useRealtimeNotifications(userId: string | undefined) {
 
     console.log('🔔 Iniciando listener de notificações realtime para usuário:', userId);
 
+    // Usar um nome de canal único para evitar múltiplas inscrições
+    const channelName = `notifications-${userId}`;
     const channel = supabase
-      .channel('notifications-realtime')
+      .channel(channelName)
       .on(
         'postgres_changes',
         {

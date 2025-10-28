@@ -34,11 +34,13 @@ export default function Login() {
       console.log('User already logged in, redirecting based on profile:', profile.nivel_acesso);
       setHasRedirected(true);
       
-      // Redirecionar diretamente para o destino final ao invés de passar por /auth/redirect
+      // Redirecionar diretamente para o destino final usando rotas corretas
       if (profile.nivel_acesso === 'prestador') {
-        navigate('/prestador/portal', { replace: true });
+        navigate('/provider', { replace: true });
+      } else if (profile.nivel_acesso === 'cliente') {
+        navigate('/client', { replace: true });
       } else if (['admin', 'gerente', 'atendente', 'colaborador'].includes(profile.nivel_acesso)) {
-        navigate('/unidade/dashboard', { replace: true });
+        navigate('/hub', { replace: true });
       }
     }
   }, [user, profile, loading, initialized, navigate, hasRedirected]);
