@@ -55,11 +55,6 @@ export const HUB_ROUTES = {
   
   // Outros
   PROFILE: '/hub/profile',
-  USERS: '/hub/users',
-  BACKUP: '/hub/backup',
-  SECURITY: '/hub/security',
-  QUALITY: '/hub/quality',
-  SYSTEM_ANALYSIS: '/hub/system-analysis',
 } as const;
 
 // ========== PROVIDER ROUTES ==========
@@ -68,8 +63,6 @@ export const PROVIDER_ROUTES = {
   GUIDES: '/provider/guides',
   GUIDES_DETAIL: (id: string) => `/provider/guides/${id}`,
   BILLING: '/provider/billing',
-  SCHEDULE: '/provider/schedule',
-  REVIEWS: '/provider/reviews',
   PROFILE: '/provider/profile',
 } as const;
 
@@ -80,7 +73,6 @@ export const CLIENT_ROUTES = {
   APPOINTMENTS_DETAIL: (id: string) => `/client/appointments/${id}`,
   QUOTES: '/client/quotes',
   QUOTES_DETAIL: (id: string) => `/client/quotes/${id}`,
-  HISTORY: '/client/history',
   PROFILE: '/client/profile',
 } as const;
 

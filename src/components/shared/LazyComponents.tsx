@@ -22,6 +22,5 @@ export const LazyAgendamentosLista = lazy(() => import('@/components/agendamento
 export const LazyOrcamentosLista = lazy(() => import('@/components/orcamentos/OrcamentosLista'));
 
 // Lazy loading para componentes de gestão
-export const LazyGestaoUsuarios = lazy(() => import('@/pages/GestaoUsuarios'));
 export const LazyReportsManager = lazy(() => import('@/components/reports/ReportsManager'));
 export const LazyBackupManager = lazy(() => import('@/components/backup/BackupManager'));

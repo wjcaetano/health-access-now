@@ -8,8 +8,6 @@ import {
   Users,
   Stethoscope,
   Package,
-  MessageSquare,
-  ClipboardList,
   Briefcase,
   BarChart3
 } from "lucide-react";
@@ -55,18 +53,6 @@ export const operationalMenuItems: MenuItem[] = [
     title: "Serviços",
     icon: Package,
     href: "/sistema/servicos",
-    roles: ["admin", "gerente", "colaborador"]
-  },
-  {
-    title: "Conversas",
-    icon: MessageSquare,
-    href: "/sistema/conversas",
-    roles: ["admin", "gerente", "colaborador"]
-  },
-  {
-    title: "Guias",
-    icon: ClipboardList,
-    href: "/sistema/guias",
     roles: ["admin", "gerente", "colaborador"]
   }
 ];

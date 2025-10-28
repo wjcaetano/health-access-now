@@ -18,11 +18,7 @@ export const LazyNovoAgendamento = lazy(() => import('@/pages/NovoAgendamento'))
 export const LazyColaboradores = lazy(() => import('@/pages/Colaboradores'));
 export const LazyFinanceiro = lazy(() => import('@/pages/Financeiro'));
 export const LazyAgendaPagamentos = lazy(() => import('@/pages/AgendaPagamentos'));
-export const LazyGuias = lazy(() => import('@/pages/Guias'));
-export const LazyConversas = lazy(() => import('@/pages/Conversas'));
-export const LazyGestaoUsuarios = lazy(() => import('@/pages/GestaoUsuarios'));
 export const LazyMeuPerfil = lazy(() => import('@/pages/MeuPerfil'));
-export const LazyAnaliseDoSistema = lazy(() => import('@/pages/AnaliseDoSistema'));
 export const LazyAdvancedDashboardPage = lazy(() => import('@/pages/AdvancedDashboard'));
 export const LazyReportsPage = lazy(() => import('@/pages/ReportsPage'));
 export const LazyBackupPage = lazy(() => import('@/pages/BackupPage'));
