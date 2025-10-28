@@ -10,7 +10,7 @@ export interface UserProfile {
   organizacao_id?: string;
   colaborador_id?: string;
   prestador_id?: string;
-  cliente_id?: string;
+  cliente_id?: string; // Agora implementado no banco de dados
   foto_url?: string;
   created_at?: string;
   updated_at?: string;

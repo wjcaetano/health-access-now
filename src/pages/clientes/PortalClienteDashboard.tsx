@@ -1,14 +1,28 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, FileText, Clock, User } from 'lucide-react';
+import { Calendar, FileText, Clock, Star } from 'lucide-react';
+import { useClienteDashboard } from '@/hooks/useClienteDashboard';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Badge } from '@/components/ui/badge';
+import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
 /**
  * Dashboard do Portal do Cliente
- * Mostra resumo dos agendamentos e histórico
+ * Mostra resumo dos agendamentos e histórico com dados reais
  */
 export const PortalClienteDashboard: React.FC = () => {
   const { profile } = useAuth();
+  const { proximosAgendamentos, historicoGuias, metricas } = useClienteDashboard(profile?.cliente_id);
+
+  if (proximosAgendamentos.isLoading || historicoGuias.isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -19,7 +33,8 @@ export const PortalClienteDashboard: React.FC = () => {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Cards de Estatísticas */}
+      <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -28,9 +43,9 @@ export const PortalClienteDashboard: React.FC = () => {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            <div className="text-2xl font-bold">{metricas.totalAgendamentosFuturos}</div>
             <p className="text-xs text-muted-foreground">
-              Nenhum agendamento pendente
+              agendamentos futuros
             </p>
           </CardContent>
         </Card>
@@ -38,29 +53,14 @@ export const PortalClienteDashboard: React.FC = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Histórico
-            </CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">
-              Serviços realizados
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Documentos
+              Serviços Realizados
             </CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            <div className="text-2xl font-bold">{metricas.servicosRealizados}</div>
             <p className="text-xs text-muted-foreground">
-              Guias e resultados
+              total de serviços
             </p>
           </CardContent>
         </Card>
@@ -68,42 +68,96 @@ export const PortalClienteDashboard: React.FC = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Perfil
+              Última Avaliação
             </CardTitle>
-            <User className="h-4 w-4 text-muted-foreground" />
+            <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">100%</div>
+            <div className="text-2xl font-bold">
+              {metricas.ultimaAvaliacao ? `${metricas.ultimaAvaliacao}/5` : '-'}
+            </div>
             <p className="text-xs text-muted-foreground">
-              Perfil completo
+              {metricas.ultimaAvaliacao ? 'estrelas' : 'nenhuma avaliação'}
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Próximos Agendamentos</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Você não tem agendamentos pendentes
+      {/* Próximos Agendamentos */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Clock className="h-5 w-5" />
+            Próximos Agendamentos
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {proximosAgendamentos.data.length === 0 ? (
+            <p className="text-muted-foreground text-center py-8">
+              Você não possui agendamentos futuros
             </p>
-          </CardContent>
-        </Card>
+          ) : (
+            <div className="space-y-4">
+              {proximosAgendamentos.data.slice(0, 5).map((agendamento: any) => (
+                <div key={agendamento.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex-1">
+                    <h4 className="font-semibold">{agendamento.servico?.nome}</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {agendamento.prestador?.nome}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Calendar className="h-3 w-3" />
+                      <span className="text-xs">
+                        {format(new Date(agendamento.data_agendamento), "dd/MM/yyyy", { locale: ptBR })}
+                      </span>
+                      <Clock className="h-3 w-3 ml-2" />
+                      <span className="text-xs">{agendamento.horario}</span>
+                    </div>
+                  </div>
+                  <Badge>{agendamento.status}</Badge>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Histórico Recente</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Nenhum histórico disponível
+      {/* Histórico de Serviços */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            Histórico de Serviços
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {historicoGuias.data.length === 0 ? (
+            <p className="text-muted-foreground text-center py-8">
+              Nenhum serviço realizado ainda
             </p>
-          </CardContent>
-        </Card>
-      </div>
+          ) : (
+            <div className="space-y-4">
+              {historicoGuias.data.slice(0, 5).map((guia: any) => (
+                <div key={guia.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex-1">
+                    <h4 className="font-semibold">{guia.servico?.nome}</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {guia.prestador?.nome}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Calendar className="h-3 w-3" />
+                      <span className="text-xs">
+                        {guia.data_realizacao && format(new Date(guia.data_realizacao), "dd/MM/yyyy", { locale: ptBR })}
+                      </span>
+                    </div>
+                  </div>
+                  <Badge variant="outline">{guia.status}</Badge>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

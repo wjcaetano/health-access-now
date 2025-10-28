@@ -2,12 +2,13 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LogOut, Menu, Search, User, Users, Settings, BarChart3 } from "lucide-react";
+import { LogOut, Menu, Search, User, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Link } from "react-router-dom";
 import NotificationBell from "./NotificationBell";
+import { getProfileRoute, getSettingsRoute } from "@/lib/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -128,15 +129,16 @@ export default function Header({ title, subtitle, toggleSidebar }: HeaderProps) 
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/unidade/perfil" className="flex items-center cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" />
+                <Link to={getProfileRoute(profile?.nivel_acesso || '')} className="flex items-center cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
                   <span>Meu Perfil</span>
                 </Link>
               </DropdownMenuItem>
-              {isManager && (
+              
+              {getSettingsRoute(profile?.nivel_acesso || '') && (
                 <DropdownMenuItem asChild>
-                  <Link to="/unidade/configuracoes" className="flex items-center cursor-pointer">
-                    <BarChart3 className="mr-2 h-4 w-4" />
+                  <Link to={getSettingsRoute(profile?.nivel_acesso || '')} className="flex items-center cursor-pointer">
+                    <Settings className="mr-2 h-4 w-4" />
                     <span>Configurações</span>
                   </Link>
                 </DropdownMenuItem>

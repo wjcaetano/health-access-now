@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/layout/Layout";
 import PortalErrorBoundary from "@/components/shared/PortalErrorBoundary";
 import SuspenseWrapper from "@/components/shared/SuspenseWrapper";
+import { useHasRole } from "@/hooks/useUserRoles";
 
 // Páginas específicas do prestador
 import { 
@@ -15,9 +16,10 @@ import {
 } from "@/components/layout/LazyPages";
 
 const PrestadorPortal: React.FC = () => {
-  const { profile, isActive } = useAuth();
+  const { user, isActive } = useAuth();
+  const isPrestador = useHasRole(user?.id, 'prestador');
 
-  if (!isActive || profile?.nivel_acesso !== 'prestador') {
+  if (!isActive || !isPrestador) {
     return <Navigate to="/login" replace />;
   }
 

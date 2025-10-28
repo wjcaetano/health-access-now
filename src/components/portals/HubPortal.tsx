@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/layout/Layout";
 import PortalErrorBoundary from "@/components/shared/PortalErrorBoundary";
 import SuspenseWrapper from "@/components/shared/SuspenseWrapper";
+import { useHasRole, useIsAdminOrManager } from "@/hooks/useUserRoles";
 
 // Lazy load páginas específicas do Hub AGENDAJA
 import { 
@@ -29,10 +30,16 @@ const DashboardEstrategicoPage = lazy(() => import("@/pages/DashboardEstrategico
 const RelatoriosCentralizadosPage = lazy(() => import("@/pages/RelatoriosCentralizadosPage"));
 
 const HubPortal: React.FC = () => {
-  const { profile, isActive } = useAuth();
+  const { user, isActive } = useAuth();
+  const isAdmin = useHasRole(user?.id, 'admin');
+  const isManager = useHasRole(user?.id, 'gerente');
+  const isAtendente = useHasRole(user?.id, 'atendente');
+  const isColaborador = useHasRole(user?.id, 'colaborador');
 
-  // Verificar se é um usuário do hub (admin, gerente, atendente ou colaborador)
-  if (!isActive || !['admin', 'atendente', 'gerente', 'colaborador'].includes(profile?.nivel_acesso || '')) {
+  // Verificar se é um usuário do hub
+  const isHubUser = isAdmin || isManager || isAtendente || isColaborador;
+
+  if (!isActive || !isHubUser) {
     return <Navigate to="/login" replace />;
   }
 
@@ -101,7 +108,7 @@ const HubPortal: React.FC = () => {
               <Financeiro />
             </SuspenseWrapper>
           } />
-          {['gerente', 'admin'].includes(profile?.nivel_acesso || '') && (
+          {(isAdmin || isManager) && (
             <Route path="colaboradores" element={
               <SuspenseWrapper>
                 <Colaboradores />
@@ -113,7 +120,7 @@ const HubPortal: React.FC = () => {
               <MeuPerfil />
             </SuspenseWrapper>
           } />
-          {['gerente', 'admin'].includes(profile?.nivel_acesso || '') && (
+          {(isAdmin || isManager) && (
             <Route path="configuracoes" element={
               <SuspenseWrapper>
                 <SystemSettings />

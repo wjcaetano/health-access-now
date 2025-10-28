@@ -19,21 +19,23 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { hubMenuItems } from "./navigation/menus/HubMenu";
 import { prestadorMenuItems } from "./navigation/menus/PrestadorMenuSimplified";
+import { usePrimaryRole } from "@/hooks/useUserRoles";
 
 interface AppSidebarProps {
   userProfile: string;
 }
 
 export default function AppSidebar({ userProfile }: AppSidebarProps) {
-  const { profile } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
   const { state } = useSidebar();
+  const primaryRole = usePrimaryRole(user?.id);
   
   // Determinar qual menu mostrar baseado no perfil do usuário
   const menuItems = userProfile === "prestador" ? prestadorMenuItems : hubMenuItems;
   
   // Verificar se é gerente ou admin para mostrar opções administrativas
-  const isManagerOrAdmin = ['gerente', 'admin'].includes(profile?.nivel_acesso || '');
+  const isManagerOrAdmin = primaryRole === 'gerente' || primaryRole === 'admin';
   
   const isActive = (href: string) => {
     return location.pathname.startsWith(href);
@@ -67,7 +69,7 @@ export default function AppSidebar({ userProfile }: AppSidebarProps) {
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems
-                .filter(item => !item.roles || item.roles.includes(profile?.nivel_acesso || ''))
+                .filter(item => !item.roles || (primaryRole && item.roles.includes(primaryRole)))
                 .map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.href)}>

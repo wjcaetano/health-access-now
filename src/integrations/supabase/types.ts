@@ -836,6 +836,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          cliente_id: string | null
           colaborador_id: string | null
           created_at: string | null
           email: string
@@ -849,6 +850,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          cliente_id?: string | null
           colaborador_id?: string | null
           created_at?: string | null
           email: string
@@ -862,6 +864,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          cliente_id?: string | null
           colaborador_id?: string | null
           created_at?: string | null
           email?: string
@@ -875,6 +878,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "profiles_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "profiles_colaborador_id_fkey"
             columns: ["colaborador_id"]

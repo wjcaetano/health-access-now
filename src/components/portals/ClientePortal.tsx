@@ -6,15 +6,17 @@ import PortalErrorBoundary from "@/components/shared/PortalErrorBoundary";
 import SuspenseWrapper from "@/components/shared/SuspenseWrapper";
 import { PortalClienteDashboard } from "@/pages/clientes/PortalClienteDashboard";
 import { PortalClienteAgendamentos } from "@/pages/clientes/PortalClienteAgendamentos";
+import { useHasRole } from "@/hooks/useUserRoles";
 
 /**
  * Portal do Cliente
  * Permite que clientes visualizem seus agendamentos e histórico
  */
 const ClientePortal: React.FC = () => {
-  const { profile, isActive } = useAuth();
+  const { user, isActive } = useAuth();
+  const isCliente = useHasRole(user?.id, 'cliente');
 
-  if (!isActive || profile?.nivel_acesso !== 'cliente') {
+  if (!isActive || !isCliente) {
     return <Navigate to="/login" replace />;
   }
 
