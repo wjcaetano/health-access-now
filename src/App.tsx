@@ -1,7 +1,8 @@
 
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient"; // Configuração otimizada de cache
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -35,21 +36,6 @@ import ConsultasMedicas from "@/pages/servicos/ConsultasMedicas";
 import ExamesLaboratoriais from "@/pages/servicos/ExamesLaboratoriais";
 import ExamesDeImagem from "@/pages/servicos/ExamesDeImagem";
 import OutrosExames from "@/pages/servicos/OutrosExames";
-
-// Configuração otimizada do QueryClient
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutos
-      gcTime: 10 * 60 * 1000, // 10 minutos
-    },
-    mutations: {
-      retry: 1,
-    },
-  },
-});
 
 function App() {
   return (
