@@ -50,7 +50,7 @@ const VisualizarOrcamento: React.FC = () => {
           <p className="text-red-500 mb-4">
             {isError ? "Erro ao carregar orçamento" : "Orçamento não encontrado"}
           </p>
-          <Button onClick={() => navigate('/unidade/orcamentos')} className="mt-4">
+          <Button onClick={() => navigate('/hub/quotes')} className="mt-4">
             Voltar para Orçamentos
           </Button>
         </div>
@@ -86,7 +86,7 @@ const VisualizarOrcamento: React.FC = () => {
     }
 
     // Redirecionar para o checkout com os dados do orçamento
-    navigate('/checkout-vendas', {
+    navigate('/hub/sales/checkout', {
       state: {
         vendaData: {
           cliente: orcamento.clientes,
@@ -112,7 +112,7 @@ const VisualizarOrcamento: React.FC = () => {
           title: "Orçamento cancelado",
           description: "O orçamento foi cancelado com sucesso."
         });
-        navigate('/unidade/orcamentos');
+        navigate('/hub/quotes');
       },
       onError: (error) => {
         console.error('Erro ao cancelar orçamento:', error);
@@ -133,7 +133,7 @@ const VisualizarOrcamento: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate('/unidade/orcamentos')}
+            onClick={() => navigate('/hub/quotes')}
             className="flex items-center"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />

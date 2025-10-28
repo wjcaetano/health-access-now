@@ -59,7 +59,7 @@ const ServicosLista: React.FC = () => {
             Gerencie os serviços oferecidos pela unidade
           </p>
         </div>
-        <RouterLink to="/unidade/servicos/novo">
+        <RouterLink to="/hub/services/new">
           <Button>
             <Plus className="h-4 w-4 mr-2" />
             Novo Serviço

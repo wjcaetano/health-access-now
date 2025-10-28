@@ -111,10 +111,12 @@ export default function TrocaSenhaObrigatoria() {
 
       // Redirecionar baseado no tipo de usuário
       setTimeout(() => {
-        if (profile?.prestador_id) {
-          navigate("/prestador/portal");
+        if (profile?.nivel_acesso === 'prestador') {
+          navigate("/provider");
+        } else if (profile?.nivel_acesso === 'cliente') {
+          navigate("/client");
         } else {
-          navigate("/unidade/dashboard");
+          navigate("/hub");
         }
       }, 2000);
 

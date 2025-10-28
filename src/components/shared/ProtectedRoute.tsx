@@ -48,7 +48,7 @@ export function ProtectedRoute({
   // Check admin requirement (no admin level anymore)
   if (requireAdmin) {
     console.log('Admin required but admin level removed, redirecting');
-    return <Navigate to="/unidade/dashboard" replace />;
+    return <Navigate to="/hub" replace />;
   }
 
   // Check specific level requirement with hierarchical access
@@ -60,27 +60,27 @@ export function ProtectedRoute({
     // Handle special roles that don't fit hierarchical structure
     if (profile.nivel_acesso === 'prestador' && requiredLevel !== 'prestador') {
       console.log('Prestador trying to access non-prestador route, redirecting');
-      return <Navigate to="/prestador/portal" replace />;
+      return <Navigate to="/provider" replace />;
     }
     
     if (profile.nivel_acesso === 'cliente' && requiredLevel !== 'cliente') {
       console.log('Cliente trying to access non-cliente route, redirecting');
-      return <Navigate to="/cliente/dashboard" replace />;
+      return <Navigate to="/client" replace />;
     }
     
     if (requiredLevel === 'prestador' && profile.nivel_acesso !== 'prestador') {
       console.log('Non-prestador trying to access prestador route, redirecting');
-      return <Navigate to="/hub/dashboard" replace />;
+      return <Navigate to="/hub" replace />;
     }
     
     if (requiredLevel === 'cliente' && profile.nivel_acesso !== 'cliente') {
       console.log('Non-cliente trying to access cliente route, redirecting');
-      return <Navigate to="/hub/dashboard" replace />;
+      return <Navigate to="/hub" replace />;
     }
     
     if (requiredLevel !== 'prestador' && requiredLevel !== 'cliente' && userLevelIndex < requiredLevelIndex) {
       console.log('Required level not met, redirecting based on user level');
-      return <Navigate to="/hub/dashboard" replace />;
+      return <Navigate to="/hub" replace />;
     }
   }
 
