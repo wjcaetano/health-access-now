@@ -1,17 +1,40 @@
 /**
- * Mapeamento de redirecionamentos para compatibilidade com rotas antigas
- * Garante que links antigos continuem funcionando
+ * ========================================
+ * ROUTE MIGRATIONS - BACKWARD COMPATIBILITY
+ * ========================================
+ * 
+ * Este arquivo centraliza TODOS os redirecionamentos de rotas legadas.
+ * Garante que links antigos (bookmarks, emails, etc) continuem funcionando.
+ * 
+ * IMPORTANTE:
+ * - Este é o ÚNICO lugar para gerenciar redirects
+ * - NÃO adicione <Navigate> components em App.tsx ou portais
+ * - O componente RouteRedirects.tsx usa este mapeamento automaticamente
+ * 
+ * MANUTENÇÃO:
+ * - Revisar deprecatedRoutes a cada 3 meses
+ * - Remover rotas após 6 meses de transição
+ * - Documentar data de adição de novas rotas
+ * 
+ * Data de última limpeza: 2025-01-28
+ * Próxima revisão: 2025-04-28
  */
 
 import { HUB_ROUTES, PROVIDER_ROUTES, CLIENT_ROUTES } from './routes';
 
 export const routeMigrations: Record<string, string> = {
-  // ========== AUTH MIGRATIONS ==========
+  // ==========================================================
+  // AUTH MIGRATIONS (Portuguese → English)
+  // Adicionado: 2024-10-28 | Manter indefinidamente
+  // ==========================================================
   '/cadastro/cliente': '/register/client',
   '/cadastro/prestador': '/register/provider',
   '/recuperar-senha': '/recovery',
 
-  // ========== PORTAL MIGRATIONS ==========
+  // ==========================================================
+  // PORTAL MIGRATIONS (Portuguese → English)
+  // Adicionado: 2024-10-28 | Remover após: 2025-04-28
+  // ==========================================================
   '/prestador': '/provider',
   '/prestador/portal': PROVIDER_ROUTES.ROOT,
   '/prestador/guias': PROVIDER_ROUTES.GUIDES,
@@ -23,7 +46,10 @@ export const routeMigrations: Record<string, string> = {
   '/cliente/agendamentos': CLIENT_ROUTES.APPOINTMENTS,
   '/cliente/orcamentos': CLIENT_ROUTES.QUOTES,
 
-  // ========== HUB MIGRATIONS (Portuguese to English) ==========
+  // ==========================================================
+  // HUB MIGRATIONS (Portuguese → English)
+  // Adicionado: 2024-10-28 | Remover após: 2025-04-28
+  // ==========================================================
   '/hub/dashboard': HUB_ROUTES.ROOT,
   '/hub/dashboard-estrategico': HUB_ROUTES.ANALYTICS,
   '/hub/buscar-prestadores': HUB_ROUTES.PROVIDERS_SEARCH,
@@ -41,7 +67,11 @@ export const routeMigrations: Record<string, string> = {
   '/hub/meu-perfil': HUB_ROUTES.PROFILE,
   '/hub/perfil': HUB_ROUTES.PROFILE,
 
-  // ========== LEGACY SYSTEM MIGRATIONS (Deprecated) ==========
+  // ==========================================================
+  // LEGACY SYSTEM MIGRATIONS (Old system routes)
+  // Adicionado: 2024-10-28 | Remover após: 2025-07-28 (9 meses)
+  // Sistema descontinuado, manter mais tempo para segurança
+  // ==========================================================
   '/unidade': HUB_ROUTES.ROOT,
   '/sistema': HUB_ROUTES.ROOT,
   '/portal': '/',
