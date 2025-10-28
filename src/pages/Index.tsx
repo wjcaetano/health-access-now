@@ -1,5 +1,10 @@
-
 import React from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { usePrimaryRole } from "@/hooks/useUserRoles";
+import { AdminDashboard } from "@/components/dashboard/AdminDashboard";
+import { GerenteDashboard } from "@/components/dashboard/GerenteDashboard";
+import { AtendenteDashboard } from "@/components/dashboard/AtendenteDashboard";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import StatCard from "@/components/dashboard/StatCard";
 import AgendamentosRecentes from "@/components/dashboard/AgendamentosRecentes";
 import OrcamentosRecentes from "@/components/dashboard/OrcamentosRecentes";
@@ -15,29 +20,33 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const Index = () => {
+  const { user } = useAuth();
+  const primaryRole = usePrimaryRole(user?.id);
   const { data: stats, isLoading: statsLoading } = useDashboardStats();
   const { data: agendamentosRecentes, isLoading: agendamentosLoading } = useAgendamentosRecentes();
   const { data: orcamentosRecentes, isLoading: orcamentosLoading } = useOrcamentosRecentes();
   const { data: mensagensRecentes, isLoading: mensagensLoading } = useMensagensRecentes();
   const isMobile = useIsMobile();
 
+  // Renderizar dashboard personalizado por role
+  if (primaryRole === 'admin') {
+    return <AdminDashboard />;
+  }
+
+  if (primaryRole === 'gerente') {
+    return <GerenteDashboard />;
+  }
+
+  if (primaryRole === 'atendente') {
+    return <AtendenteDashboard />;
+  }
+
+  // Dashboard padrão para colaboradores
+
   if (statsLoading) {
     return (
-      <div className={`space-y-4 animate-fade-in max-w-full ${isMobile ? 'px-1' : 'container mx-auto px-4 py-6'}`}>
-        <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'}`}>
-          {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className={isMobile ? "h-24" : "h-32"} />
-          ))}
-        </div>
-        <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-3'}`}>
-          <div className={isMobile ? "" : "lg:col-span-2"}>
-            <Skeleton className={isMobile ? "h-64" : "h-96"} />
-          </div>
-          <div className={`space-y-4 ${isMobile ? '' : 'md:space-y-6'}`}>
-            <Skeleton className={isMobile ? "h-40" : "h-48"} />
-            <Skeleton className={isMobile ? "h-40" : "h-48"} />
-          </div>
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
