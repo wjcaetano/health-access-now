@@ -17,7 +17,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
-import { hubMenuItems } from "./navigation/menus/HubMenu";
+import { hubMenuGroups } from "./navigation/menus/HubMenu";
 import { prestadorMenuItems } from "./navigation/menus/PrestadorMenuSimplified";
 import { usePrimaryRole } from "@/hooks/useUserRoles";
 
@@ -31,15 +31,27 @@ export default function AppSidebar({ userProfile }: AppSidebarProps) {
   const { state } = useSidebar();
   const primaryRole = usePrimaryRole(user?.id);
   
-  // Determinar qual menu mostrar baseado no perfil do usuário
-  const menuItems = userProfile === "prestador" ? prestadorMenuItems : hubMenuItems;
-  
-  // Verificar se é gerente ou admin para mostrar opções administrativas
-  const isManagerOrAdmin = primaryRole === 'gerente' || primaryRole === 'admin';
-  
   const isActive = (href: string) => {
     return location.pathname.startsWith(href);
   };
+
+  // Filtrar grupos e itens baseado no role do usuário
+  const getVisibleGroups = () => {
+    if (!primaryRole) return [];
+    
+    return hubMenuGroups
+      .map(group => ({
+        ...group,
+        items: group.items.filter(item => 
+          !item.roles || item.roles.includes(primaryRole)
+        )
+      }))
+      .filter(group => group.items.length > 0);
+  };
+  
+  const visibleGroups = userProfile === "prestador" 
+    ? [{ title: "Prestador", items: prestadorMenuItems }]
+    : getVisibleGroups();
 
   return (
     <Sidebar 
@@ -62,51 +74,17 @@ export default function AppSidebar({ userProfile }: AppSidebarProps) {
       </SidebarHeader>
       
       <SidebarContent className="flex-1 px-2 py-4">
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-sidebar-foreground/60 mb-2">
-            {userProfile === "prestador" ? "Prestador" : "Hub AGENDAJA"}
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems
-                .filter(item => !item.roles || (primaryRole && item.roles.includes(primaryRole)))
-                .map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={isActive(item.href)}>
-                    <Link
-                      to={item.href}
-                      className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                        isActive(item.href)
-                          ? "bg-agendaja-primary/10 text-agendaja-primary"
-                          : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      )}
-                    >
-                      <item.icon className={cn(
-                        "h-4 w-4 flex-shrink-0",
-                        isActive(item.href) ? "text-agendaja-primary" : "text-sidebar-foreground/60"
-                      )} />
-                      {state !== "collapsed" && <span>{item.title}</span>}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Seção Administrativa - apenas para gerentes e admins */}
-        {isManagerOrAdmin && (
-          <SidebarGroup>
-            <SidebarGroupLabel className="text-xs uppercase tracking-wider text-sidebar-foreground/60 mb-2">
-              Gerência
-            </SidebarGroupLabel>
+        {visibleGroups.map((group, groupIndex) => (
+          <SidebarGroup key={group.title}>
+            {state !== "collapsed" && (
+              <SidebarGroupLabel className="text-xs uppercase tracking-wider text-sidebar-foreground/60 mb-2 px-2">
+                {group.title}
+              </SidebarGroupLabel>
+            )}
             <SidebarGroupContent>
               <SidebarMenu>
-                {hubMenuItems
-                  .filter(item => item.roles?.includes('gerente') || item.roles?.includes('admin'))
-                  .map((item) => (
-                  <SidebarMenuItem key={`admin-${item.title}`}>
+                {group.items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={isActive(item.href)}>
                       <Link
                         to={item.href}
@@ -129,7 +107,7 @@ export default function AppSidebar({ userProfile }: AppSidebarProps) {
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-        )}
+        ))}
       </SidebarContent>
     </Sidebar>
   );
