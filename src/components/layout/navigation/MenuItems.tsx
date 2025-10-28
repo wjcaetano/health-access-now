@@ -3,7 +3,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { hubMenuItems } from "./menus/HubMenu";
-import { prestadorMenuItems } from "./menus/PrestadorMenuSimplified";
+import { prestadorMenuItems, clienteMenuItems } from "./menus/PrestadorMenuSimplified";
 import { cn } from "@/lib/utils";
 
 export interface MenuItem {
@@ -24,6 +24,10 @@ const MenuItems: React.FC<MenuItemsProps> = React.memo(({ onItemClick }) => {
   const getMenuItems = () => {
     if (profile?.nivel_acesso === "prestador") {
       return prestadorMenuItems;
+    }
+    
+    if (profile?.nivel_acesso === "cliente") {
+      return clienteMenuItems;
     }
     
     if (["admin", "gerente", "atendente", "colaborador"].includes(profile?.nivel_acesso || "")) {

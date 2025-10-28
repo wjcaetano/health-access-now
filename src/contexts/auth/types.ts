@@ -5,11 +5,12 @@ export interface UserProfile {
   id: string;
   email: string;
   nome?: string;
-  nivel_acesso: 'colaborador' | 'atendente' | 'gerente' | 'admin' | 'prestador';
+  nivel_acesso: 'colaborador' | 'atendente' | 'gerente' | 'admin' | 'prestador' | 'cliente';
   status: 'pendente' | 'aguardando_aprovacao' | 'ativo' | 'suspenso' | 'inativo';
   organizacao_id?: string;
   colaborador_id?: string;
   prestador_id?: string;
+  cliente_id?: string;
   foto_url?: string;
   created_at?: string;
   updated_at?: string;

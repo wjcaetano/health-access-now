@@ -20,6 +20,10 @@ import {
   LazyPrestadorPortal
 } from "@/components/layout/LazyPages";
 
+// Cliente portal (não está no LazyPages ainda)
+import { lazy } from "react";
+const LazyClientePortal = lazy(() => import("@/components/portals/ClientePortal"));
+
 // Páginas públicas (não lazy pois são críticas)
 import PaginaDeVendas from "@/pages/PaginaDeVendas";
 import PortalParceiro from "@/pages/parceiros/PortalParceiro";
@@ -86,6 +90,14 @@ function App() {
                     </ProtectedRoute>
                   } />
                   
+                  {/* Portal do Cliente - apenas para clientes */}
+                  <Route path="/cliente/*" element={
+                    <ProtectedRoute requiredLevel="cliente">
+                      <SuspenseWrapper minHeight="100vh">
+                        <LazyClientePortal />
+                      </SuspenseWrapper>
+                    </ProtectedRoute>
+                  } />
                   
                   {/* Redirecionamentos para compatibilidade */}
                   <Route path="/unidade/*" element={<Navigate to="/hub/dashboard" replace />} />

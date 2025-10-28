@@ -947,6 +947,38 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          organizacao_id: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          organizacao_id?: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          organizacao_id?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_organizacao_id_fkey"
+            columns: ["organizacao_id"]
+            isOneToOne: false
+            referencedRelation: "organizacoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vendas: {
         Row: {
           cliente_id: string
@@ -1089,6 +1121,10 @@ export type Database = {
         }
         Returns: string
       }
+      current_user_has_role: {
+        Args: { _role: Database["public"]["Enums"]["app_role"] }
+        Returns: boolean
+      }
       delete_user_and_colaborador: {
         Args: { user_email: string }
         Returns: undefined
@@ -1103,7 +1139,21 @@ export type Database = {
       }
       get_user_level: { Args: never; Returns: string }
       get_user_organizacao_id: { Args: never; Returns: string }
+      get_user_roles: {
+        Args: { _user_id: string }
+        Returns: {
+          organizacao_id: string
+          role: Database["public"]["Enums"]["app_role"]
+        }[]
+      }
       get_user_unidade_id: { Args: never; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       is_admin_or_manager: { Args: never; Returns: boolean }
       is_user_active: { Args: never; Returns: boolean }
       ja_bateu_ponto_hoje: {
@@ -1116,7 +1166,13 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role:
+        | "admin"
+        | "gerente"
+        | "atendente"
+        | "colaborador"
+        | "prestador"
+        | "cliente"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1243,6 +1299,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: [
+        "admin",
+        "gerente",
+        "atendente",
+        "colaborador",
+        "prestador",
+        "cliente",
+      ],
+    },
   },
 } as const

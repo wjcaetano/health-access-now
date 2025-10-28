@@ -4,7 +4,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 interface PortalErrorBoundaryProps {
   children: React.ReactNode;
-  portalType: 'hub' | 'prestador';
+  portalType: 'hub' | 'prestador' | 'parceiro' | 'cliente';
 }
 
 function ErrorFallback({ error, resetErrorBoundary, portalType }: { 

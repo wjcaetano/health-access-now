@@ -4,9 +4,12 @@ import {
   BarChart3,
   ClipboardList,
   DollarSign,
-  User
+  User,
+  Home,
+  Calendar
 } from "lucide-react";
 
+// Menu para prestadores
 export const prestadorMenuItems: MenuItem[] = [
   {
     title: "Portal",
@@ -31,5 +34,27 @@ export const prestadorMenuItems: MenuItem[] = [
     icon: User,
     href: "/prestador/perfil",
     roles: ["prestador"]
+  }
+];
+
+// Menu para clientes
+export const clienteMenuItems: MenuItem[] = [
+  {
+    title: "Meu Portal",
+    icon: Home,
+    href: "/cliente/dashboard",
+    roles: ["cliente"]
+  },
+  {
+    title: "Meus Agendamentos",
+    icon: Calendar,
+    href: "/cliente/agendamentos",
+    roles: ["cliente"]
+  },
+  {
+    title: "Meu Perfil",
+    icon: User,
+    href: "/hub/meu-perfil",
+    roles: ["cliente"]
   }
 ];

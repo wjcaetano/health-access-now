@@ -6,7 +6,7 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
 interface RouteGuardProps {
   children: React.ReactNode;
-  requiredLevel?: 'colaborador' | 'atendente' | 'gerente' | 'admin' | 'prestador';
+  requiredLevel?: 'colaborador' | 'atendente' | 'gerente' | 'admin' | 'prestador' | 'cliente';
   fallbackPath?: string;
 }
 

@@ -7,7 +7,7 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAdmin?: boolean;
-  requiredLevel?: 'atendente' | 'gerente' | 'admin' | 'prestador';
+  requiredLevel?: 'atendente' | 'gerente' | 'admin' | 'prestador' | 'cliente';
   fallbackPath?: string;
 }
 
@@ -57,15 +57,30 @@ export function ProtectedRoute({
     const userLevelIndex = levels.indexOf(profile.nivel_acesso);
     const requiredLevelIndex = levels.indexOf(requiredLevel);
     
-    // Allow access if user level is equal or higher than required, or if user is prestador accessing prestador routes
+    // Handle special roles that don't fit hierarchical structure
     if (profile.nivel_acesso === 'prestador' && requiredLevel !== 'prestador') {
       console.log('Prestador trying to access non-prestador route, redirecting');
       return <Navigate to="/prestador/portal" replace />;
     }
     
-    if (requiredLevel !== 'prestador' && userLevelIndex < requiredLevelIndex) {
+    if (profile.nivel_acesso === 'cliente' && requiredLevel !== 'cliente') {
+      console.log('Cliente trying to access non-cliente route, redirecting');
+      return <Navigate to="/cliente/dashboard" replace />;
+    }
+    
+    if (requiredLevel === 'prestador' && profile.nivel_acesso !== 'prestador') {
+      console.log('Non-prestador trying to access prestador route, redirecting');
+      return <Navigate to="/hub/dashboard" replace />;
+    }
+    
+    if (requiredLevel === 'cliente' && profile.nivel_acesso !== 'cliente') {
+      console.log('Non-cliente trying to access cliente route, redirecting');
+      return <Navigate to="/hub/dashboard" replace />;
+    }
+    
+    if (requiredLevel !== 'prestador' && requiredLevel !== 'cliente' && userLevelIndex < requiredLevelIndex) {
       console.log('Required level not met, redirecting based on user level');
-      return <Navigate to="/unidade/dashboard" replace />;
+      return <Navigate to="/hub/dashboard" replace />;
     }
   }
 
