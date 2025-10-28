@@ -47,6 +47,12 @@ export const routeMigrations: Record<string, string> = {
   '/cliente/orcamentos': CLIENT_ROUTES.QUOTES,
 
   // ==========================================================
+  // LANDING PAGES MIGRATIONS
+  // Adicionado: 2025-01-28 | Manter indefinidamente
+  // ==========================================================
+  '/portal-parceiro': '/landing/parceiros',
+
+  // ==========================================================
   // HUB MIGRATIONS (Portuguese → English)
   // Adicionado: 2024-10-28 | Remover após: 2025-04-28
   // ==========================================================

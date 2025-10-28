@@ -32,7 +32,7 @@ const LazyClientePortal = lazy(() => import("@/components/portals/ClientePortal"
 
 // Páginas públicas (não lazy pois são críticas)
 import PaginaDeVendas from "@/pages/PaginaDeVendas";
-import PortalParceiro from "@/pages/parceiros/PortalParceiro";
+import Parceiros from "@/pages/landing/Parceiros";
 import ServicoPublico from "@/pages/servicos/ServicoPublico";
 
 function App() {
@@ -57,8 +57,8 @@ function App() {
                   <Route path="/register/provider" element={<CadastroPrestador />} />
                   <Route path="/auth/redirect" element={<ProfileRedirect />} />
                   
-                  {/* Páginas Públicas */}
-                  <Route path="/portal-parceiro" element={<PortalParceiro />} />
+                  {/* Landing Pages */}
+                  <Route path="/landing/parceiros" element={<Parceiros />} />
                   
                   {/* Serviços Públicos - Rota dinâmica consolidada */}
                   <Route path="/servicos/:categoria" element={<ServicoPublico />} />
