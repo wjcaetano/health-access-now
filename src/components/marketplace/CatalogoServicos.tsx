@@ -3,17 +3,33 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, DollarSign, Clock, Star } from 'lucide-react';
+import { Search, DollarSign, Clock, Star, Calendar } from 'lucide-react';
 import { useMarketplaceServicos, useCategoriasServicos, FiltrosMarketplace } from '@/hooks/useMarketplaceServicos';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/formatters';
+import { AgendarServicoModal } from './AgendarServicoModal';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export const CatalogoServicos: React.FC = () => {
+  const { profile } = useAuth();
+  const navigate = useNavigate();
   const [filtros, setFiltros] = useState<FiltrosMarketplace>({});
   const [busca, setBusca] = useState('');
+  const [servicoSelecionado, setServicoSelecionado] = useState<any>(null);
+  const [showAgendarModal, setShowAgendarModal] = useState(false);
 
   const { data: servicos, isLoading } = useMarketplaceServicos(filtros);
   const { data: categorias } = useCategoriasServicos();
+
+  const handleAgendar = (servico: any) => {
+    if (!profile) {
+      navigate('/login');
+      return;
+    }
+    setServicoSelecionado(servico);
+    setShowAgendarModal(true);
+  };
 
   const handleBuscar = () => {
     setFiltros(prev => ({ ...prev, busca }));
@@ -148,7 +164,10 @@ export const CatalogoServicos: React.FC = () => {
                       <DollarSign className="h-4 w-4" />
                       {formatCurrency(servico.valor_venda)}
                     </div>
-                    <Button size="sm">Agendar</Button>
+                    <Button size="sm" onClick={() => handleAgendar(servico)}>
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Agendar
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -156,6 +175,14 @@ export const CatalogoServicos: React.FC = () => {
           ))
         )}
       </div>
+
+      {servicoSelecionado && (
+        <AgendarServicoModal
+          servico={servicoSelecionado}
+          open={showAgendarModal}
+          onOpenChange={setShowAgendarModal}
+        />
+      )}
     </div>
   );
 };

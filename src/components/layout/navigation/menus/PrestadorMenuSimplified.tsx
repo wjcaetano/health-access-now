@@ -6,7 +6,8 @@ import {
   DollarSign,
   User,
   Home,
-  Calendar
+  Calendar,
+  FileText
 } from "lucide-react";
 
 // Menu para prestadores
@@ -49,6 +50,12 @@ export const clienteMenuItems: MenuItem[] = [
     title: "Meus Agendamentos",
     icon: Calendar,
     href: "/cliente/agendamentos",
+    roles: ["cliente"]
+  },
+  {
+    title: "Meus Orçamentos",
+    icon: FileText,
+    href: "/cliente/orcamentos",
     roles: ["cliente"]
   },
   {

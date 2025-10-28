@@ -1,4 +1,4 @@
-import React from "react";
+import React, { lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/layout/Layout";
@@ -7,6 +7,8 @@ import SuspenseWrapper from "@/components/shared/SuspenseWrapper";
 import { PortalClienteDashboard } from "@/pages/clientes/PortalClienteDashboard";
 import { PortalClienteAgendamentos } from "@/pages/clientes/PortalClienteAgendamentos";
 import { useHasRole } from "@/hooks/useUserRoles";
+
+const LazyPortalClienteOrcamentos = lazy(() => import("@/pages/clientes/PortalClienteOrcamentos"));
 
 /**
  * Portal do Cliente
@@ -33,6 +35,11 @@ const ClientePortal: React.FC = () => {
           <Route path="agendamentos" element={
             <SuspenseWrapper>
               <PortalClienteAgendamentos />
+            </SuspenseWrapper>
+          } />
+          <Route path="orcamentos" element={
+            <SuspenseWrapper>
+              <LazyPortalClienteOrcamentos />
             </SuspenseWrapper>
           } />
           <Route path="*" element={<Navigate to="dashboard" replace />} />
