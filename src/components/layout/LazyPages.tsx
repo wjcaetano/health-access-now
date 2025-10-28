@@ -37,5 +37,5 @@ export const LazyFaturamentoPrestador = lazy(() => import('@/pages/prestador/Fat
 export const LazyPortalCliente = lazy(() => import('@/pages/clientes/PortalCliente'));
 
 // Portais com Lazy Loading
-export const LazyUnidadePortal = lazy(() => import('@/components/portals/UnidadePortal'));
+export const LazyHubPortal = lazy(() => import('@/components/portals/HubPortal'));
 export const LazyPrestadorPortal = lazy(() => import('@/components/portals/PrestadorPortal'));

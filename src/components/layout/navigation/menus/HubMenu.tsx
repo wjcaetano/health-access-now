@@ -19,67 +19,67 @@ export const hubMenuItems: MenuItem[] = [
   {
     title: "Dashboard",
     icon: BarChart3,
-    href: "/unidade/dashboard",
+    href: "/hub/dashboard",
     roles: ["atendente", "gerente", "admin"]
   },
   {
     title: "Vendas",
     icon: DollarSign,
-    href: "/unidade/vendas",
+    href: "/hub/vendas",
     roles: ["atendente", "gerente", "admin"]
   },
   {
     title: "Agendamentos",
     icon: Calendar,
-    href: "/unidade/agendamentos",
+    href: "/hub/agendamentos",
     roles: ["atendente", "gerente", "admin"]
   },
   {
     title: "Orçamentos",
     icon: FileText,
-    href: "/unidade/orcamentos",
+    href: "/hub/orcamentos",
     roles: ["atendente", "gerente", "admin"]
   },
   {
     title: "Clientes",
     icon: Users,
-    href: "/unidade/clientes",
+    href: "/hub/clientes",
     roles: ["atendente", "gerente", "admin"]
   },
   {
     title: "Prestadores",
     icon: Stethoscope,
-    href: "/unidade/prestadores",
+    href: "/hub/prestadores",
     roles: ["gerente", "admin"]
   },
   {
     title: "Serviços",
     icon: Package,
-    href: "/unidade/servicos",
+    href: "/hub/servicos",
     roles: ["gerente", "admin"]
   },
   {
     title: "Financeiro",
     icon: Calculator,
-    href: "/unidade/financeiro",
+    href: "/hub/financeiro",
     roles: ["gerente", "admin"]
   },
   {
     title: "Colaboradores",
     icon: UserCog,
-    href: "/unidade/colaboradores",
+    href: "/hub/colaboradores",
     roles: ["gerente", "admin"]
   },
   {
     title: "Organizações",
     icon: Building2,
-    href: "/unidade/organizacoes",
+    href: "/hub/organizacoes",
     roles: ["admin"]
   },
   {
     title: "Configurações",
     icon: Settings,
-    href: "/unidade/configuracoes",
+    href: "/hub/configuracoes",
     roles: ["admin"]
   }
 ];

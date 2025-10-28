@@ -29,7 +29,7 @@ const ExamesDeImagem = () => {
                 </div>
                 <Button 
                   size="lg"
-                  onClick={() => window.location.href = '/unidade/agendamentos'}
+                  onClick={() => window.location.href = '/hub/agendamentos'}
                 >
                   Agendar Exame de Imagem
                 </Button>

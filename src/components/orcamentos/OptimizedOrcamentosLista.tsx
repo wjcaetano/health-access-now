@@ -18,7 +18,7 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
-import { useOptimizedOrcamentos } from "@/hooks/useOptimizedQueries";
+import { useOrcamentos } from "@/hooks/useOrcamentos";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMemorizedCalculations } from "@/hooks/useMemorizedData";
 import OptimizedTable from "@/components/shared/OptimizedTable";
@@ -107,7 +107,7 @@ const MobileOrcamentoCard = memo(({ orcamento }: { orcamento: any }) => {
             variant="outline" 
             size="sm"
             className="w-full text-agendaja-primary hover:text-agendaja-primary/80 hover:bg-agendaja-light/50"
-            onClick={() => navigate(`/unidade/orcamentos/${orcamento.id}`)}
+            onClick={() => navigate(`/hub/orcamentos/${orcamento.id}`)}
           >
             <Eye className="h-4 w-4 mr-2" />
             Visualizar Orçamento
@@ -122,7 +122,7 @@ MobileOrcamentoCard.displayName = "MobileOrcamentoCard";
 const OptimizedOrcamentosLista: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const { data: orcamentos, isLoading, error } = useOptimizedOrcamentos();
+  const { data: orcamentos, isLoading, error } = useOrcamentos();
   const isMobile = useIsMobile();
   
   // Memoized filtered and sorted data
@@ -201,7 +201,7 @@ const OptimizedOrcamentosLista: React.FC = () => {
           variant="ghost" 
           size="sm"
           className="text-agendaja-primary hover:text-agendaja-primary/80 hover:bg-agendaja-light/50"
-          onClick={() => navigate(`/unidade/orcamentos/${row.original.id}`)}
+          onClick={() => navigate(`/hub/orcamentos/${row.original.id}`)}
         >
           <Eye className="h-4 w-4 mr-1" />
           Ver

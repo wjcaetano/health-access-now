@@ -115,7 +115,7 @@ const AgendamentosLista: React.FC = () => {
           <h2 className="text-3xl font-bold text-gray-900">Agendamentos</h2>
           <p className="text-gray-500 mt-1">Gerencie todos os agendamentos</p>
         </div>
-        <Link to="/unidade/agendamentos/novo">
+        <Link to="/hub/agendamentos/novo">
           <Button>
             <Plus className="h-4 w-4 mr-2" />
             Novo Agendamento

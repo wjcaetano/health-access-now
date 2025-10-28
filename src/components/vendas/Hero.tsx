@@ -45,7 +45,7 @@ const Hero = () => {
               <Button 
                 size="lg" 
                 className="text-lg px-8 py-4 bg-gradient-to-r from-agendaja-primary to-agendaja-secondary text-white hover:from-agendaja-primary/90 hover:to-agendaja-secondary/90 shadow-lg transition-all duration-300 hover:scale-105 border-none" 
-                onClick={() => window.location.href = '/unidade/agendamentos'}
+                onClick={() => window.location.href = '/hub/agendamentos'}
               >
                 <User className="mr-2 w-5 h-5" /> 
                 Agendar Agora

@@ -90,7 +90,7 @@ const ComoFunciona = () => {
           <Button
             size="lg"
             className="bg-gradient-to-r from-agendaja-primary to-agendaja-secondary hover:from-agendaja-primary/90 hover:to-agendaja-secondary/90 text-white px-8 py-4 text-lg shadow-lg transition-all duration-300 hover:scale-105 border-none"
-            onClick={() => window.location.href = '/unidade/agendamentos'}
+            onClick={() => window.location.href = '/hub/agendamentos'}
           >
             Agendar Consulta ou Exame
             <ArrowRight className="ml-2 w-5 h-5" />

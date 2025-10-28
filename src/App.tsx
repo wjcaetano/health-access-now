@@ -16,7 +16,7 @@ import SuspenseWrapper from "@/components/shared/SuspenseWrapper";
 
 // Lazy load portals
 import { 
-  LazyUnidadePortal, 
+  LazyHubPortal, 
   LazyPrestadorPortal
 } from "@/components/layout/LazyPages";
 
@@ -68,11 +68,11 @@ function App() {
                   <Route path="/servicos/exames-de-imagem" element={<ExamesDeImagem />} />
                   <Route path="/servicos/outros-exames" element={<OutrosExames />} />
                   
-                  {/* Portal da Unidade - para gerentes, atendentes e admins de unidade */}
-                  <Route path="/unidade/*" element={
+                  {/* Portal do Hub AGENDAJA - para gerentes, atendentes e admins */}
+                  <Route path="/hub/*" element={
                     <ProtectedRoute>
                       <SuspenseWrapper minHeight="100vh">
-                        <LazyUnidadePortal />
+                        <LazyHubPortal />
                       </SuspenseWrapper>
                     </ProtectedRoute>
                   } />
@@ -88,9 +88,10 @@ function App() {
                   
                   
                   {/* Redirecionamentos para compatibilidade */}
-                  <Route path="/sistema/*" element={<Navigate to="/unidade/dashboard" replace />} />
+                  <Route path="/unidade/*" element={<Navigate to="/hub/dashboard" replace />} />
+                  <Route path="/sistema/*" element={<Navigate to="/hub/dashboard" replace />} />
                   <Route path="/portal" element={<Navigate to="/" replace />} />
-                  <Route path="/dashboard" element={<Navigate to="/unidade/dashboard" replace />} />
+                  <Route path="/dashboard" element={<Navigate to="/hub/dashboard" replace />} />
                   
                   {/* Página 404 */}
                   <Route path="*" element={<NotFound />} />

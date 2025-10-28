@@ -14,7 +14,7 @@ const CallToAction = () => {
       <Button
         size="lg"
         className="text-lg bg-white text-agendaja-primary hover:bg-agendaja-secondary hover:text-white shadow-lg"
-        onClick={() => window.location.href = '/unidade/agendamentos'}
+        onClick={() => window.location.href = '/hub/agendamentos'}
       >
         Agendar Exame ou Consulta
       </Button>

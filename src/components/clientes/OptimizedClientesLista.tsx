@@ -4,8 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, User, Phone, Mail, MapPin, Edit, Trash2 } from "lucide-react";
-import { useOptimizedClientes } from "@/hooks/useOptimizedQueries";
-import { useDeleteCliente } from "@/hooks/useClientes";
+import { useClientes, useDeleteCliente } from "@/hooks/useClientes";
 import { useIsMobile } from "@/hooks/use-mobile";
 import OptimizedTable from "@/components/shared/OptimizedTable";
 import { ClientesSkeleton } from "./ClientesSkeleton";
@@ -92,7 +91,7 @@ const ClienteCard = memo(({ cliente, onDelete }: { cliente: any; onDelete: (id: 
 ClienteCard.displayName = "ClienteCard";
 
 const OptimizedClientesLista = memo(() => {
-  const { data: clientes, isLoading, error } = useOptimizedClientes();
+  const { data: clientes, isLoading, error } = useClientes();
   const deleteCliente = useDeleteCliente();
   const [searchTerm, setSearchTerm] = useState("");
   const isMobile = useIsMobile();

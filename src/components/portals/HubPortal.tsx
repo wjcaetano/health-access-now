@@ -6,7 +6,7 @@ import Layout from "@/components/layout/Layout";
 import PortalErrorBoundary from "@/components/shared/PortalErrorBoundary";
 import SuspenseWrapper from "@/components/shared/SuspenseWrapper";
 
-// Lazy load páginas específicas da unidade
+// Lazy load páginas específicas do Hub AGENDAJA
 import { 
   LazyIndex as Index,
   LazyVendas as Vendas,
@@ -21,16 +21,16 @@ import {
   LazySystemSettings as SystemSettings
 } from "@/components/layout/LazyPages";
 
-const UnidadePortal: React.FC = () => {
+const HubPortal: React.FC = () => {
   const { profile, isActive } = useAuth();
 
-  // Verificar se é um usuário da unidade
+  // Verificar se é um usuário do hub (admin, gerente, atendente ou colaborador)
   if (!isActive || !['admin', 'atendente', 'gerente', 'colaborador'].includes(profile?.nivel_acesso || '')) {
     return <Navigate to="/login" replace />;
   }
 
   return (
-    <PortalErrorBoundary portalType="unidade">
+    <PortalErrorBoundary portalType="hub">
       <Layout>
         <Routes>
           <Route index element={<Navigate to="dashboard" replace />} />
@@ -100,4 +100,4 @@ const UnidadePortal: React.FC = () => {
   );
 };
 
-export default UnidadePortal;
+export default HubPortal;
