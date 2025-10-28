@@ -2,6 +2,7 @@
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
 import { MobileLayout } from "./MobileLayout";
 import { DesktopLayout } from "./DesktopLayout";
 import { LoadingLayout } from "./LoadingLayout";
@@ -12,8 +13,11 @@ interface AppLayoutProps {
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
-  const { loading, isActive, profile } = useAuth();
+  const { loading, isActive, profile, user } = useAuth();
   const isMobile = useIsMobile();
+  
+  // Ativar listener de notificações em tempo real
+  useRealtimeNotifications(user?.id);
   
   // Estados de carregamento
   if (loading) {
