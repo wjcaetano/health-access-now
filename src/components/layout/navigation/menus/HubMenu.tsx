@@ -23,6 +23,12 @@ export const hubMenuItems: MenuItem[] = [
     roles: ["atendente", "gerente", "admin"]
   },
   {
+    title: "Dashboard Estratégico",
+    icon: BarChart3,
+    href: "/hub/dashboard-estrategico",
+    roles: ["gerente", "admin"]
+  },
+  {
     title: "Vendas",
     icon: DollarSign,
     href: "/hub/vendas",
@@ -53,6 +59,18 @@ export const hubMenuItems: MenuItem[] = [
     roles: ["gerente", "admin"]
   },
   {
+    title: "Buscar Prestadores",
+    icon: Stethoscope,
+    href: "/hub/buscar-prestadores",
+    roles: ["atendente", "gerente", "admin"]
+  },
+  {
+    title: "Marketplace",
+    icon: Package,
+    href: "/hub/marketplace",
+    roles: ["atendente", "gerente", "admin"]
+  },
+  {
     title: "Serviços",
     icon: Package,
     href: "/hub/servicos",
@@ -75,6 +93,12 @@ export const hubMenuItems: MenuItem[] = [
     icon: Building2,
     href: "/hub/organizacoes",
     roles: ["admin"]
+  },
+  {
+    title: "Relatórios",
+    icon: FileText,
+    href: "/hub/relatorios",
+    roles: ["gerente", "admin"]
   },
   {
     title: "Configurações",

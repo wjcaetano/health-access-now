@@ -130,6 +130,74 @@ export type Database = {
           },
         ]
       }
+      avaliacoes: {
+        Row: {
+          cliente_id: string
+          comentario: string | null
+          created_at: string
+          guia_id: string
+          id: string
+          nota: number
+          organizacao_id: string | null
+          prestador_id: string
+          resposta_prestador: string | null
+          updated_at: string
+        }
+        Insert: {
+          cliente_id: string
+          comentario?: string | null
+          created_at?: string
+          guia_id: string
+          id?: string
+          nota: number
+          organizacao_id?: string | null
+          prestador_id: string
+          resposta_prestador?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cliente_id?: string
+          comentario?: string | null
+          created_at?: string
+          guia_id?: string
+          id?: string
+          nota?: number
+          organizacao_id?: string | null
+          prestador_id?: string
+          resposta_prestador?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "avaliacoes_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avaliacoes_guia_id_fkey"
+            columns: ["guia_id"]
+            isOneToOne: true
+            referencedRelation: "guias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avaliacoes_organizacao_id_fkey"
+            columns: ["organizacao_id"]
+            isOneToOne: false
+            referencedRelation: "organizacoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avaliacoes_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clientes: {
         Row: {
           cpf: string
@@ -698,15 +766,19 @@ export type Database = {
           comissao: number | null
           conta: string | null
           data_cadastro: string | null
+          disponibilidade: string | null
           email: string
           endereco: string
           especialidades: string[] | null
           id: string
+          localizacao: string | null
+          media_avaliacoes: number | null
           nome: string
           organizacao_id: string | null
           telefone: string
           tipo: string
           tipo_conta: string | null
+          total_avaliacoes: number | null
         }
         Insert: {
           agencia?: string | null
@@ -716,15 +788,19 @@ export type Database = {
           comissao?: number | null
           conta?: string | null
           data_cadastro?: string | null
+          disponibilidade?: string | null
           email: string
           endereco: string
           especialidades?: string[] | null
           id?: string
+          localizacao?: string | null
+          media_avaliacoes?: number | null
           nome: string
           organizacao_id?: string | null
           telefone: string
           tipo: string
           tipo_conta?: string | null
+          total_avaliacoes?: number | null
         }
         Update: {
           agencia?: string | null
@@ -734,15 +810,19 @@ export type Database = {
           comissao?: number | null
           conta?: string | null
           data_cadastro?: string | null
+          disponibilidade?: string | null
           email?: string
           endereco?: string
           especialidades?: string[] | null
           id?: string
+          localizacao?: string | null
+          media_avaliacoes?: number | null
           nome?: string
           organizacao_id?: string | null
           telefone?: string
           tipo?: string
           tipo_conta?: string | null
+          total_avaliacoes?: number | null
         }
         Relationships: [
           {

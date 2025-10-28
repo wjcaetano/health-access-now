@@ -21,6 +21,13 @@ import {
   LazySystemSettings as SystemSettings
 } from "@/components/layout/LazyPages";
 
+// Fase 4 - Novas páginas
+import { lazy } from "react";
+const BuscarPrestadores = lazy(() => import("@/pages/BuscarPrestadores"));
+const MarketplaceServicos = lazy(() => import("@/pages/MarketplaceServicos"));
+const DashboardEstrategicoPage = lazy(() => import("@/pages/DashboardEstrategicoPage"));
+const RelatoriosCentralizadosPage = lazy(() => import("@/pages/RelatoriosCentralizadosPage"));
+
 const HubPortal: React.FC = () => {
   const { profile, isActive } = useAuth();
 
@@ -37,6 +44,26 @@ const HubPortal: React.FC = () => {
           <Route path="dashboard" element={
             <SuspenseWrapper>
               <Index />
+            </SuspenseWrapper>
+          } />
+          <Route path="dashboard-estrategico" element={
+            <SuspenseWrapper>
+              <DashboardEstrategicoPage />
+            </SuspenseWrapper>
+          } />
+          <Route path="buscar-prestadores" element={
+            <SuspenseWrapper>
+              <BuscarPrestadores />
+            </SuspenseWrapper>
+          } />
+          <Route path="marketplace" element={
+            <SuspenseWrapper>
+              <MarketplaceServicos />
+            </SuspenseWrapper>
+          } />
+          <Route path="relatorios" element={
+            <SuspenseWrapper>
+              <RelatoriosCentralizadosPage />
             </SuspenseWrapper>
           } />
           <Route path="vendas" element={
