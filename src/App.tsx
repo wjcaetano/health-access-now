@@ -10,6 +10,10 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 import ProfileRedirect from "@/components/auth/ProfileRedirect";
 import Login from "@/pages/auth/Login";
+import RecoveryPage from "@/pages/RecoveryPage";
+import CadastroCliente from "@/pages/auth/CadastroCliente";
+import CadastroPrestador from "@/pages/auth/CadastroPrestador";
+import AprovacoesPage from "@/pages/AprovacoesPage";
 import NotFound from "@/pages/NotFound";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import SuspenseWrapper from "@/components/shared/SuspenseWrapper";
@@ -61,6 +65,9 @@ function App() {
                   
                   {/* Autenticação */}
                   <Route path="/login" element={<Login />} />
+                  <Route path="/recovery" element={<RecoveryPage />} />
+                  <Route path="/cadastro/cliente" element={<CadastroCliente />} />
+                  <Route path="/cadastro/prestador" element={<CadastroPrestador />} />
                   <Route path="/auth/redirect" element={<ProfileRedirect />} />
                   
                   {/* Páginas Públicas */}
@@ -78,6 +85,13 @@ function App() {
                       <SuspenseWrapper minHeight="100vh">
                         <LazyHubPortal />
                       </SuspenseWrapper>
+                    </ProtectedRoute>
+                  } />
+                  
+                  {/* Aprovações - apenas admins */}
+                  <Route path="/hub/aprovacoes" element={
+                    <ProtectedRoute requiredLevel="admin">
+                      <AprovacoesPage />
                     </ProtectedRoute>
                   } />
                   

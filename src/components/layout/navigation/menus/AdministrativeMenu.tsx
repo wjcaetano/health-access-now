@@ -9,7 +9,8 @@ import {
   FileText,
   Activity,
   DollarSign,
-  BookOpen
+  BookOpen,
+  CheckSquare
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -25,42 +26,49 @@ const menuItems: MenuItem[] = [
   {
     title: 'Financeiro',
     icon: <DollarSign className="h-4 w-4" />,
-    path: '/unidade/financeiro',
+    path: '/hub/financeiro',
     description: 'Gestão financeira e fluxo de caixa',
     adminOnly: false
   },
   {
     title: 'Colaboradores',
     icon: <UserCheck className="h-4 w-4" />,
-    path: '/unidade/colaboradores',
+    path: '/hub/colaboradores',
     description: 'Gerenciar equipe e ponto eletrônico',
     adminOnly: false
   },
   {
     title: 'Meu Perfil',
     icon: <UserCheck className="h-4 w-4" />,
-    path: '/unidade/perfil',
+    path: '/hub/meu-perfil',
     description: 'Gerenciar perfil pessoal',
     adminOnly: false
   },
   {
     title: 'Relatórios',
     icon: <FileText className="h-4 w-4" />,
-    path: '/unidade/relatorios',
+    path: '/hub/relatorios',
     description: 'Relatórios e análises',
     adminOnly: false
   },
   {
+    title: 'Aprovações',
+    icon: <CheckSquare className="h-4 w-4" />,
+    path: '/hub/aprovacoes',
+    description: 'Aprovar cadastros de prestadores',
+    adminOnly: true
+  },
+  {
     title: 'Gestão de Usuários',
     icon: <Users className="h-4 w-4" />,
-    path: '/unidade/usuarios',
+    path: '/hub/usuarios',
     description: 'Gerenciar usuários e permissões',
     adminOnly: true
   },
   {
     title: 'Configurações',
     icon: <Settings className="h-4 w-4" />,
-    path: '/unidade/configuracoes',
+    path: '/hub/configuracoes',
     description: 'Configurações do sistema',
     adminOnly: true
   }

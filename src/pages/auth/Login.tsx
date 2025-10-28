@@ -245,6 +245,36 @@ export default function Login() {
                   : "Não tem conta? Cadastre-se"
                 }
               </Button>
+              
+              {!isSignUp && (
+                <div className="pt-4 border-t border-agendaja-border/20">
+                  <p className="text-xs text-center text-agendaja-text-secondary mb-3">
+                    Novo por aqui?
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 text-xs"
+                      onClick={() => navigate('/cadastro/cliente')}
+                      disabled={isLoading}
+                    >
+                      Sou Cliente
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 text-xs"
+                      onClick={() => navigate('/cadastro/prestador')}
+                      disabled={isLoading}
+                    >
+                      Sou Prestador
+                    </Button>
+                  </div>
+                </div>
+              )}
             </CardFooter>
           </form>
         </Card>
