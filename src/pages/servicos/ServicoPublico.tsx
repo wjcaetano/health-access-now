@@ -3,8 +3,8 @@ import HeaderVendas from "@/components/vendas/HeaderVendas";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Login from "@/pages/auth/Login";
 import { useState } from "react";
-import { useParams, Navigate } from "react-router-dom";
-import { 
+import { useParams, Navigate, useNavigate } from "react-router-dom";
+import {
   Stethoscope, 
   TestTube, 
   Scan, 
@@ -103,6 +103,7 @@ const SERVICOS_CONFIG: Record<string, ServicoConfig> = {
 
 const ServicoPublico = () => {
   const { categoria } = useParams<{ categoria: string }>();
+  const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const config = categoria ? SERVICOS_CONFIG[categoria] : null;
@@ -157,7 +158,7 @@ const ServicoPublico = () => {
         
         <Button 
           size="lg"
-          onClick={() => window.location.href = '/hub/agendamentos'}
+          onClick={() => navigate('/hub/appointments')}
         >
           {config.buttonText}
         </Button>

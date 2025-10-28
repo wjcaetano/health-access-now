@@ -1,8 +1,10 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const CallToAction = () => {
+  const navigate = useNavigate();
+  
   return (
     <section className="w-full py-16 flex flex-col items-center bg-gradient-to-tr from-agendaja-primary/95 to-agendaja-secondary/80 text-center">
       <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -14,7 +16,7 @@ const CallToAction = () => {
       <Button
         size="lg"
         className="text-lg bg-white text-agendaja-primary hover:bg-agendaja-secondary hover:text-white shadow-lg"
-        onClick={() => window.location.href = '/hub/agendamentos'}
+        onClick={() => navigate('/hub/appointments')}
       >
         Agendar Exame ou Consulta
       </Button>

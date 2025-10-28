@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { User, Play, CheckCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
+  const navigate = useNavigate();
+  
   return (
     <section className="w-full px-4 pt-20 pb-16 bg-gradient-to-br from-agendaja-background via-agendaja-surface to-agendaja-light">
       <div className="container mx-auto max-w-7xl">
@@ -45,7 +48,7 @@ const Hero = () => {
               <Button 
                 size="lg" 
                 className="text-lg px-8 py-4 bg-gradient-to-r from-agendaja-primary to-agendaja-secondary text-white hover:from-agendaja-primary/90 hover:to-agendaja-secondary/90 shadow-lg transition-all duration-300 hover:scale-105 border-none" 
-                onClick={() => window.location.href = '/hub/agendamentos'}
+                onClick={() => navigate('/hub/appointments')}
               >
                 <User className="mr-2 w-5 h-5" /> 
                 Agendar Agora

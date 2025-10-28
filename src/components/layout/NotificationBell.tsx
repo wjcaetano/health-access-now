@@ -20,8 +20,7 @@ export default function NotificationBell() {
   const { data: notifications = [] } = useUnreadNotifications();
   const markAsRead = useMarkNotificationAsRead();
   
-  // Ativar listener de notificações em tempo real
-  useRealtimeNotifications(user?.id);
+  // Listener já está ativo no AppLayout, não precisa duplicar aqui
 
   const handleMarkAsRead = (notificationId: string) => {
     markAsRead.mutate(notificationId);

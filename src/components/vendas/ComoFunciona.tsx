@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowRight, Search, Calendar, CreditCard, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const passos = [
   {
@@ -34,6 +35,8 @@ const passos = [
 ];
 
 const ComoFunciona = () => {
+  const navigate = useNavigate();
+  
   return (
     <section id="como-funciona" className="py-20 bg-agendaja-background">
       <div className="container mx-auto px-4 max-w-7xl">
@@ -90,7 +93,7 @@ const ComoFunciona = () => {
           <Button
             size="lg"
             className="bg-gradient-to-r from-agendaja-primary to-agendaja-secondary hover:from-agendaja-primary/90 hover:to-agendaja-secondary/90 text-white px-8 py-4 text-lg shadow-lg transition-all duration-300 hover:scale-105 border-none"
-            onClick={() => window.location.href = '/hub/agendamentos'}
+            onClick={() => navigate('/hub/appointments')}
           >
             Agendar Consulta ou Exame
             <ArrowRight className="ml-2 w-5 h-5" />
