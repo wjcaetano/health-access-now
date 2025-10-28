@@ -33,10 +33,7 @@ const LazyClientePortal = lazy(() => import("@/components/portals/ClientePortal"
 // Páginas públicas (não lazy pois são críticas)
 import PaginaDeVendas from "@/pages/PaginaDeVendas";
 import PortalParceiro from "@/pages/parceiros/PortalParceiro";
-import ConsultasMedicas from "@/pages/servicos/ConsultasMedicas";
-import ExamesLaboratoriais from "@/pages/servicos/ExamesLaboratoriais";
-import ExamesDeImagem from "@/pages/servicos/ExamesDeImagem";
-import OutrosExames from "@/pages/servicos/OutrosExames";
+import ServicoPublico from "@/pages/servicos/ServicoPublico";
 
 function App() {
   return (
@@ -63,11 +60,8 @@ function App() {
                   {/* Páginas Públicas */}
                   <Route path="/portal-parceiro" element={<PortalParceiro />} />
                   
-                  {/* Serviços Públicos */}
-                  <Route path="/servicos/consultas-medicas" element={<ConsultasMedicas />} />
-                  <Route path="/servicos/exames-laboratoriais" element={<ExamesLaboratoriais />} />
-                  <Route path="/servicos/exames-de-imagem" element={<ExamesDeImagem />} />
-                  <Route path="/servicos/outros-exames" element={<OutrosExames />} />
+                  {/* Serviços Públicos - Rota dinâmica consolidada */}
+                  <Route path="/servicos/:categoria" element={<ServicoPublico />} />
                   
                   {/* Portal do Hub AGENDAJA - para gerentes, atendentes e admins */}
                   <Route path="/hub/*" element={
