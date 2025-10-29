@@ -136,9 +136,9 @@ const adminGroup: MenuGroup = {
       roles: ["admin", "gerente"],
     },
     {
-      title: "Organizações",
+      title: "Configurações da Plataforma",
       icon: Building2,
-      href: HUB_ROUTES.ORGANIZATIONS,
+      href: HUB_ROUTES.PLATFORM_CONFIG,
       roles: ["admin"],
     },
     {

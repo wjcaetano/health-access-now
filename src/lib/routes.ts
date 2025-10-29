@@ -48,7 +48,7 @@ export const HUB_ROUTES = {
   TEAM: '/hub/team',
   TEAM_DETAIL: (id: string) => `/hub/team/${id}`,
   
-  ORGANIZATIONS: '/hub/organizations',
+  PLATFORM_CONFIG: '/hub/platform-config',
   REPORTS: '/hub/reports',
   SETTINGS: '/hub/settings',
   APPROVALS: '/hub/approvals',

@@ -29,6 +29,7 @@ const BuscarPrestadores = lazy(() => import("@/pages/BuscarPrestadores"));
 const MarketplaceServicos = lazy(() => import("@/pages/MarketplaceServicos"));
 const DashboardEstrategicoPage = lazy(() => import("@/pages/DashboardEstrategicoPage"));
 const RelatoriosCentralizadosPage = lazy(() => import("@/pages/RelatoriosCentralizadosPage"));
+const PlatformConfig = lazy(() => import("@/pages/PlatformConfig"));
 
 const HubPortal: React.FC = () => {
   const { user, isActive } = useAuth();
@@ -125,6 +126,13 @@ const HubPortal: React.FC = () => {
               <RelatoriosCentralizadosPage />
             </SuspenseWrapper>
           } />
+          {isAdmin && (
+            <Route path="platform-config" element={
+              <SuspenseWrapper>
+                <PlatformConfig />
+              </SuspenseWrapper>
+            } />
+          )}
           {(isAdmin || isManager) && (
             <Route path="settings" element={
               <SuspenseWrapper>
