@@ -8,6 +8,7 @@ import { useClientes, useDeleteCliente } from "@/hooks/useClientes";
 import { useIsMobile } from "@/hooks/use-mobile";
 import OptimizedTable from "@/components/shared/OptimizedTable";
 import { ClientesSkeleton } from "./ClientesSkeleton";
+import ClienteDetalhesDialog from "@/components/clientes/ClienteDetalhesDialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,8 +22,19 @@ import {
 } from "@/components/ui/alert-dialog";
 
 // Memoized components
-const ClienteCard = memo(({ cliente, onDelete }: { cliente: any; onDelete: (id: string) => void }) => (
-  <div className="border rounded-lg p-4 bg-white">
+const ClienteCard = memo(({ 
+  cliente, 
+  onDelete, 
+  onClick 
+}: { 
+  cliente: any; 
+  onDelete: (id: string) => void;
+  onClick: () => void;
+}) => (
+  <div 
+    className="border rounded-lg p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+    onClick={onClick}
+  >
     <div className="space-y-3">
       <div className="flex items-start gap-3">
         <div className="h-10 w-10 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary flex-shrink-0">
@@ -57,16 +69,29 @@ const ClienteCard = memo(({ cliente, onDelete }: { cliente: any; onDelete: (id: 
       </div>
       
       <div className="flex justify-end items-center gap-2 pt-2 border-t">
-        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="h-8 w-8 p-0"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick();
+          }}
+        >
           <Edit className="h-4 w-4" />
         </Button>
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="ghost" size="sm" className="text-red-600 h-8 w-8 p-0">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-red-600 h-8 w-8 p-0"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Trash2 className="h-4 w-4" />
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogContent>
+          <AlertDialogContent onClick={(e) => e.stopPropagation()}>
             <AlertDialogHeader>
               <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
               <AlertDialogDescription>
@@ -76,7 +101,10 @@ const ClienteCard = memo(({ cliente, onDelete }: { cliente: any; onDelete: (id: 
             <AlertDialogFooter>
               <AlertDialogCancel>Cancelar</AlertDialogCancel>
               <AlertDialogAction 
-                onClick={() => onDelete(cliente.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(cliente.id);
+                }}
                 className="bg-red-600 hover:bg-red-700"
               >
                 Excluir
@@ -94,6 +122,8 @@ const OptimizedClientesLista = memo(() => {
   const { data: clientes, isLoading, error } = useClientes();
   const deleteCliente = useDeleteCliente();
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedClienteId, setSelectedClienteId] = useState<string | null>(null);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const isMobile = useIsMobile();
 
   // Memoized filtered data
@@ -107,13 +137,21 @@ const OptimizedClientesLista = memo(() => {
     );
   }, [clientes, searchTerm]);
 
+  const handleClienteClick = (clienteId: string) => {
+    setSelectedClienteId(clienteId);
+    setDetailsDialogOpen(true);
+  };
+
   // Memoized table columns
   const columns = useMemo(() => [
     {
       header: "Cliente",
       accessorKey: "nome",
       cell: ({ row }: { row: any }) => (
-        <div className="flex items-start space-x-3">
+        <div 
+          className="flex items-start space-x-3 cursor-pointer hover:bg-muted/50 -m-2 p-2 rounded"
+          onClick={() => handleClienteClick(row.original.id)}
+        >
           <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-agendaja-light flex items-center justify-center text-agendaja-primary flex-shrink-0">
             <User className="h-5 w-5 md:h-6 md:w-6" />
           </div>
@@ -159,16 +197,29 @@ const OptimizedClientesLista = memo(() => {
       id: "actions",
       cell: ({ row }: { row: any }) => (
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClienteClick(row.original.id);
+            }}
+          >
             <Edit className="h-4 w-4" />
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-red-600 h-8 w-8 p-0">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-red-600 h-8 w-8 p-0"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <Trash2 className="h-4 w-4" />
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent onClick={(e) => e.stopPropagation()}>
               <AlertDialogHeader>
                 <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
                 <AlertDialogDescription>
@@ -178,7 +229,10 @@ const OptimizedClientesLista = memo(() => {
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction 
-                  onClick={() => deleteCliente.mutate(row.original.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteCliente.mutate(row.original.id);
+                  }}
                   className="bg-red-600 hover:bg-red-700"
                 >
                   Excluir
@@ -210,53 +264,62 @@ const OptimizedClientesLista = memo(() => {
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader className={isMobile ? "p-4" : "p-4 md:p-6"}>
-        <CardTitle className="flex flex-col space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <span className={isMobile ? "text-lg" : "text-lg md:text-xl"}>
-              Clientes Cadastrados ({clientesFiltrados.length})
-            </span>
-            <div className="relative w-full sm:w-72">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-              <Input
-                placeholder="Buscar por nome, CPF, telefone ou email..."
-                className="pl-8 w-full"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+    <>
+      <Card className="w-full">
+        <CardHeader className={isMobile ? "p-4" : "p-4 md:p-6"}>
+          <CardTitle className="flex flex-col space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <span className={isMobile ? "text-lg" : "text-lg md:text-xl"}>
+                Clientes Cadastrados ({clientesFiltrados.length})
+              </span>
+              <div className="relative w-full sm:w-72">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                <Input
+                  placeholder="Buscar por nome, CPF, telefone ou email..."
+                  className="pl-8 w-full"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className={isMobile ? "p-2" : "p-0"}>
-        {isMobile ? (
-          // Layout móvel com cards otimizados
-          <div className="space-y-3">
-            {clientesFiltrados.map((cliente) => (
-              <ClienteCard 
-                key={cliente.id} 
-                cliente={cliente} 
-                onDelete={handleDeleteCliente}
-              />
-            ))}
-          </div>
-        ) : (
-          // Layout desktop com OptimizedTable
-          <OptimizedTable 
-            data={clientesFiltrados}
-            columns={columns}
-            loading={isLoading}
-            pageSize={20}
-          />
-        )}
-        {clientesFiltrados.length === 0 && (
-          <div className="text-center text-gray-500 py-8 px-4">
-            {searchTerm ? "Nenhum cliente encontrado com os critérios de busca" : "Nenhum cliente cadastrado ainda"}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className={isMobile ? "p-2" : "p-0"}>
+          {isMobile ? (
+            // Layout móvel com cards otimizados
+            <div className="space-y-3">
+              {clientesFiltrados.map((cliente) => (
+                <ClienteCard 
+                  key={cliente.id} 
+                  cliente={cliente} 
+                  onDelete={handleDeleteCliente}
+                  onClick={() => handleClienteClick(cliente.id)}
+                />
+              ))}
+            </div>
+          ) : (
+            // Layout desktop com OptimizedTable
+            <OptimizedTable 
+              data={clientesFiltrados}
+              columns={columns}
+              loading={isLoading}
+              pageSize={20}
+            />
+          )}
+          {clientesFiltrados.length === 0 && (
+            <div className="text-center text-gray-500 py-8 px-4">
+              {searchTerm ? "Nenhum cliente encontrado com os critérios de busca" : "Nenhum cliente cadastrado ainda"}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <ClienteDetalhesDialog
+        clienteId={selectedClienteId}
+        open={detailsDialogOpen}
+        onOpenChange={setDetailsDialogOpen}
+      />
+    </>
   );
 });
 

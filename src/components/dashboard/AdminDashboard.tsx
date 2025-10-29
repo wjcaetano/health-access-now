@@ -50,25 +50,25 @@ export const AdminDashboard: React.FC = () => {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Button asChild variant="outline" className="h-auto flex-col gap-2 p-4 hover-scale">
-              <Link to="/hub/configuracoes">
+              <Link to="/hub/settings">
                 <Settings className="h-6 w-6" />
                 <span className="text-sm">Configurações</span>
               </Link>
             </Button>
             <Button asChild variant="outline" className="h-auto flex-col gap-2 p-4 hover-scale">
-              <Link to="/hub/colaboradores">
+              <Link to="/hub/team">
                 <UserPlus className="h-6 w-6" />
                 <span className="text-sm">Usuários</span>
               </Link>
             </Button>
             <Button asChild variant="outline" className="h-auto flex-col gap-2 p-4 hover-scale">
-              <Link to="/hub/dashboard-estrategico">
+              <Link to="/hub/analytics">
                 <BarChart3 className="h-6 w-6" />
                 <span className="text-sm">Analytics</span>
               </Link>
             </Button>
             <Button asChild variant="outline" className="h-auto flex-col gap-2 p-4 hover-scale">
-              <Link to="/hub/relatorios">
+              <Link to="/hub/reports">
                 <FileText className="h-6 w-6" />
                 <span className="text-sm">Relatórios</span>
               </Link>

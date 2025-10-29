@@ -167,7 +167,7 @@ const OrcamentosLista: React.FC = () => {
             variant="outline" 
             size="sm"
             className="w-full text-agendaja-primary hover:text-agendaja-primary/80 hover:bg-agendaja-light/50"
-            onClick={() => navigate(`/unidade/orcamentos/${orcamento.id}`)}
+            onClick={() => navigate(`/hub/quotes/${orcamento.id}`)}
           >
             <Eye className="h-4 w-4 mr-2" />
             Visualizar Orçamento
@@ -278,7 +278,7 @@ const OrcamentosLista: React.FC = () => {
                               variant="ghost" 
                               size="sm"
                               className="text-agendaja-primary hover:text-agendaja-primary/80 hover:bg-agendaja-light/50"
-                              onClick={() => navigate(`/unidade/orcamentos/${orcamento.id}`)}
+                              onClick={() => navigate(`/hub/quotes/${orcamento.id}`)}
                             >
                               <Eye className="h-4 w-4 mr-1" />
                               Ver
