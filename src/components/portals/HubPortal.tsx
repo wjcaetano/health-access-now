@@ -30,6 +30,7 @@ const MarketplaceServicos = lazy(() => import("@/pages/MarketplaceServicos"));
 const DashboardEstrategicoPage = lazy(() => import("@/pages/DashboardEstrategicoPage"));
 const RelatoriosCentralizadosPage = lazy(() => import("@/pages/RelatoriosCentralizadosPage"));
 const PlatformConfig = lazy(() => import("@/pages/PlatformConfig"));
+const AprovacoesPage = lazy(() => import("@/pages/AprovacoesPage"));
 
 const HubPortal: React.FC = () => {
   const { user, isActive } = useAuth();
@@ -114,6 +115,13 @@ const HubPortal: React.FC = () => {
           } />
           
           {/* Administração */}
+          {isAdmin && (
+            <Route path="approvals" element={
+              <SuspenseWrapper>
+                <AprovacoesPage />
+              </SuspenseWrapper>
+            } />
+          )}
           {(isAdmin || isManager) && (
             <Route path="team" element={
               <SuspenseWrapper>
