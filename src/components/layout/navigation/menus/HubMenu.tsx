@@ -15,6 +15,7 @@ import {
   Settings,
   Store,
   TrendingUp,
+  CheckCircle,
 } from "lucide-react";
 import { HUB_ROUTES } from "@/lib/routes";
 
@@ -129,6 +130,12 @@ const financeGroup: MenuGroup = {
 const adminGroup: MenuGroup = {
   title: "Administração",
   items: [
+    {
+      title: "Aprovações",
+      icon: CheckCircle,
+      href: HUB_ROUTES.APPROVALS,
+      roles: ["admin"],
+    },
     {
       title: "Relatórios",
       icon: BarChart3,
