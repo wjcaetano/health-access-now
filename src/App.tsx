@@ -15,6 +15,7 @@ import RecoveryPage from "@/pages/RecoveryPage";
 import CadastroCliente from "@/pages/auth/CadastroCliente";
 import CadastroPrestador from "@/pages/auth/CadastroPrestador";
 import AprovacoesPage from "@/pages/AprovacoesPage";
+import AguardandoAprovacao from "@/pages/AguardandoAprovacao";
 import NotFound from "@/pages/NotFound";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import SuspenseWrapper from "@/components/shared/SuspenseWrapper";
@@ -56,6 +57,7 @@ function App() {
                   <Route path="/register/client" element={<CadastroCliente />} />
                   <Route path="/register/provider" element={<CadastroPrestador />} />
                   <Route path="/auth/redirect" element={<ProfileRedirect />} />
+                  <Route path="/aguardando-aprovacao" element={<AguardandoAprovacao />} />
                   
                   {/* Landing Pages */}
                   <Route path="/landing/parceiros" element={<Parceiros />} />

@@ -40,6 +40,12 @@ export function ProtectedRoute({
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  // Permitir prestadores aguardando aprovação acessarem página especial
+  if (profile.status === 'aguardando_aprovacao' && profile.nivel_acesso === 'prestador') {
+    console.log('Prestador aguardando aprovação, redirecting to waiting page');
+    return <Navigate to="/aguardando-aprovacao" replace />;
+  }
+
   if (profile.status !== 'ativo') {
     console.log('User not active, redirecting to login');
     return <Navigate to="/login" replace />;
