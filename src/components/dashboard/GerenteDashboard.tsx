@@ -12,11 +12,11 @@ import {
   BarChart3
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useDashboardStats } from "@/hooks/useDashboard";
+import { useDashboardMetrics } from "@/hooks/useDashboardRealData";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 
 export const GerenteDashboard: React.FC = () => {
-  const { data: metricas, isLoading } = useDashboardStats();
+  const { data: metricas, isLoading } = useDashboardMetrics();
 
   if (isLoading) {
     return (
@@ -87,10 +87,10 @@ export const GerenteDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              R$ {((metricas?.agendamentosConfirmados || 0) * 120).toLocaleString('pt-BR')}
+              R$ {(metricas?.faturamentoMes || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </div>
             <p className="text-xs text-muted-foreground">
-              +20% em relação ao mês anterior
+              {metricas?.vendasMes || 0} vendas concluídas
             </p>
           </CardContent>
         </Card>
@@ -103,9 +103,9 @@ export const GerenteDashboard: React.FC = () => {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metricas?.agendamentosConfirmados || 0}</div>
+            <div className="text-2xl font-bold">{metricas?.vendasMes || 0}</div>
             <p className="text-xs text-muted-foreground">
-              Ticket médio: R$ 120,00
+              Ticket médio: R$ {metricas?.vendasMes ? (metricas.faturamentoMes / metricas.vendasMes).toFixed(2) : '0,00'}
             </p>
           </CardContent>
         </Card>
@@ -120,7 +120,7 @@ export const GerenteDashboard: React.FC = () => {
           <CardContent>
             <div className="text-2xl font-bold">{metricas?.agendamentosHoje || 0}</div>
             <p className="text-xs text-muted-foreground">
-              Este mês
+              Hoje
             </p>
           </CardContent>
         </Card>
@@ -134,12 +134,12 @@ export const GerenteDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {metricas?.agendamentosConfirmados && metricas?.totalClientes 
-                ? ((metricas.agendamentosConfirmados / metricas.totalClientes) * 100).toFixed(1)
+              {metricas?.orcamentosPendentes 
+                ? ((metricas.orcamentosPendentes / (metricas.clientesAtivos || 1)) * 100).toFixed(1)
                 : '0'}%
             </div>
             <p className="text-xs text-muted-foreground">
-              Orçamentos → Vendas
+              Orçamentos pendentes
             </p>
           </CardContent>
         </Card>
