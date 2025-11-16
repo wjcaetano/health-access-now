@@ -12,12 +12,12 @@ import {
   AlertCircle
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useDashboardStats } from "@/hooks/useDashboard";
+import { useDashboardMetrics } from "@/hooks/useDashboardRealData";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { Badge } from "@/components/ui/badge";
 
 export const AtendenteDashboard: React.FC = () => {
-  const { data: metricas, isLoading } = useDashboardStats();
+  const { data: metricas, isLoading } = useDashboardMetrics();
 
   if (isLoading) {
     return (
@@ -87,9 +87,9 @@ export const AtendenteDashboard: React.FC = () => {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{Math.floor((metricas?.totalClientes || 0) / 20)}</div>
+            <div className="text-2xl font-bold">{metricas?.vendasMes || 0}</div>
             <p className="text-xs text-muted-foreground">
-              +2 desde ontem
+              Do mês atual
             </p>
           </CardContent>
         </Card>
@@ -104,7 +104,7 @@ export const AtendenteDashboard: React.FC = () => {
           <CardContent>
             <div className="text-2xl font-bold">{metricas?.agendamentosHoje || 0}</div>
             <p className="text-xs text-muted-foreground">
-              Próximo às 14h
+              Confirmados
             </p>
           </CardContent>
         </Card>
@@ -117,7 +117,7 @@ export const AtendenteDashboard: React.FC = () => {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{Math.floor((metricas?.agendamentosConfirmados || 0) / 10)}</div>
+            <div className="text-2xl font-bold">{metricas?.orcamentosPendentes || 0}</div>
             <p className="text-xs text-muted-foreground">
               Aguardando aprovação
             </p>

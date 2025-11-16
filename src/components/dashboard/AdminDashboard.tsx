@@ -12,12 +12,12 @@ import {
   BarChart3
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useDashboardStats } from "@/hooks/useDashboard";
+import { useDashboardMetrics } from "@/hooks/useDashboardRealData";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { Badge } from "@/components/ui/badge";
 
 export const AdminDashboard: React.FC = () => {
-  const { data: metricas, isLoading } = useDashboardStats();
+  const { data: metricas, isLoading } = useDashboardMetrics();
 
   if (isLoading) {
     return (
@@ -82,16 +82,16 @@ export const AdminDashboard: React.FC = () => {
         <Card className="hover-scale">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Receita Total
+              Faturamento do Mês
             </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              R$ {((metricas?.totalClientes || 0) * 150).toLocaleString('pt-BR')}
+              R$ {(metricas?.faturamentoMes || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </div>
             <p className="text-xs text-muted-foreground">
-              +12% em relação ao mês anterior
+              {metricas?.vendasMes || 0} vendas concluídas
             </p>
           </CardContent>
         </Card>
@@ -104,9 +104,9 @@ export const AdminDashboard: React.FC = () => {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metricas?.totalClientes || 0}</div>
+            <div className="text-2xl font-bold">{metricas?.clientesAtivos || 0}</div>
             <p className="text-xs text-muted-foreground">
-              Novos este mês
+              Clientes cadastrados
             </p>
           </CardContent>
         </Card>
@@ -119,7 +119,7 @@ export const AdminDashboard: React.FC = () => {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{Math.floor((metricas?.totalClientes || 0) / 10)}</div>
+            <div className="text-2xl font-bold">{metricas?.totalPrestadores || 0}</div>
             <p className="text-xs text-muted-foreground">
               Em toda a rede
             </p>
