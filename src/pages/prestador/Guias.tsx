@@ -6,40 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Search, Calendar, Check } from "lucide-react";
-import { Guia } from "@/types";
+import { FileText, Search, Calendar, Check, Filter } from "lucide-react";
 import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { useToast } from "@/components/ui/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useGuiasPrestador } from "@/hooks/useGuias";
 
-// Dados simulados de guias
-const guiasMock: Guia[] = Array.from({ length: 20 }).map((_, i) => ({
-  id: `guia-${i + 1}`,
-  agendamentoId: `agend-${i + 1}`,
-  prestadorId: "prestador-1",
-  clienteId: `cliente-${Math.floor(Math.random() * 10) + 1}`,
-  cliente: {
-    id: `cliente-${Math.floor(Math.random() * 10) + 1}`,
-    nome: `Cliente ${Math.floor(Math.random() * 10) + 1}`,
-    cpf: "123.456.789-00",
-    telefone: "(11) 98765-4321",
-    email: "cliente@exemplo.com",
-    endereco: "Rua Exemplo, 123",
-    dataCadastro: new Date(),
-    idAssociado: `ASS${Math.floor(10000 + Math.random() * 90000)}`
-  },
-  servico: ["Consulta Cardiologista", "Exame de Sangue", "Raio-X", "Ultrassonografia"][Math.floor(Math.random() * 4)],
-  valor: Math.floor(15000 + Math.random() * 50000),
-  codigoAutenticacao: `AG${Math.floor(100000 + Math.random() * 900000)}`,
-  status: ["emitida", "realizada", "faturada", "paga"][Math.floor(Math.random() * 3)] as any,
-  dataEmissao: new Date(2025, 3 + Math.floor(Math.random() * 3), Math.floor(1 + Math.random() * 28)),
-  dataRealizacao: Math.random() > 0.3 ? new Date() : undefined,
-  dataFaturamento: Math.random() > 0.7 ? new Date() : undefined,
-  dataPagamento: undefined
-}));
+import { Skeleton } from "@/components/ui/skeleton";
 
-// Ordenar por data de emissão (mais recentes primeiro)
-guiasMock.sort((a, b) => b.dataEmissao.getTime() - a.dataEmissao.getTime());
 
 const statusMap: Record<string, { label: string; color: string }> = {
   emitida: {
@@ -64,28 +39,49 @@ const GuiasPrestador: React.FC = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [selectedGuias, setSelectedGuias] = useState<string[]>([]);
-  const isMobile = useIsMobile();
   
-  // Filtrar guias
-  const guiasFiltradas = guiasMock.filter(guia => {
-    const matchesSearch = 
-      guia.servico.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      guia.cliente?.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      guia.codigoAutenticacao.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === "all" || guia.status === statusFilter;
-    
-    return matchesSearch && matchesStatus;
-  });
   
   // Formatar valor em reais
   const formatarValor = (valor: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
-    }).format(valor / 100);
+    }).format(valor);
   };
+  const [selectedGuias, setSelectedGuias] = useState<string[]>([]);
+  const isMobile = useIsMobile();
+  
+  const { data: guias, isLoading, error } = useGuiasPrestador();
+  
+  if (isLoading) {
+    return (
+      <div className="space-y-4 p-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <p className="text-destructive">Erro ao carregar guias: {error.message}</p>
+      </div>
+    );
+  }
+  
+  // Filtrar guias
+  const guiasFiltradas = (guias || []).filter(guia => {
+    const matchesSearch = 
+      guia.servicos?.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      guia.clientes?.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      guia.codigo_autenticacao.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === "all" || guia.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
+  
   
   // Lidar com a marcação de guias
   const handleCheckGuia = (guiaId: string, checked: boolean) => {
@@ -208,17 +204,17 @@ const GuiasPrestador: React.FC = () => {
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 mb-1">
                               <span className="font-mono text-sm font-medium">
-                                {guia.codigoAutenticacao}
+                                {guia.codigo_autenticacao}
                               </span>
                               <Badge 
                                 variant="outline" 
-                                className={statusMap[guia.status].color}
+                                className={statusMap[guia.status]?.color || "bg-gray-100"}
                               >
-                                {statusMap[guia.status].label}
+                                {statusMap[guia.status]?.label || guia.status}
                               </Badge>
                             </div>
-                            <h3 className="font-medium text-sm truncate">{guia.cliente?.nome}</h3>
-                            <p className="text-sm text-gray-600 truncate">{guia.servico}</p>
+                            <h3 className="font-medium text-sm truncate">{guia.clientes?.nome}</h3>
+                            <p className="text-sm text-gray-600 truncate">{guia.servicos?.nome}</p>
                           </div>
                         </div>
                       </div>
@@ -230,7 +226,7 @@ const GuiasPrestador: React.FC = () => {
                           </span>
                           <div className="flex items-center text-xs text-gray-500">
                             <Calendar className="h-3 w-3 mr-1" />
-                            <span>{format(guia.dataEmissao, "dd/MM/yyyy")}</span>
+                            <span>{guia.data_emissao ? format(new Date(guia.data_emissao), "dd/MM/yyyy", { locale: ptBR }) : '-'}</span>
                           </div>
                         </div>
                         <Button 
@@ -292,25 +288,25 @@ const GuiasPrestador: React.FC = () => {
                         )}
                       </TableCell>
                       <TableCell className="font-mono text-sm">
-                        {guia.codigoAutenticacao}
+                        {guia.codigo_autenticacao}
                       </TableCell>
-                      <TableCell>{guia.cliente?.nome}</TableCell>
-                      <TableCell>{guia.servico}</TableCell>
+                      <TableCell>{guia.clientes?.nome}</TableCell>
+                      <TableCell>{guia.servicos?.nome}</TableCell>
                       <TableCell className="font-medium">
                         {formatarValor(guia.valor)}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center text-sm">
                           <Calendar className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
-                          <span>{format(guia.dataEmissao, "dd/MM/yyyy")}</span>
+                          <span>{guia.data_emissao ? format(new Date(guia.data_emissao), "dd/MM/yyyy", { locale: ptBR }) : '-'}</span>
                         </div>
                       </TableCell>
                       <TableCell>
                         <Badge 
                           variant="outline" 
-                          className={statusMap[guia.status].color}
+                          className={statusMap[guia.status]?.color || "bg-gray-100"}
                         >
-                          {statusMap[guia.status].label}
+                          {statusMap[guia.status]?.label || guia.status}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">

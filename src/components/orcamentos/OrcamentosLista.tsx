@@ -17,17 +17,26 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   Calendar,
   Search,
   User,
-  Eye
+  Eye,
+  Filter
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
 import { useOrcamentos } from "@/hooks/useOrcamentos";
 import { useIsMobile } from "@/hooks/use-mobile";
+
 
 const statusMap = {
   pendente: {
@@ -75,6 +84,8 @@ const calcularStatusReal = (orcamento: any) => {
 
 const OrcamentosLista: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  
   const navigate = useNavigate();
   const { data: orcamentos, isLoading, error } = useOrcamentos();
   const isMobile = useIsMobile();
@@ -101,13 +112,22 @@ const OrcamentosLista: React.FC = () => {
     );
   }
 
-  // Filtrar orçamentos com base no termo de busca
-  const orcamentosFiltrados = (orcamentos || []).filter((orcamento) => 
-    orcamento.clientes?.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    orcamento.servicos?.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    orcamento.prestadores?.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    String(orcamento.valor_final).includes(searchTerm)
-  );
+  // Filtrar orçamentos com base no termo de busca, status e data
+  const orcamentosFiltrados = (orcamentos || []).filter((orcamento) => {
+    const statusReal = calcularStatusReal(orcamento);
+    
+    // Filtro de busca
+    const matchesSearch = 
+      orcamento.clientes?.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      orcamento.servicos?.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      orcamento.prestadores?.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      String(orcamento.valor_final).includes(searchTerm);
+    
+    // Filtro de status
+    const matchesStatus = statusFilter === "all" || statusReal === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
   
   // Organizar por data de criação, mais recentes primeiro
   const orcamentosOrdenados = [...orcamentosFiltrados].sort(
