@@ -1,11 +1,13 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, FileText, Clock, Star } from 'lucide-react';
+import { Calendar, FileText, Clock, Star, DollarSign, TrendingUp } from 'lucide-react';
 import { useClienteDashboard } from '@/hooks/useClienteDashboard';
+import { useClienteFinanceiro, useClienteGuias } from '@/hooks/useClientePortalData';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
+import { formatCurrency } from '@/lib/formatters';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
 /**
@@ -15,14 +17,20 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 export const PortalClienteDashboard: React.FC = () => {
   const { profile } = useAuth();
   const { proximosAgendamentos, historicoGuias, metricas } = useClienteDashboard(profile?.cliente_id);
+  const { data: financeiro, isLoading: isLoadingFinanceiro } = useClienteFinanceiro(profile?.cliente_id);
+  const { data: guias = [], isLoading: isLoadingGuias } = useClienteGuias(profile?.cliente_id);
 
-  if (proximosAgendamentos.isLoading || historicoGuias.isLoading) {
+  if (proximosAgendamentos.isLoading || historicoGuias.isLoading || isLoadingFinanceiro || isLoadingGuias) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <LoadingSpinner size="lg" />
       </div>
     );
   }
+
+  const guiasRealizadas = guias.filter((g: any) => 
+    ['realizada', 'faturada', 'paga'].includes(g.status)
+  ).length;
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -34,7 +42,7 @@ export const PortalClienteDashboard: React.FC = () => {
       </div>
 
       {/* Cards de Estatísticas */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -53,14 +61,14 @@ export const PortalClienteDashboard: React.FC = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Serviços Realizados
+              Guias Realizadas
             </CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metricas.servicosRealizados}</div>
+            <div className="text-2xl font-bold">{guiasRealizadas}</div>
             <p className="text-xs text-muted-foreground">
-              total de serviços
+              serviços completos
             </p>
           </CardContent>
         </Card>
@@ -68,7 +76,24 @@ export const PortalClienteDashboard: React.FC = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Última Avaliação
+              Total Investido
+            </CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {formatCurrency(financeiro?.totalGasto || 0)}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              em serviços
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Avaliação Média
             </CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -77,7 +102,7 @@ export const PortalClienteDashboard: React.FC = () => {
               {metricas.ultimaAvaliacao ? `${metricas.ultimaAvaliacao}/5` : '-'}
             </div>
             <p className="text-xs text-muted-foreground">
-              {metricas.ultimaAvaliacao ? 'estrelas' : 'nenhuma avaliação'}
+              {metricas.ultimaAvaliacao ? 'estrelas' : 'sem avaliações'}
             </p>
           </CardContent>
         </Card>
