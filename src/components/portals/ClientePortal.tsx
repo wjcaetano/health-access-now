@@ -10,6 +10,7 @@ import { useHasRole } from "@/hooks/useUserRoles";
 import { CLIENT_ROUTES } from "@/lib/routes";
 
 const LazyPortalClienteOrcamentos = lazy(() => import("@/pages/clientes/PortalClienteOrcamentos"));
+const LazyPortalClienteGuias = lazy(() => import("@/pages/clientes/PortalClienteGuias"));
 
 /**
  * Portal do Cliente
@@ -41,6 +42,11 @@ const ClientePortal: React.FC = () => {
           <Route path="quotes" element={
             <SuspenseWrapper>
               <LazyPortalClienteOrcamentos />
+            </SuspenseWrapper>
+          } />
+          <Route path="guides" element={
+            <SuspenseWrapper>
+              <LazyPortalClienteGuias />
             </SuspenseWrapper>
           } />
           

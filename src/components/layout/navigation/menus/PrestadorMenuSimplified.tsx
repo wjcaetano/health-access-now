@@ -7,7 +7,8 @@ import {
   User,
   Home,
   Calendar,
-  FileText
+  FileText,
+  Shield
 } from "lucide-react";
 import { PROVIDER_ROUTES, CLIENT_ROUTES } from "@/lib/routes";
 
@@ -51,6 +52,12 @@ export const clienteMenuItems: MenuItem[] = [
     title: "Meus Agendamentos",
     icon: Calendar,
     href: CLIENT_ROUTES.APPOINTMENTS,
+    roles: ["cliente"]
+  },
+  {
+    title: "Minhas Guias",
+    icon: Shield,
+    href: "/client/guides",
     roles: ["cliente"]
   },
   {
