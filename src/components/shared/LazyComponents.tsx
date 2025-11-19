@@ -14,7 +14,7 @@ export const LazyColaboradores = lazy(() => import('@/pages/Colaboradores'));
 export const LazyAdvancedDashboard = lazy(() => import('@/components/dashboard/AdvancedDashboard'));
 
 // Lazy loading para listas
-export const LazyClientesLista = lazy(() => import('@/components/clientes/ClientesLista'));
+export const LazyClientesLista = lazy(() => import('@/components/clientes/OptimizedClientesLista'));
 export const LazyPrestadoresLista = lazy(() => import('@/components/prestadores/PrestadoresLista'));
 export const LazyServicosLista = lazy(() => import('@/components/servicos/ServicosLista'));
 export const LazyVendasLista = lazy(() => import('@/components/vendas/ListaVendas'));

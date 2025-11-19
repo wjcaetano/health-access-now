@@ -15,7 +15,7 @@ import {
   useAgendamentosRecentes, 
   useOrcamentosRecentes, 
   useMensagensRecentes 
-} from "@/hooks/useDashboard";
+} from "@/hooks/useDashboardRealData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 
